@@ -13,7 +13,7 @@ pub fn to_file(file: &str, image: &image::Image) {
     writer.flush().unwrap();
 }
 
-pub fn to_writer(writer: &mut dyn std::io::Write, image: &image::Image) {
+pub fn to_writer(writer: &mut impl std::io::Write, image: &image::Image) {
     writer
         .write_fmt(format_args!(
             "P3\n{width} {height}\n{max_color}\n",
