@@ -1,7 +1,7 @@
 use rtx::core::image;
 use rtx::exporter::ppm;
 
-fn main() {
+fn main() -> std::io::Result<()> {
     let mut image = image::Image::new(500, 500);
     for y in 0..image.height() {
         for x in 0..image.width() {
@@ -10,5 +10,5 @@ fn main() {
             image[y][x].green = (0.25 * 255.999) as u8;
         }
     }
-    ppm::to_file("Test.ppm", &image);
+    ppm::write_to_file("Test.ppm", &image)
 }
