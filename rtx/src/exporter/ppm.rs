@@ -40,8 +40,8 @@ pub fn write_to_writer(
 #[cfg(test)]
 mod test {
     use super::*;
-    use std::io::BufReader;
     use std::io::BufRead;
+    use std::io::BufReader;
 
     // Mock Writer with String buffer
     struct MockStringWriter {
@@ -110,13 +110,15 @@ mod test {
     }
 
     #[test]
-    #[should_panic(expected="Mock Error Write")]
+    #[should_panic(expected = "Mock Error Write")]
     fn test_write_to_writer_with_err() {
         let mut error_writer = MockErrorWriter {};
         let image = image::Image::new(2, 2);
         match write_to_writer(&mut error_writer, &image) {
             Ok(_) => {}
-            Err(e) => { panic!(e.to_string()); }
+            Err(e) => {
+                panic!(e.to_string());
+            }
         }
     }
 
