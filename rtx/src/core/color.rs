@@ -1239,4 +1239,289 @@ mod test {
 
         assert_eq!(lhs * rhs, expected);
     }
+
+    #[test]
+    fn test_add_assign() {
+        let mut color = Color {
+            red: 12,
+            blue: 12,
+            green: 12
+        };
+
+        let add = Color {
+            red: 244,
+            blue: 12,
+            green: 23
+        };
+
+        color += add;
+
+        let expected = Color {
+            red: 255,
+            blue: 24,
+            green: 35
+        };
+
+        assert_eq!(color, expected);
+    }
+
+    #[test]
+    fn test_sub_assign() {
+        let mut color = Color {
+            red: 12,
+            blue: 12,
+            green: 12
+        };
+
+        let sub = Color {
+            red: 244,
+            blue: 12,
+            green: 23
+        };
+
+        color -= sub;
+
+        let expected = Color {
+            red: 0,
+            blue: 0,
+            green: 0
+        };
+
+        assert_eq!(color, expected);
+    }
+
+    #[test]
+    fn test_mul_assign() {
+        let mut color = Color {
+            red: 12,
+            blue: 12,
+            green: 12
+        };
+
+        let mul = Color {
+            red: 244,
+            blue: 12,
+            green: 23
+        };
+
+        color *= mul;
+
+        let expected = Color {
+            red: 255,
+            blue: 144,
+            green: 255
+        };
+
+        assert_eq!(color, expected);
+    }
+
+    #[test]
+    fn test_mul_assign_i8() {
+        let mut color = Color {
+            red: 12,
+            blue: 12,
+            green: 12
+        };
+
+        let mul: i8 = 12;
+
+        color *= mul;
+
+        let expected = Color {
+            red: 144,
+            blue: 144,
+            green: 144
+        };
+
+        assert_eq!(color, expected);
+    }
+
+    #[test]
+    fn test_mul_assign_u8() {
+        let mut color = Color {
+            red: 12,
+            blue: 12,
+            green: 12
+        };
+
+        let mul: u8 = 12;
+
+        color *= mul;
+
+        let expected = Color {
+            red: 144,
+            blue: 144,
+            green: 144
+        };
+
+        assert_eq!(color, expected);
+    }
+
+    #[test]
+    fn test_mul_assign_i16() {
+        let mut color = Color {
+            red: 12,
+            blue: 12,
+            green: 12
+        };
+
+        let mul: i16 = 12;
+
+        color *= mul;
+
+        let expected = Color {
+            red: 144,
+            blue: 144,
+            green: 144
+        };
+
+        assert_eq!(color, expected);
+    }
+
+    #[test]
+    fn test_mul_assign_u16() {
+        let mut color = Color {
+            red: 12,
+            blue: 12,
+            green: 12
+        };
+
+        let mul: u16 = 12;
+
+        color *= mul;
+
+        let expected = Color {
+            red: 144,
+            blue: 144,
+            green: 144
+        };
+
+        assert_eq!(color, expected);
+    }
+
+    #[test]
+    fn test_mul_assign_i32() {
+        let mut color = Color {
+            red: 12,
+            blue: 12,
+            green: 12
+        };
+
+        let mul: i32 = 12;
+
+        color *= mul;
+
+        let expected = Color {
+            red: 144,
+            blue: 144,
+            green: 144
+        };
+
+        assert_eq!(color, expected);
+    }
+
+    #[test]
+    fn test_mul_assign_u32() {
+        let mut color = Color {
+            red: 12,
+            blue: 12,
+            green: 12
+        };
+
+        let mul: u32 = 12;
+
+        color *= mul;
+
+        let expected = Color {
+            red: 144,
+            blue: 144,
+            green: 144
+        };
+
+        assert_eq!(color, expected);
+    }
+
+    #[test]
+    fn test_mul_assign_i64() {
+        let mut color = Color {
+            red: 12,
+            blue: 12,
+            green: 12
+        };
+
+        let mul: i64 = 12;
+
+        color *= mul;
+
+        let expected = Color {
+            red: 144,
+            blue: 144,
+            green: 144
+        };
+
+        assert_eq!(color, expected);
+    }
+
+    #[test]
+    fn test_mul_assign_u64() {
+        let mut color = Color {
+            red: 12,
+            blue: 12,
+            green: 12
+        };
+
+        let mul: u64 = 12;
+
+        color *= mul;
+
+        let expected = Color {
+            red: 144,
+            blue: 144,
+            green: 144
+        };
+
+        assert_eq!(color, expected);
+    }
+
+    #[test]
+    fn test_mul_assfgn_f32() {
+        let mut color = Color {
+            red: 12,
+            blue: 12,
+            green: 12
+        };
+
+        let mul: f32 = 12.2;
+
+        color *= mul;
+
+        let expected = Color {
+            red: 146,
+            blue: 146,
+            green: 146
+        };
+
+        assert_eq!(color, expected);
+    }
+
+    #[test]
+    fn test_mul_assfgn_f64() {
+        let mut color = Color {
+            red: 12,
+            blue: 12,
+            green: 12
+        };
+
+        let mul: f64 = 12.2;
+
+        color *= mul;
+
+        let expected = Color {
+            red: 146,
+            blue: 146,
+            green: 146
+        };
+
+        assert_eq!(color, expected);
+    }
 }
