@@ -688,4 +688,555 @@ mod test {
 
         assert_eq!(lhs * rhs, expected);
     }
+
+    #[test]
+    fn test_mul_i16_rhs() {
+        let lhs = Color {
+            red: 12,
+            blue: 32,
+            green: 24
+        };
+
+        let rhs: i16 = 12;
+
+        let expected = Color {
+            red: 144,
+            blue: 255,
+            green: 255
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_i16_rhs_overflow() {
+        let lhs = Color {
+            red: 12,
+            blue: 32,
+            green: 24
+        };
+
+        let rhs: i16 = 500;
+
+        let expected = Color {
+            red: 255,
+            blue: 255,
+            green: 255
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_i16_rhs_negative() {
+        let lhs = Color {
+            red: 12,
+            blue: 32,
+            green: 24
+        };
+
+        let rhs: i16 = -500;
+
+        let expected = Color {
+            red: 0,
+            blue: 0,
+            green: 0
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_i16_lhs() {
+        let lhs: i16 = 2;
+
+        let rhs = Color {
+            red: 23,
+            blue: 32,
+            green: 24
+        };
+
+        let expected = Color {
+            red: 46,
+            blue: 64,
+            green: 48
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_u16_rhs() {
+        let lhs = Color {
+            red: 12,
+            blue: 32,
+            green: 24
+        };
+
+        let rhs: u16 = 5;
+
+        let expected = Color {
+            red: 60,
+            blue: 160,
+            green: 120
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_u16_rhs_overflow() {
+        let lhs = Color {
+            red: 12,
+            blue: 32,
+            green: 24
+        };
+
+        let rhs: u16 = 500;
+
+        let expected = Color {
+            red: 255,
+            blue: 255,
+            green: 255
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_u16_lhs() {
+        let lhs: u16 = 10;
+
+        let rhs = Color {
+            red: 12,
+            blue: 23,
+            green: 24
+        };
+
+        let expected = Color {
+            red: 120,
+            blue: 230,
+            green: 240
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_i32_rhs() {
+        let lhs = Color {
+            red: 12,
+            blue: 23,
+            green: 34
+        };
+
+        let rhs: i32 = 12;
+
+        let expected = Color {
+            red: 144,
+            blue: 255,
+            green: 255
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_i32_rhs_overflow() {
+        let lhs = Color {
+            red: 23,
+            blue: 32,
+            green: 64
+        };
+
+        let rhs: i32 = 344;
+
+        let expected = Color {
+            red: 255,
+            blue: 255,
+            green: 255
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_i32_rhs_negative() {
+        let lhs = Color {
+            red: 34,
+            blue: 23,
+            green: 64
+        };
+
+        let rhs: i32 = -12;
+
+        let expected = Color {
+            red: 0,
+            blue: 0,
+            green: 0
+        };
+
+        assert_eq!(lhs * rhs, expected)
+    }
+
+    #[test]
+    fn test_mul_i32_lhs() {
+        let lhs: i32 = 12;
+
+        let rhs = Color {
+            red: 12,
+            blue: 23,
+            green: 32
+        };
+
+        let expected = Color {
+            red: 144,
+            blue: 255,
+            green: 255
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_u32_rhs() {
+        let lhs = Color {
+            red: 23,
+            blue: 32,
+            green: 64
+        };
+
+        let rhs: u32 = 10;
+
+        let expected = Color {
+            red: 230,
+            blue: 255,
+            green: 255
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_u32_rhs_overflow() {
+        let lhs = Color {
+            red: 23,
+            blue: 32,
+            green: 64
+        };
+
+        let rhs: u32 = 100;
+
+        let expected = Color {
+            red: 255,
+            blue: 255,
+            green: 255
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_u32_lhs() {
+        let lhs: u32 = 10;
+
+        let rhs = Color {
+            red: 12,
+            blue: 10,
+            green: 8
+        };
+
+        let expected = Color {
+            red: 120,
+            blue: 100,
+            green: 80
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_i64_rhs() {
+        let lhs = Color {
+            red: 23,
+            blue: 32,
+            green: 8
+        };
+
+        let rhs: i64 = 2;
+
+        let expected = Color {
+            red: 46,
+            blue: 64,
+            green: 16
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_i64_rhs_overflow() {
+        let lhs = Color {
+            red: 23,
+            blue: 32,
+            green: 32
+        };
+
+        let rhs: i64 = 30;
+
+        let expected = Color {
+            red: 255,
+            blue: 255,
+            green: 255
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_i64_rhs_negative() {
+        let lhs = Color {
+            red: 23,
+            blue: 34,
+            green: 33
+        };
+
+        let rhs: i64 = -12;
+
+        let expected = Color {
+            red: 0,
+            blue: 0,
+            green: 0
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_i64_lhs() {
+        let lhs: i64 = 2;
+
+        let rhs = Color {
+            red: 32,
+            blue: 64,
+            green: 32
+        };
+
+        let expected = Color {
+            red: 64,
+            blue: 128,
+            green: 64
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_u64_rhs() {
+        let lhs = Color {
+            red: 32,
+            blue: 64,
+            green: 53
+        };
+
+        let rhs: u64 = 2;
+
+        let expected = Color {
+            red: 64,
+            blue: 128,
+            green: 106
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_u64_rhs_overflow() {
+        let lhs = Color {
+            red: 54,
+            blue: 12,
+            green: 12
+        };
+
+        let rhs: u64 = 255;
+
+        let expected = Color {
+            red: 255,
+            blue: 255,
+            green: 255
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_u64_lhs() {
+        let lhs: u64 = 2;
+
+        let rhs = Color {
+            red: 25,
+            blue: 23,
+            green: 12
+        };
+
+        let expected = Color {
+            red: 50,
+            blue: 46,
+            green: 24
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_f32_rhs() {
+        let lhs = Color {
+            red: 54,
+            blue: 12,
+            green: 12
+        };
+
+        let rhs: f32 = 2.5;
+
+        let expected = Color {
+            red: 135,
+            blue: 30,
+            green: 30
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_f32_rhs_overflow() {
+        let lhs = Color {
+            red: 54,
+            blue: 12,
+            green: 12
+        };
+
+        let rhs: f32 = 112.5;
+
+        let expected = Color {
+            red: 255,
+            blue: 255,
+            green: 255
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_f32_rhs_negative() {
+        let lhs = Color {
+            red: 54,
+            blue: 12,
+            green: 12
+        };
+
+        let rhs: f32 = -112.5;
+
+        let expected = Color {
+            red: 0,
+            blue: 0,
+            green: 0
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_f32_lhs() {
+        let lhs: f32 = 2.5;
+
+        let rhs = Color {
+            red: 54,
+            blue: 12,
+            green: 12
+        };
+
+        let expected = Color {
+            red: 135,
+            blue: 30,
+            green: 30
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_f64_rhs() {
+        let lhs = Color {
+            red: 54,
+            blue: 12,
+            green: 12
+        };
+
+        let rhs: f64 = 2.5;
+
+        let expected = Color {
+            red: 135,
+            blue: 30,
+            green: 30
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_f64_rhs_overflow() {
+        let lhs = Color {
+            red: 54,
+            blue: 12,
+            green: 12
+        };
+
+        let rhs: f64 = 112.5;
+
+        let expected = Color {
+            red: 255,
+            blue: 255,
+            green: 255
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_f64_rhs_negative() {
+        let lhs = Color {
+            red: 54,
+            blue: 12,
+            green: 12
+        };
+
+        let rhs: f64 = -112.5;
+
+        let expected = Color {
+            red: 0,
+            blue: 0,
+            green: 0
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
+
+    #[test]
+    fn test_mul_f64_lhs() {
+        let lhs: f64 = 2.5;
+
+        let rhs = Color {
+            red: 54,
+            blue: 12,
+            green: 12
+        };
+
+        let expected = Color {
+            red: 135,
+            blue: 30,
+            green: 30
+        };
+
+        assert_eq!(lhs * rhs, expected);
+    }
 }
