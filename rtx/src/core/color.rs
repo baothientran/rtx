@@ -8,6 +8,12 @@ pub struct Color {
     pub green: u8,
 }
 
+impl Color {
+    pub fn new(red: u8, blue: u8, green: u8) -> Color {
+        Color { red, blue, green }
+    }
+}
+
 // Color + Color
 impl ops::Add for Color {
     type Output = Self;
@@ -325,77 +331,77 @@ impl ops::Mul<Color> for f64 {
 // Color += Color
 impl ops::AddAssign for Color {
     fn add_assign(&mut self, rhs: Color) {
-        *self = *self + rhs; 
+        *self = *self + rhs;
     }
 }
 
 // Color -= Color
 impl ops::SubAssign for Color {
     fn sub_assign(&mut self, rhs: Color) {
-        *self = *self - rhs; 
+        *self = *self - rhs;
     }
 }
 
 // Color *= Color
 impl ops::MulAssign for Color {
     fn mul_assign(&mut self, rhs: Color) {
-        *self = *self * rhs; 
+        *self = *self * rhs;
     }
 }
 
 // Color *= i8;
 impl ops::MulAssign<i8> for Color {
     fn mul_assign(&mut self, rhs: i8) {
-        *self = *self *rhs; 
+        *self = *self * rhs;
     }
 }
 
 // Color *= u8
 impl ops::MulAssign<u8> for Color {
     fn mul_assign(&mut self, rhs: u8) {
-        *self = *self * rhs; 
+        *self = *self * rhs;
     }
 }
 
 // Color *= i16
 impl ops::MulAssign<i16> for Color {
     fn mul_assign(&mut self, rhs: i16) {
-        *self = *self * rhs; 
+        *self = *self * rhs;
     }
 }
 
 // Color *= u16
 impl ops::MulAssign<u16> for Color {
     fn mul_assign(&mut self, rhs: u16) {
-        *self = *self * rhs; 
+        *self = *self * rhs;
     }
 }
 
 // Color *= i32
 impl ops::MulAssign<i32> for Color {
     fn mul_assign(&mut self, rhs: i32) {
-        *self = *self * rhs; 
+        *self = *self * rhs;
     }
 }
 
 // Color *= u32
 impl ops::MulAssign<u32> for Color {
     fn mul_assign(&mut self, rhs: u32) {
-        *self = *self * rhs; 
+        *self = *self * rhs;
     }
 }
 
 // Color *= i64
 impl ops::MulAssign<i64> for Color {
     fn mul_assign(&mut self, rhs: i64) {
-        *self = *self * rhs; 
+        *self = *self * rhs;
     }
 }
 
 // Color *= u64
 impl ops::MulAssign<u64> for Color {
     fn mul_assign(&mut self, rhs: u64) {
-        *self = *self * rhs; 
+        *self = *self * rhs;
     }
 }
 
@@ -419,23 +425,31 @@ mod test {
     use super::*;
 
     #[test]
+    fn test_create() {
+        let color = Color::new(12, 23, 43);
+        assert_eq!(color.red, 12);
+        assert_eq!(color.blue, 23);
+        assert_eq!(color.green, 43);
+    }
+
+    #[test]
     fn test_add() {
         let lhs = Color {
             red: 12,
             blue: 23,
-            green: 12
+            green: 12,
         };
 
         let rhs = Color {
             red: 12,
             blue: 23,
-            green: 23
+            green: 23,
         };
 
         let expected = Color {
             red: 24,
             blue: 46,
-            green: 35
+            green: 35,
         };
 
         assert_eq!(lhs + rhs, expected);
@@ -446,19 +460,19 @@ mod test {
         let lhs = Color {
             red: 12,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let rhs = Color {
             red: 245,
             blue: 250,
-            green: 255
+            green: 255,
         };
 
         let expected = Color {
             red: 255,
             blue: 255,
-            green: 255
+            green: 255,
         };
 
         assert_eq!(lhs + rhs, expected);
@@ -469,19 +483,19 @@ mod test {
         let lhs = Color {
             red: 23,
             blue: 22,
-            green: 34
+            green: 34,
         };
 
         let rhs = Color {
             red: 12,
             blue: 10,
-            green: 14
+            green: 14,
         };
 
         let expected = Color {
             red: 11,
             blue: 12,
-            green: 20
+            green: 20,
         };
 
         assert_eq!(lhs - rhs, expected);
@@ -492,19 +506,19 @@ mod test {
         let lhs = Color {
             red: 12,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let rhs = Color {
             red: 23,
             blue: 23,
-            green: 23
+            green: 23,
         };
 
         let expected = Color {
             red: 0,
             blue: 0,
-            green: 0
+            green: 0,
         };
 
         assert_eq!(lhs - rhs, expected);
@@ -515,19 +529,19 @@ mod test {
         let lhs = Color {
             red: 12,
             blue: 12,
-            green: 24
+            green: 24,
         };
 
         let rhs = Color {
             red: 12,
             blue: 12,
-            green: 1
+            green: 1,
         };
 
         let expected = Color {
             red: 144,
             blue: 144,
-            green: 24
+            green: 24,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -538,19 +552,19 @@ mod test {
         let lhs = Color {
             red: 12,
             blue: 12,
-            green: 24
+            green: 24,
         };
 
         let rhs = Color {
             red: 22,
             blue: 22,
-            green: 24
+            green: 24,
         };
 
         let expected = Color {
             red: 255,
             blue: 255,
-            green: 255
+            green: 255,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -561,7 +575,7 @@ mod test {
         let lhs = Color {
             red: 12,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let rhs: i8 = 12;
@@ -569,7 +583,7 @@ mod test {
         let expected = Color {
             red: 144,
             blue: 144,
-            green: 144
+            green: 144,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -580,7 +594,7 @@ mod test {
         let lhs = Color {
             red: 244,
             blue: 244,
-            green: 244
+            green: 244,
         };
 
         let rhs: i8 = 127;
@@ -588,7 +602,7 @@ mod test {
         let expected = Color {
             red: 255,
             blue: 255,
-            green: 255
+            green: 255,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -599,7 +613,7 @@ mod test {
         let lhs = Color {
             red: 244,
             blue: 244,
-            green: 244
+            green: 244,
         };
 
         let rhs: i8 = -127;
@@ -607,7 +621,7 @@ mod test {
         let expected = Color {
             red: 0,
             blue: 0,
-            green: 0
+            green: 0,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -620,13 +634,13 @@ mod test {
         let rhs = Color {
             red: 12,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let expected = Color {
             red: 144,
             blue: 144,
-            green: 144
+            green: 144,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -637,7 +651,7 @@ mod test {
         let lhs = Color {
             red: 12,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let rhs: u8 = 12;
@@ -645,7 +659,7 @@ mod test {
         let expected = Color {
             red: 144,
             blue: 144,
-            green: 144
+            green: 144,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -656,7 +670,7 @@ mod test {
         let lhs = Color {
             red: 12,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let rhs: u8 = 255;
@@ -664,7 +678,7 @@ mod test {
         let expected = Color {
             red: 255,
             blue: 255,
-            green: 255
+            green: 255,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -677,13 +691,13 @@ mod test {
         let rhs = Color {
             red: 12,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let expected = Color {
             red: 144,
             blue: 144,
-            green: 144
+            green: 144,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -694,7 +708,7 @@ mod test {
         let lhs = Color {
             red: 12,
             blue: 32,
-            green: 24
+            green: 24,
         };
 
         let rhs: i16 = 12;
@@ -702,7 +716,7 @@ mod test {
         let expected = Color {
             red: 144,
             blue: 255,
-            green: 255
+            green: 255,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -713,7 +727,7 @@ mod test {
         let lhs = Color {
             red: 12,
             blue: 32,
-            green: 24
+            green: 24,
         };
 
         let rhs: i16 = 500;
@@ -721,7 +735,7 @@ mod test {
         let expected = Color {
             red: 255,
             blue: 255,
-            green: 255
+            green: 255,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -732,7 +746,7 @@ mod test {
         let lhs = Color {
             red: 12,
             blue: 32,
-            green: 24
+            green: 24,
         };
 
         let rhs: i16 = -500;
@@ -740,7 +754,7 @@ mod test {
         let expected = Color {
             red: 0,
             blue: 0,
-            green: 0
+            green: 0,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -753,13 +767,13 @@ mod test {
         let rhs = Color {
             red: 23,
             blue: 32,
-            green: 24
+            green: 24,
         };
 
         let expected = Color {
             red: 46,
             blue: 64,
-            green: 48
+            green: 48,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -770,7 +784,7 @@ mod test {
         let lhs = Color {
             red: 12,
             blue: 32,
-            green: 24
+            green: 24,
         };
 
         let rhs: u16 = 5;
@@ -778,7 +792,7 @@ mod test {
         let expected = Color {
             red: 60,
             blue: 160,
-            green: 120
+            green: 120,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -789,7 +803,7 @@ mod test {
         let lhs = Color {
             red: 12,
             blue: 32,
-            green: 24
+            green: 24,
         };
 
         let rhs: u16 = 500;
@@ -797,7 +811,7 @@ mod test {
         let expected = Color {
             red: 255,
             blue: 255,
-            green: 255
+            green: 255,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -810,13 +824,13 @@ mod test {
         let rhs = Color {
             red: 12,
             blue: 23,
-            green: 24
+            green: 24,
         };
 
         let expected = Color {
             red: 120,
             blue: 230,
-            green: 240
+            green: 240,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -827,7 +841,7 @@ mod test {
         let lhs = Color {
             red: 12,
             blue: 23,
-            green: 34
+            green: 34,
         };
 
         let rhs: i32 = 12;
@@ -835,7 +849,7 @@ mod test {
         let expected = Color {
             red: 144,
             blue: 255,
-            green: 255
+            green: 255,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -846,7 +860,7 @@ mod test {
         let lhs = Color {
             red: 23,
             blue: 32,
-            green: 64
+            green: 64,
         };
 
         let rhs: i32 = 344;
@@ -854,7 +868,7 @@ mod test {
         let expected = Color {
             red: 255,
             blue: 255,
-            green: 255
+            green: 255,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -865,7 +879,7 @@ mod test {
         let lhs = Color {
             red: 34,
             blue: 23,
-            green: 64
+            green: 64,
         };
 
         let rhs: i32 = -12;
@@ -873,7 +887,7 @@ mod test {
         let expected = Color {
             red: 0,
             blue: 0,
-            green: 0
+            green: 0,
         };
 
         assert_eq!(lhs * rhs, expected)
@@ -886,13 +900,13 @@ mod test {
         let rhs = Color {
             red: 12,
             blue: 23,
-            green: 32
+            green: 32,
         };
 
         let expected = Color {
             red: 144,
             blue: 255,
-            green: 255
+            green: 255,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -903,7 +917,7 @@ mod test {
         let lhs = Color {
             red: 23,
             blue: 32,
-            green: 64
+            green: 64,
         };
 
         let rhs: u32 = 10;
@@ -911,7 +925,7 @@ mod test {
         let expected = Color {
             red: 230,
             blue: 255,
-            green: 255
+            green: 255,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -922,7 +936,7 @@ mod test {
         let lhs = Color {
             red: 23,
             blue: 32,
-            green: 64
+            green: 64,
         };
 
         let rhs: u32 = 100;
@@ -930,7 +944,7 @@ mod test {
         let expected = Color {
             red: 255,
             blue: 255,
-            green: 255
+            green: 255,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -943,13 +957,13 @@ mod test {
         let rhs = Color {
             red: 12,
             blue: 10,
-            green: 8
+            green: 8,
         };
 
         let expected = Color {
             red: 120,
             blue: 100,
-            green: 80
+            green: 80,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -960,7 +974,7 @@ mod test {
         let lhs = Color {
             red: 23,
             blue: 32,
-            green: 8
+            green: 8,
         };
 
         let rhs: i64 = 2;
@@ -968,7 +982,7 @@ mod test {
         let expected = Color {
             red: 46,
             blue: 64,
-            green: 16
+            green: 16,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -979,7 +993,7 @@ mod test {
         let lhs = Color {
             red: 23,
             blue: 32,
-            green: 32
+            green: 32,
         };
 
         let rhs: i64 = 30;
@@ -987,7 +1001,7 @@ mod test {
         let expected = Color {
             red: 255,
             blue: 255,
-            green: 255
+            green: 255,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -998,7 +1012,7 @@ mod test {
         let lhs = Color {
             red: 23,
             blue: 34,
-            green: 33
+            green: 33,
         };
 
         let rhs: i64 = -12;
@@ -1006,7 +1020,7 @@ mod test {
         let expected = Color {
             red: 0,
             blue: 0,
-            green: 0
+            green: 0,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -1019,13 +1033,13 @@ mod test {
         let rhs = Color {
             red: 32,
             blue: 64,
-            green: 32
+            green: 32,
         };
 
         let expected = Color {
             red: 64,
             blue: 128,
-            green: 64
+            green: 64,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -1036,7 +1050,7 @@ mod test {
         let lhs = Color {
             red: 32,
             blue: 64,
-            green: 53
+            green: 53,
         };
 
         let rhs: u64 = 2;
@@ -1044,7 +1058,7 @@ mod test {
         let expected = Color {
             red: 64,
             blue: 128,
-            green: 106
+            green: 106,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -1055,7 +1069,7 @@ mod test {
         let lhs = Color {
             red: 54,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let rhs: u64 = 255;
@@ -1063,7 +1077,7 @@ mod test {
         let expected = Color {
             red: 255,
             blue: 255,
-            green: 255
+            green: 255,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -1076,13 +1090,13 @@ mod test {
         let rhs = Color {
             red: 25,
             blue: 23,
-            green: 12
+            green: 12,
         };
 
         let expected = Color {
             red: 50,
             blue: 46,
-            green: 24
+            green: 24,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -1093,7 +1107,7 @@ mod test {
         let lhs = Color {
             red: 54,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let rhs: f32 = 2.5;
@@ -1101,7 +1115,7 @@ mod test {
         let expected = Color {
             red: 135,
             blue: 30,
-            green: 30
+            green: 30,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -1112,7 +1126,7 @@ mod test {
         let lhs = Color {
             red: 54,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let rhs: f32 = 112.5;
@@ -1120,7 +1134,7 @@ mod test {
         let expected = Color {
             red: 255,
             blue: 255,
-            green: 255
+            green: 255,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -1131,7 +1145,7 @@ mod test {
         let lhs = Color {
             red: 54,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let rhs: f32 = -112.5;
@@ -1139,7 +1153,7 @@ mod test {
         let expected = Color {
             red: 0,
             blue: 0,
-            green: 0
+            green: 0,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -1152,13 +1166,13 @@ mod test {
         let rhs = Color {
             red: 54,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let expected = Color {
             red: 135,
             blue: 30,
-            green: 30
+            green: 30,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -1169,7 +1183,7 @@ mod test {
         let lhs = Color {
             red: 54,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let rhs: f64 = 2.5;
@@ -1177,7 +1191,7 @@ mod test {
         let expected = Color {
             red: 135,
             blue: 30,
-            green: 30
+            green: 30,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -1188,7 +1202,7 @@ mod test {
         let lhs = Color {
             red: 54,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let rhs: f64 = 112.5;
@@ -1196,7 +1210,7 @@ mod test {
         let expected = Color {
             red: 255,
             blue: 255,
-            green: 255
+            green: 255,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -1207,7 +1221,7 @@ mod test {
         let lhs = Color {
             red: 54,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let rhs: f64 = -112.5;
@@ -1215,7 +1229,7 @@ mod test {
         let expected = Color {
             red: 0,
             blue: 0,
-            green: 0
+            green: 0,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -1228,13 +1242,13 @@ mod test {
         let rhs = Color {
             red: 54,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let expected = Color {
             red: 135,
             blue: 30,
-            green: 30
+            green: 30,
         };
 
         assert_eq!(lhs * rhs, expected);
@@ -1245,13 +1259,13 @@ mod test {
         let mut color = Color {
             red: 12,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let add = Color {
             red: 244,
             blue: 12,
-            green: 23
+            green: 23,
         };
 
         color += add;
@@ -1259,7 +1273,7 @@ mod test {
         let expected = Color {
             red: 255,
             blue: 24,
-            green: 35
+            green: 35,
         };
 
         assert_eq!(color, expected);
@@ -1270,13 +1284,13 @@ mod test {
         let mut color = Color {
             red: 12,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let sub = Color {
             red: 244,
             blue: 12,
-            green: 23
+            green: 23,
         };
 
         color -= sub;
@@ -1284,7 +1298,7 @@ mod test {
         let expected = Color {
             red: 0,
             blue: 0,
-            green: 0
+            green: 0,
         };
 
         assert_eq!(color, expected);
@@ -1295,13 +1309,13 @@ mod test {
         let mut color = Color {
             red: 12,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let mul = Color {
             red: 244,
             blue: 12,
-            green: 23
+            green: 23,
         };
 
         color *= mul;
@@ -1309,7 +1323,7 @@ mod test {
         let expected = Color {
             red: 255,
             blue: 144,
-            green: 255
+            green: 255,
         };
 
         assert_eq!(color, expected);
@@ -1320,7 +1334,7 @@ mod test {
         let mut color = Color {
             red: 12,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let mul: i8 = 12;
@@ -1330,7 +1344,7 @@ mod test {
         let expected = Color {
             red: 144,
             blue: 144,
-            green: 144
+            green: 144,
         };
 
         assert_eq!(color, expected);
@@ -1341,7 +1355,7 @@ mod test {
         let mut color = Color {
             red: 12,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let mul: u8 = 12;
@@ -1351,7 +1365,7 @@ mod test {
         let expected = Color {
             red: 144,
             blue: 144,
-            green: 144
+            green: 144,
         };
 
         assert_eq!(color, expected);
@@ -1362,7 +1376,7 @@ mod test {
         let mut color = Color {
             red: 12,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let mul: i16 = 12;
@@ -1372,7 +1386,7 @@ mod test {
         let expected = Color {
             red: 144,
             blue: 144,
-            green: 144
+            green: 144,
         };
 
         assert_eq!(color, expected);
@@ -1383,7 +1397,7 @@ mod test {
         let mut color = Color {
             red: 12,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let mul: u16 = 12;
@@ -1393,7 +1407,7 @@ mod test {
         let expected = Color {
             red: 144,
             blue: 144,
-            green: 144
+            green: 144,
         };
 
         assert_eq!(color, expected);
@@ -1404,7 +1418,7 @@ mod test {
         let mut color = Color {
             red: 12,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let mul: i32 = 12;
@@ -1414,7 +1428,7 @@ mod test {
         let expected = Color {
             red: 144,
             blue: 144,
-            green: 144
+            green: 144,
         };
 
         assert_eq!(color, expected);
@@ -1425,7 +1439,7 @@ mod test {
         let mut color = Color {
             red: 12,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let mul: u32 = 12;
@@ -1435,7 +1449,7 @@ mod test {
         let expected = Color {
             red: 144,
             blue: 144,
-            green: 144
+            green: 144,
         };
 
         assert_eq!(color, expected);
@@ -1446,7 +1460,7 @@ mod test {
         let mut color = Color {
             red: 12,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let mul: i64 = 12;
@@ -1456,7 +1470,7 @@ mod test {
         let expected = Color {
             red: 144,
             blue: 144,
-            green: 144
+            green: 144,
         };
 
         assert_eq!(color, expected);
@@ -1467,7 +1481,7 @@ mod test {
         let mut color = Color {
             red: 12,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let mul: u64 = 12;
@@ -1477,7 +1491,7 @@ mod test {
         let expected = Color {
             red: 144,
             blue: 144,
-            green: 144
+            green: 144,
         };
 
         assert_eq!(color, expected);
@@ -1488,7 +1502,7 @@ mod test {
         let mut color = Color {
             red: 12,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let mul: f32 = 12.2;
@@ -1498,7 +1512,7 @@ mod test {
         let expected = Color {
             red: 146,
             blue: 146,
-            green: 146
+            green: 146,
         };
 
         assert_eq!(color, expected);
@@ -1509,7 +1523,7 @@ mod test {
         let mut color = Color {
             red: 12,
             blue: 12,
-            green: 12
+            green: 12,
         };
 
         let mul: f64 = 12.2;
@@ -1519,7 +1533,7 @@ mod test {
         let expected = Color {
             red: 146,
             blue: 146,
-            green: 146
+            green: 146,
         };
 
         assert_eq!(color, expected);
