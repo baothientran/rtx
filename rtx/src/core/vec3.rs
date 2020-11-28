@@ -7,8 +7,20 @@ pub struct Vec3 {
     pub z: f32,
 }
 
+pub fn dot(lhs: &Vec3, rhs: &Vec3) -> f32 {
+    lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z
+}
+
+pub fn cross(lhs: &Vec3, rhs: &Vec3) -> Vec3 {
+    Vec3::new(
+        lhs.y * rhs.z - lhs.z * rhs.y,
+        lhs.z * rhs.x - lhs.x * rhs.z,
+        lhs.x * rhs.y - lhs.y * rhs.x,
+    )
+}
+
 pub fn length_sq(v: &Vec3) -> f32 {
-    return v.x * v.x + v.y * v.y + v.z * v.z;
+    dot(v, v)
 }
 
 pub fn length(v: &Vec3) -> f32 {
@@ -127,6 +139,38 @@ impl ops::DivAssign<f32> for Vec3 {
 mod test {
     use super::*;
     use crate::core::math;
+
+    #[test]
+    fn test_cross() {
+        let lhs = Vec3::new(12.0, 34.0, 12.0);
+        let rhs = Vec3::new(2.0, 1.0, 2.0);
+        let result = cross(&lhs, &rhs);
+        assert!(math::equal_epsilon_f32(
+            dot(&result, &lhs),
+            0.0,
+            math::EPSILON_F32_5
+        ));
+        assert!(math::equal_epsilon_f32(
+            dot(&result, &rhs),
+            0.0,
+            math::EPSILON_F32_5
+        ));
+        assert!(math::equal_epsilon_f32(result.x, 56.0, math::EPSILON_F32_5));
+        assert!(math::equal_epsilon_f32(result.y, 0.0, math::EPSILON_F32_5));
+        assert!(math::equal_epsilon_f32(
+            result.z,
+            -56.0,
+            math::EPSILON_F32_5
+        ));
+    }
+
+    #[test]
+    fn test_dot() {
+        let lhs = Vec3::new(12.0, 34.0, 12.0);
+        let rhs = Vec3::new(2.0, 1.0, 2.0);
+        let result = dot(&lhs, &rhs);
+        assert!(math::equal_epsilon_f32(result, 82.0, math::EPSILON_F32_5));
+    }
 
     #[test]
     fn test_length_sq() {
