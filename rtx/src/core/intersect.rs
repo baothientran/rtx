@@ -8,10 +8,10 @@ pub fn intersect_ray_sphere(ray: &ray::Ray, sphere: &sphere::Sphere) -> Option<f
     let radius_sq = radius * radius;
 
     let oc = *center - *ray.origin();
-    let oc_length_sq = vec3::length_sq(&oc);
+    let oc_length_sq = vec3::Vec3::length_sq(&oc);
     let origin_outside = oc_length_sq > radius_sq;
 
-    let tca = vec3::dot(&oc, ray.direction());
+    let tca = vec3::Vec3::dot(&oc, ray.direction());
     if tca < 0.0 && origin_outside {
         return None;
     }

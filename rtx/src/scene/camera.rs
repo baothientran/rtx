@@ -26,13 +26,13 @@ impl PerspectiveCamera {
         image_width: i32,
         image_height: i32,
     ) -> PerspectiveCamera {
-        let mut view_x_axis = vec3::cross(&out_direction, &up_direction);
-        view_x_axis = vec3::normalize(&view_x_axis).unwrap();
+        let mut view_x_axis = vec3::Vec3::cross(&out_direction, &up_direction);
+        view_x_axis = vec3::Vec3::normalize(&view_x_axis).unwrap();
 
-        let mut view_y_axis = vec3::cross(&view_x_axis, &out_direction);
-        view_y_axis = vec3::normalize(&view_y_axis).unwrap();
+        let mut view_y_axis = vec3::Vec3::cross(&view_x_axis, &out_direction);
+        view_y_axis = vec3::Vec3::normalize(&view_y_axis).unwrap();
 
-        let view_z_axis = vec3::normalize(&out_direction).unwrap();
+        let view_z_axis = vec3::Vec3::normalize(&out_direction).unwrap();
 
         let image_horizontal_length = 2.0 * distance_to_image * f32::tan(view_angle / 2.0);
         let image_vertical_length =
@@ -58,14 +58,16 @@ impl PerspectiveCamera {
 
     pub fn create_ray(&self, x: f32, y: f32) -> ray::Ray {
         let origin = self.location;
+        let width_ratio = x / ((self.image_width - 1) as f32);
+        let height_ratio = y / ((self.image_height - 1) as f32);
         let mut direction = self.top_left_position
-            + self.image_horizontal_length * x / ((self.image_width - 1) as f32) * self.view_x_axis
-            - self.image_vertical_length * y / ((self.image_height - 1) as f32) * self.view_y_axis
+            + self.image_horizontal_length * width_ratio * self.view_x_axis
+            - self.image_vertical_length * height_ratio * self.view_y_axis
             - origin;
 
-        direction = vec3::normalize(&direction).unwrap();
+        direction = vec3::Vec3::normalize(&direction).unwrap();
 
-        ray::Ray::new(origin, direction)
+        return ray::Ray::new(origin, direction);
     }
 }
 

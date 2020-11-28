@@ -28,6 +28,22 @@ pub fn equal_epsilon_f64(lhs: f64, rhs: f64, epsilon: f64) -> bool {
     return (lhs - rhs).abs() < epsilon;
 }
 
+pub fn clamp<T>(num: T, min: T, max: T) -> T where T: PartialOrd {
+    if min > max {
+        panic!("min should smaller than max");
+    }
+
+    if num < min {
+        return min;
+    }
+
+    if num > max {
+        return max;
+    }
+
+    return num;
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -46,5 +62,26 @@ mod test {
             5.100001,
             EPSILON_F64_13
         ));
+    }
+
+    #[test]
+    fn test_clamp() {
+        let n: i8 = 35;
+        let i = clamp(n, 34, 40);
+        assert_eq!(i, 35);
+    }
+
+    #[test]
+    fn test_clamp_max() {
+        let n: i8 = 50;
+        let i = clamp(n, 34, 40);
+        assert_eq!(i, 40);
+    }
+
+    #[test]
+    fn test_clamp_min() {
+        let n: i8 = 10;
+        let i = clamp(n, 34, 40);
+        assert_eq!(i, 34);
     }
 }

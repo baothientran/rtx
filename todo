@@ -1,0 +1,28 @@
+- tests:
+    + sphere
+    + ray
+    + camera
+    + hittable
+    + cli
+
+- features:
+    + background image
+
+    + materials:
+        * lambertian material
+        * metal material
+
+    + meshes: 
+        * triangle mesh
+
+    + spatial structures:
+        * bvh
+        * kd-tree
+        * octree
+
+    + scene descriptor:
+        * obj parser
+        * scene description file
+        * gltf parser
+
+    + multithreaded

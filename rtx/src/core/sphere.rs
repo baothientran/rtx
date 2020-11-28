@@ -17,6 +17,11 @@ impl Sphere {
     pub fn radius(&self) -> f32 {
         self.radius
     }
+
+    pub fn calc_normal(&self, p: &vec3::Vec3) -> vec3::Vec3 {
+        let n = *p - self.center;
+        return vec3::Vec3::normalize(&n).unwrap();
+    }
 }
 
 #[cfg(test)]
@@ -34,4 +39,7 @@ mod test {
         assert!(math::equal_epsilon_f32(center.z, 3.0, math::EPSILON_F32_5));
         assert!(math::equal_epsilon_f32(radius, 32.0, math::EPSILON_F32_5));
     }
+
+    #[test]
+    fn test_calc_normal() {}
 }

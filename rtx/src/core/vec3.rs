@@ -7,39 +7,47 @@ pub struct Vec3 {
     pub z: f32,
 }
 
-pub fn dot(lhs: &Vec3, rhs: &Vec3) -> f32 {
-    lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z
-}
-
-pub fn cross(lhs: &Vec3, rhs: &Vec3) -> Vec3 {
-    Vec3::new(
-        lhs.y * rhs.z - lhs.z * rhs.y,
-        lhs.z * rhs.x - lhs.x * rhs.z,
-        lhs.x * rhs.y - lhs.y * rhs.x,
-    )
-}
-
-pub fn length_sq(v: &Vec3) -> f32 {
-    dot(v, v)
-}
-
-pub fn length(v: &Vec3) -> f32 {
-    return f32::sqrt(length_sq(v));
-}
-
-pub fn normalize(v: &Vec3) -> Option<Vec3> {
-    let len = length(v);
-    if len == 0.0 {
-        return None;
-    }
-
-    let inv_len = 1.0 / len;
-    return Some(*v * inv_len);
-}
-
 impl Vec3 {
     pub fn new(x: f32, y: f32, z: f32) -> Vec3 {
         Vec3 { x, y, z }
+    }
+
+    pub fn dot(lhs: &Vec3, rhs: &Vec3) -> f32 {
+        lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z
+    }
+
+    pub fn cross(lhs: &Vec3, rhs: &Vec3) -> Vec3 {
+        Vec3::new(
+            lhs.y * rhs.z - lhs.z * rhs.y,
+            lhs.z * rhs.x - lhs.x * rhs.z,
+            lhs.x * rhs.y - lhs.y * rhs.x,
+        )
+    }
+
+    pub fn length_sq(v: &Vec3) -> f32 {
+        Vec3::dot(v, v)
+    }
+
+    pub fn length(v: &Vec3) -> f32 {
+        return f32::sqrt(Vec3::length_sq(v));
+    }
+
+    pub fn normalize(v: &Vec3) -> Option<Vec3> {
+        let len = Vec3::length(v);
+        if len == 0.0 {
+            return None;
+        }
+
+        let inv_len = 1.0 / len;
+        return Some(*v * inv_len);
+    }
+
+    pub fn abs(v: &Vec3) -> Vec3 {
+        Vec3 {
+            x: f32::abs(v.x),
+            y: f32::abs(v.y),
+            z: f32::abs(v.z)
+        }
     }
 }
 
@@ -144,14 +152,14 @@ mod test {
     fn test_cross() {
         let lhs = Vec3::new(12.0, 34.0, 12.0);
         let rhs = Vec3::new(2.0, 1.0, 2.0);
-        let result = cross(&lhs, &rhs);
+        let result = Vec3::cross(&lhs, &rhs);
         assert!(math::equal_epsilon_f32(
-            dot(&result, &lhs),
+            Vec3::dot(&result, &lhs),
             0.0,
             math::EPSILON_F32_5
         ));
         assert!(math::equal_epsilon_f32(
-            dot(&result, &rhs),
+            Vec3::dot(&result, &rhs),
             0.0,
             math::EPSILON_F32_5
         ));
@@ -168,7 +176,7 @@ mod test {
     fn test_dot() {
         let lhs = Vec3::new(12.0, 34.0, 12.0);
         let rhs = Vec3::new(2.0, 1.0, 2.0);
-        let result = dot(&lhs, &rhs);
+        let result = Vec3::dot(&lhs, &rhs);
         assert!(math::equal_epsilon_f32(result, 82.0, math::EPSILON_F32_5));
     }
 
@@ -178,7 +186,7 @@ mod test {
         let expected = v.x * v.x + v.y * v.y + v.z * v.z;
         assert!(math::equal_epsilon_f32(
             expected,
-            length_sq(&v),
+            Vec3::length_sq(&v),
             math::EPSILON_F32_5
         ));
     }
@@ -188,7 +196,7 @@ mod test {
         let v = Vec3::new(12.0, 0.0, 0.0);
         assert!(math::equal_epsilon_f32(
             12.0,
-            length(&v),
+            Vec3::length(&v),
             math::EPSILON_F32_5
         ));
     }
@@ -196,9 +204,9 @@ mod test {
     #[test]
     fn test_normalize() {
         let v = Vec3::new(12.2, 21.0, 34.4);
-        let n = normalize(&v).unwrap();
+        let n = Vec3::normalize(&v).unwrap();
         assert!(math::equal_epsilon_f32(
-            length(&n),
+            Vec3::length(&n),
             1.0,
             math::EPSILON_F32_5
         ));
@@ -407,5 +415,15 @@ mod test {
         assert!(math::equal_epsilon_f32(result.x, 1.2, math::EPSILON_F32_5));
         assert!(math::equal_epsilon_f32(result.y, 2.1, math::EPSILON_F32_5));
         assert!(math::equal_epsilon_f32(result.z, 3.44, math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_abs() {
+        let v = Vec3::new(-12.0, -1.0, -2.0);
+        let result = Vec3::abs(&v);
+
+        assert!(math::equal_epsilon_f32(result.x, 12.0, math::EPSILON_F32_5));
+        assert!(math::equal_epsilon_f32(result.y, 1.0, math::EPSILON_F32_5));
+        assert!(math::equal_epsilon_f32(result.z, 2.0, math::EPSILON_F32_5));
     }
 }

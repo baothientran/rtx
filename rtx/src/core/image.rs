@@ -1,18 +1,14 @@
-use super::color;
+use crate::core::vec3;
 use std::ops;
 use std::vec::Vec;
 
 pub struct Image {
-    colors: Vec<Vec<color::Color>>,
+    colors: Vec<Vec<vec3::Vec3>>,
 }
 
 impl Image {
     pub fn new(width: usize, height: usize) -> Image {
-        let black = color::Color {
-            red: 0,
-            blue: 0,
-            green: 0,
-        };
+        let black = vec3::Vec3::new(0.0, 0.0, 0.0);
         return Image {
             colors: vec![vec!(black; width); height],
         };
@@ -28,7 +24,7 @@ impl Image {
 }
 
 impl ops::Index<usize> for Image {
-    type Output = Vec<color::Color>;
+    type Output = Vec<vec3::Vec3>;
 
     fn index(&self, idx: usize) -> &Self::Output {
         return &self.colors[idx];
@@ -36,7 +32,7 @@ impl ops::Index<usize> for Image {
 }
 
 impl ops::IndexMut<usize> for Image {
-    fn index_mut(&mut self, idx: usize) -> &mut Vec<color::Color> {
+    fn index_mut(&mut self, idx: usize) -> &mut Vec<vec3::Vec3> {
         return &mut self.colors[idx];
     }
 }
@@ -44,6 +40,7 @@ impl ops::IndexMut<usize> for Image {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::core::math;
 
     #[test]
     fn test_create_image() {
@@ -53,7 +50,10 @@ mod test {
 
         for y in 0..image.height() {
             for x in 0..image.width() {
-                assert_eq!(image[y][x], color::Color::new(0, 0, 0));
+                let result = image[y][x];
+                assert!(math::equal_epsilon_f32(result.x, 0.0, math::EPSILON_F32_5));
+                assert!(math::equal_epsilon_f32(result.y, 0.0, math::EPSILON_F32_5));
+                assert!(math::equal_epsilon_f32(result.z, 0.0, math::EPSILON_F32_5));
             }
         }
     }
@@ -61,9 +61,10 @@ mod test {
     #[test]
     fn test_assign_color() {
         let mut image = Image::new(20, 20);
-        image[12][12] = color::Color::new(12, 23, 10);
-        assert_eq!(image[12][12].red, 12);
-        assert_eq!(image[12][12].blue, 23);
-        assert_eq!(image[12][12].green, 10);
+        image[12][12] = vec3::Vec3::new(12.0, 23.0, 10.0);
+        let result = image[12][12];
+        assert!(math::equal_epsilon_f32(result.x, 12.0, math::EPSILON_F32_5));
+        assert!(math::equal_epsilon_f32(result.y, 23.0, math::EPSILON_F32_5));
+        assert!(math::equal_epsilon_f32(result.z, 10.0, math::EPSILON_F32_5));
     }
 }

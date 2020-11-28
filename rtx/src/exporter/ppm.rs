@@ -1,4 +1,5 @@
 use crate::core::image;
+use crate::core::color;
 use std::fs::File;
 use std::io::BufWriter;
 use std::io::Write;
@@ -26,7 +27,7 @@ pub fn write_to_writer(
 
     for y in 0..image.height() {
         for x in 0..image.width() {
-            let color = image[y][x];
+            let color = color::Color::from_vec3(&image[y][x]);
             writer.write_fmt(format_args!(
                 "{} {} {}\n",
                 color.red, color.blue, color.green

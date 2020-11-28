@@ -18,6 +18,10 @@ impl Ray {
     pub fn direction(&self) -> &vec3::Vec3 {
         &self.direction
     }
+
+    pub fn calc_position(&self, t: f32) -> vec3::Vec3 {
+        return self.origin + t * self.direction;
+    }
 }
 
 #[cfg(test)]
@@ -54,4 +58,7 @@ mod test {
             math::EPSILON_F32_5
         ));
     }
+
+    #[test]
+    fn test_calc_position() {}
 }
