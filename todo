@@ -1,42 +1,40 @@
-- tests:
-    + sphere
-    + ray
-    + camera
-    + hittable
-    + cli
+- tests: 
+    + sphere [planned]
+    + ray [planned]
+    + camera [planned]
+    + hittable [planned]
+    + cli [planned]
 
 - features:
-    + background image
-
     + concurrency:
-        * multithreaded
+        * multithreaded [planned]
 
     + materials:
-        * lambertian material
-        * metal material
+        * lambertian material [planned]
+        * metal material [planned]
 
     + meshes: 
-        * triangle mesh
+        * triangle mesh [planned]
         * plane
         * cone
         * ellipsoid
         * cube
 
     + spatial structures:
-        * bvh
+        * bvh [planned]
         * kd-tree
         * octree
 
     + parsers:
-        * obj parser
-        * custom scene description file
+        * obj parser [planned]
+        * custom scene description file [planned]
 
     + rendering effects:
-        * surface textures
+        * surface textures [planned]
         * solid textures
-        * reflection
-        * refraction
-        * depth of field
+        * reflection [planned]
+        * refraction [planned]
+        * depth of field [planned]
         * motion blur
         * volume and media
         * caustic
@@ -45,3 +43,54 @@
         * path tracing
 
 - plans:
+    Period: 11/29/2020 - 11/29/2020
+        + background image
+
+        + materials:
+            * lambertian material
+
+        + tests:
+            * sphere
+            * ray
+            * camera
+            * hittable
+            * cli
+
+    Period: 11/30/2020 -  12/06/2020
+        + materials:
+            * lambertian material
+
+        + meshes:
+            * triangle mesh
+
+        + spatial structures:
+            * bvh
+
+        + parsers:
+            * obj parser
+
+    Period: 12/07/2020 - 12/13/2020
+        + material:
+            * metal material
+
+        + parsers:
+            * obj parser
+            * custom scene description file
+
+        + rendering effects:
+            * reflection
+
+    Period: 12/14/2020 - 12/20/2020
+        + concurrency:
+            * multithreaded;
+
+        + rendering effects:
+            * refraction
+
+    Period: 12/21/2020 - 12/27/2020
+        + rendering effects:
+            * depth of field
+
+    Period: 12/28/2020 - 01/03/2021
+        + rendering effects:
+            * surface textures
