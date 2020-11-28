@@ -8,21 +8,40 @@
 - features:
     + background image
 
+    + concurrency:
+        * multithreaded
+
     + materials:
         * lambertian material
         * metal material
 
     + meshes: 
         * triangle mesh
+        * plane
+        * cone
+        * ellipsoid
+        * cube
 
     + spatial structures:
         * bvh
         * kd-tree
         * octree
 
-    + scene descriptor:
+    + parsers:
         * obj parser
-        * scene description file
-        * gltf parser
+        * custom scene description file
 
-    + multithreaded
+    + rendering effects:
+        * surface textures
+        * solid textures
+        * reflection
+        * refraction
+        * depth of field
+        * motion blur
+        * volume and media
+        * caustic
+
+    + rendering methods:
+        * path tracing
+
+- plans:
