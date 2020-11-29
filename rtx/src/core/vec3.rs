@@ -24,6 +24,11 @@ impl Vec3 {
         )
     }
 
+    pub fn distance(from: &Vec3, to: &Vec3) -> f32 {
+        let direction = *to - *from;
+        return Vec3::length(&direction);
+    }
+
     pub fn length_sq(v: &Vec3) -> f32 {
         Vec3::dot(v, v)
     }
@@ -46,7 +51,7 @@ impl Vec3 {
         Vec3 {
             x: f32::abs(v.x),
             y: f32::abs(v.y),
-            z: f32::abs(v.z)
+            z: f32::abs(v.z),
         }
     }
 }
@@ -178,6 +183,14 @@ mod test {
         let rhs = Vec3::new(2.0, 1.0, 2.0);
         let result = Vec3::dot(&lhs, &rhs);
         assert!(math::equal_epsilon_f32(result, 82.0, math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_distance() {
+        let from = Vec3::new(12.0, 2.0, 3.0);
+        let to = Vec3::new(1.0, 2.0, 1.0);
+        let dist = Vec3::distance(&from, &to);
+        assert!(math::equal_epsilon_f32(dist, 11.18034, math::EPSILON_F32_5));
     }
 
     #[test]

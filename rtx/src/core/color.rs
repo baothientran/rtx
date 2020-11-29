@@ -1,5 +1,5 @@
-use crate::core::vec3;
 use crate::core::math;
+use crate::core::vec3;
 
 #[derive(PartialEq, Copy, Clone, Debug)]
 pub struct Color {
@@ -17,11 +17,7 @@ impl Color {
         let red = (math::clamp(v.x, 0.0, 1.0) * 255.999) as u8;
         let blue = (math::clamp(v.y, 0.0, 1.0) * 255.999) as u8;
         let green = (math::clamp(v.z, 0.0, 1.0) * 255.999) as u8;
-        return Color {
-            red,
-            blue,
-            green
-        };
+        return Color { red, blue, green };
     }
 }
 
