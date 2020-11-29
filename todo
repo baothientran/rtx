@@ -63,32 +63,29 @@
         + meshes:
             * triangle mesh
 
-        + spatial structures:
-            * bvh
-
         + parsers:
             * obj parser
 
     Period: 12/07/2020 - 12/13/2020
-        + material:
-            * metal material
-
-        + parsers:
-            * obj parser
-            * custom scene description file
+        + spatial structures:
+            * bvh
 
         + rendering effects:
             * reflection
 
     Period: 12/14/2020 - 12/20/2020
         + concurrency:
-            * multithreaded;
+            * multithreaded
 
         + rendering effects:
             * refraction
 
     Period: 12/21/2020 - 12/27/2020
-        + rendering effects:
+        + parsers:
+            * custom scene description file
+
+        + material:
+            * metal material
             * depth of field
 
     Period: 12/28/2020 - 01/03/2021
