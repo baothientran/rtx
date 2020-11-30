@@ -1,5 +1,5 @@
-use crate::scene::ray;
 use crate::core::vec3;
+use crate::scene::ray;
 
 pub enum SurfaceInfo {
     None,

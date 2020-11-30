@@ -30,7 +30,7 @@ pub fn render(
                     // Use normal for now
                     let abs_normal = vec3::Vec3::abs(&normal);
                     image[y][x] = abs_normal;
-                },
+                }
                 renderable::SurfaceInfo::None => {}
             }
         }

@@ -89,9 +89,21 @@ mod test {
 
     #[test]
     fn test_degree_to_radian() {
-        assert!(equal_epsilon_f32(degree_to_radian(60.0), 1.0472, EPSILON_F32_5));
-        assert!(equal_epsilon_f32(degree_to_radian(23.0), 0.40142, EPSILON_F32_5));
-        assert!(equal_epsilon_f32(degree_to_radian(45.0), 0.78540, EPSILON_F32_5));
+        assert!(equal_epsilon_f32(
+            degree_to_radian(60.0),
+            1.0472,
+            EPSILON_F32_5
+        ));
+        assert!(equal_epsilon_f32(
+            degree_to_radian(23.0),
+            0.40142,
+            EPSILON_F32_5
+        ));
+        assert!(equal_epsilon_f32(
+            degree_to_radian(45.0),
+            0.78540,
+            EPSILON_F32_5
+        ));
     }
 
     #[test]

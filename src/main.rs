@@ -1,11 +1,11 @@
 use rtx::apps;
-use rtx::core::{math, vec3, image};
-use rtx::scene::{renderable, perspective_camera};
-use rtx::exporter::{ppm};
+use rtx::core::{image, math, vec3};
+use rtx::exporter::ppm;
+use rtx::scene::{perspective_camera, renderable};
 
 fn main() {
     // setup scene
-    let mut img = image::Image::new(1000, 500); 
+    let mut img = image::Image::new(1000, 500);
 
     let hittables = Vec::<&dyn renderable::Renderable>::new();
 

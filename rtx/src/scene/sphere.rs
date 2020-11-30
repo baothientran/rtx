@@ -60,7 +60,7 @@ impl renderable::Renderable for Sphere {
                         position,
                         normal,
                     };
-                },
+                }
                 renderable::SurfaceInfo::Hit {
                     ray_time,
                     position,

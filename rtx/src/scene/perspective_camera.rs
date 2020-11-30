@@ -1,6 +1,6 @@
 use crate::core::vec3;
-use crate::scene::ray;
 use crate::scene::camera;
+use crate::scene::ray;
 
 #[derive(Copy, Clone, Debug)]
 pub struct PerspectiveCamera {

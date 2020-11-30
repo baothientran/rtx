@@ -60,5 +60,28 @@ mod test {
     }
 
     #[test]
-    fn test_calc_position() {}
+    fn test_calc_position() {
+        let ray = Ray::new(
+            vec3::Vec3::new(1.0, 3.2, 1.2),
+            vec3::Vec3::new(2.0, 2.0, 1.0),
+        );
+        let origin = ray.origin();
+        let direction = ray.direction();
+
+        let position = ray.calc_position(0.4);
+        let mut position_to_origin = position - *origin;
+        assert!(math::equal_epsilon_f32(
+            vec3::Vec3::length(&position_to_origin),
+            0.4 * vec3::Vec3::length(direction),
+            math::EPSILON_F32_5
+        ));
+
+        position_to_origin = vec3::Vec3::normalize(&position_to_origin).unwrap();
+        let normal_direction = vec3::Vec3::normalize(direction).unwrap();
+        assert!(math::equal_epsilon_f32(
+            vec3::Vec3::dot(&position_to_origin, &normal_direction),
+            1.0,
+            math::EPSILON_F32_5
+        ));
+    }
 }
