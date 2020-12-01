@@ -66,11 +66,11 @@ impl convert::From<f32> for Vec3 {
 impl ops::Neg for Vec3 {
     type Output = Vec3;
 
-    fn neg(self) -> Self { 
+    fn neg(self) -> Self {
         return Vec3 {
             x: -self.x,
             y: -self.y,
-            z: -self.z
+            z: -self.z,
         };
     }
 }

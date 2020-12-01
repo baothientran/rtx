@@ -77,4 +77,98 @@ impl camera::Camera for PerspectiveCamera {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::core::math;
+
+    #[test]
+    fn test_create() {
+        let location = vec3::Vec3::from(1.0);
+        let mut out_direction = vec3::Vec3::from(0.0) - location;
+        out_direction = vec3::Vec3::normalize(&out_direction).unwrap();
+        let up_direction = vec3::Vec3::new(0.0, 1.0, 0.0);
+
+        let camera = PerspectiveCamera::new(
+            location,
+            out_direction,
+            up_direction,
+            math::degree_to_radian(60.0),
+            20.0,
+            200,
+            200,
+        );
+
+        // check location
+        assert!(math::equal_epsilon_f32(
+            camera.location.x,
+            1.0,
+            math::EPSILON_F32_5
+        ));
+        assert!(math::equal_epsilon_f32(
+            camera.location.y,
+            1.0,
+            math::EPSILON_F32_5
+        ));
+        assert!(math::equal_epsilon_f32(
+            camera.location.z,
+            1.0,
+            math::EPSILON_F32_5
+        ));
+
+        // check axes are perpendicular to each other
+        assert!(math::equal_epsilon_f32(
+            vec3::Vec3::dot(&camera.view_x_axis, &camera.view_y_axis),
+            0.0,
+            math::EPSILON_F32_5
+        ));
+        assert!(math::equal_epsilon_f32(
+            vec3::Vec3::dot(&camera.view_y_axis, &camera.view_z_axis),
+            0.0,
+            math::EPSILON_F32_5
+        ));
+        assert!(math::equal_epsilon_f32(
+            vec3::Vec3::dot(&camera.view_x_axis, &camera.view_z_axis),
+            0.0,
+            math::EPSILON_F32_5
+        ));
+
+        // check other properties
+        assert!(math::equal_epsilon_f32(
+            camera.view_angle,
+            math::degree_to_radian(60.0),
+            math::EPSILON_F32_5
+        ));
+        assert!(math::equal_epsilon_f32(
+            camera.distance_to_image,
+            20.0,
+            math::EPSILON_F32_5
+        ));
+        assert_eq!(camera.image_width, 200);
+        assert_eq!(camera.image_height, 200);
+        assert!(math::equal_epsilon_f32(
+            camera.image_horizontal_length,
+            23.09401,
+            math::EPSILON_F32_5
+        ));
+        assert!(math::equal_epsilon_f32(
+            camera.image_vertical_length,
+            23.09401,
+            math::EPSILON_F32_5
+        ));
+
+        // check top left position
+        assert!(math::equal_epsilon_f32(
+            camera.top_left_position.x,
+            -23.42602,
+            math::EPSILON_F32_5
+        ));
+        assert!(math::equal_epsilon_f32(
+            camera.top_left_position.y,
+            -1.11891,
+            math::EPSILON_F32_5
+        ));
+        assert!(math::equal_epsilon_f32(
+            camera.top_left_position.z,
+            -7.09608,
+            math::EPSILON_F32_5
+        ));
+    }
 }

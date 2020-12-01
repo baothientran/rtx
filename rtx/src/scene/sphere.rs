@@ -11,7 +11,7 @@ pub struct Sphere {
 #[derive(Copy, Clone, Debug)]
 struct SphereIntersect {
     pub t: f32,
-    pub outside: bool
+    pub outside: bool,
 }
 
 impl Sphere {
@@ -53,11 +53,17 @@ impl Sphere {
 
         if origin_outside {
             let t = tca - f32::sqrt(hc_length_sq);
-            return Some(SphereIntersect{t, outside: origin_outside});
+            return Some(SphereIntersect {
+                t,
+                outside: origin_outside,
+            });
         }
 
         let t = tca + f32::sqrt(hc_length_sq);
-        return Some(SphereIntersect{t, outside: origin_outside});
+        return Some(SphereIntersect {
+            t,
+            outside: origin_outside,
+        });
     }
 }
 
@@ -89,7 +95,7 @@ impl renderable::Renderable for Sphere {
                         *normal = self._calc_normal(position);
                         if !intersect.outside {
                             *normal = -*normal;
-                    }
+                        }
                     }
                 }
             },
@@ -128,7 +134,11 @@ mod test {
         let intersect = sphere._intersect_ray(&ray).unwrap();
         let intersect_pos = ray.calc_position(intersect.t);
         let distance = vec3::Vec3::distance(sphere.center(), &intersect_pos);
-        assert!(math::equal_epsilon_f32(distance, sphere.radius(), math::EPSILON_F32_5));
+        assert!(math::equal_epsilon_f32(
+            distance,
+            sphere.radius(),
+            math::EPSILON_F32_5
+        ));
         assert!(intersect.outside);
     }
 
@@ -145,7 +155,11 @@ mod test {
         let intersect = sphere._intersect_ray(&ray).unwrap();
         let intersect_pos = ray.calc_position(intersect.t);
         let distance = vec3::Vec3::distance(sphere.center(), &intersect_pos);
-        assert!(math::equal_epsilon_f32(distance, sphere.radius(), math::EPSILON_F32_5));
+        assert!(math::equal_epsilon_f32(
+            distance,
+            sphere.radius(),
+            math::EPSILON_F32_5
+        ));
         assert!(!intersect.outside);
     }
 
@@ -170,8 +184,16 @@ mod test {
         let normal = sphere._calc_normal(&position);
         let mut direction = position - *sphere.center();
         direction = vec3::Vec3::normalize(&direction).unwrap();
-        assert!(math::equal_epsilon_f32(vec3::Vec3::length(&normal), 1.0, math::EPSILON_F32_5));
-        assert!(math::equal_epsilon_f32(vec3::Vec3::dot(&normal, &direction), 1.0, math::EPSILON_F32_5));
+        assert!(math::equal_epsilon_f32(
+            vec3::Vec3::length(&normal),
+            1.0,
+            math::EPSILON_F32_5
+        ));
+        assert!(math::equal_epsilon_f32(
+            vec3::Vec3::dot(&normal, &direction),
+            1.0,
+            math::EPSILON_F32_5
+        ));
     }
 
     #[test]
@@ -188,22 +210,50 @@ mod test {
         sphere.intersect_ray(&ray, &mut surface_info);
         assert!(!surface_info.is_none());
         match surface_info {
-            SurfaceInfo::Hit{ray_time, position, normal} => {
+            SurfaceInfo::Hit {
+                ray_time,
+                position,
+                normal,
+            } => {
                 // verify the position is on the sphere
                 let intersect_pos = ray.calc_position(ray_time);
-                assert!(math::equal_epsilon_f32(position.x, intersect_pos.x, math::EPSILON_F32_5));
-                assert!(math::equal_epsilon_f32(position.y, intersect_pos.y, math::EPSILON_F32_5));
-                assert!(math::equal_epsilon_f32(position.z, intersect_pos.z, math::EPSILON_F32_5));
+                assert!(math::equal_epsilon_f32(
+                    position.x,
+                    intersect_pos.x,
+                    math::EPSILON_F32_5
+                ));
+                assert!(math::equal_epsilon_f32(
+                    position.y,
+                    intersect_pos.y,
+                    math::EPSILON_F32_5
+                ));
+                assert!(math::equal_epsilon_f32(
+                    position.z,
+                    intersect_pos.z,
+                    math::EPSILON_F32_5
+                ));
 
                 let distance = vec3::Vec3::distance(sphere.center(), &position);
-                assert!(math::equal_epsilon_f32(distance, sphere.radius(), math::EPSILON_F32_5));
+                assert!(math::equal_epsilon_f32(
+                    distance,
+                    sphere.radius(),
+                    math::EPSILON_F32_5
+                ));
 
                 // make sure the normal points out
                 let mut direction = position - *sphere.center();
                 direction = vec3::Vec3::normalize(&direction).unwrap();
-                assert!(math::equal_epsilon_f32(vec3::Vec3::length(&normal), 1.0, math::EPSILON_F32_5));
-                assert!(math::equal_epsilon_f32(vec3::Vec3::dot(&normal, &direction), 1.0, math::EPSILON_F32_5));
-            },
+                assert!(math::equal_epsilon_f32(
+                    vec3::Vec3::length(&normal),
+                    1.0,
+                    math::EPSILON_F32_5
+                ));
+                assert!(math::equal_epsilon_f32(
+                    vec3::Vec3::dot(&normal, &direction),
+                    1.0,
+                    math::EPSILON_F32_5
+                ));
+            }
             _ => {}
         }
     }
@@ -222,22 +272,50 @@ mod test {
         sphere.intersect_ray(&ray, &mut surface_info);
         assert!(!surface_info.is_none());
         match surface_info {
-            SurfaceInfo::Hit{ray_time, position, normal} => {
+            SurfaceInfo::Hit {
+                ray_time,
+                position,
+                normal,
+            } => {
                 // verify the position is on the sphere
                 let intersect_pos = ray.calc_position(ray_time);
-                assert!(math::equal_epsilon_f32(position.x, intersect_pos.x, math::EPSILON_F32_5));
-                assert!(math::equal_epsilon_f32(position.y, intersect_pos.y, math::EPSILON_F32_5));
-                assert!(math::equal_epsilon_f32(position.z, intersect_pos.z, math::EPSILON_F32_5));
+                assert!(math::equal_epsilon_f32(
+                    position.x,
+                    intersect_pos.x,
+                    math::EPSILON_F32_5
+                ));
+                assert!(math::equal_epsilon_f32(
+                    position.y,
+                    intersect_pos.y,
+                    math::EPSILON_F32_5
+                ));
+                assert!(math::equal_epsilon_f32(
+                    position.z,
+                    intersect_pos.z,
+                    math::EPSILON_F32_5
+                ));
 
                 let distance = vec3::Vec3::distance(sphere.center(), &position);
-                assert!(math::equal_epsilon_f32(distance, sphere.radius(), math::EPSILON_F32_5));
+                assert!(math::equal_epsilon_f32(
+                    distance,
+                    sphere.radius(),
+                    math::EPSILON_F32_5
+                ));
 
                 // make sure the normal points inside
                 let mut direction = position - *sphere.center();
                 direction = vec3::Vec3::normalize(&direction).unwrap();
-                assert!(math::equal_epsilon_f32(vec3::Vec3::length(&normal), 1.0, math::EPSILON_F32_5));
-                assert!(math::equal_epsilon_f32(vec3::Vec3::dot(&normal, &direction), -1.0, math::EPSILON_F32_5));
-            },
+                assert!(math::equal_epsilon_f32(
+                    vec3::Vec3::length(&normal),
+                    1.0,
+                    math::EPSILON_F32_5
+                ));
+                assert!(math::equal_epsilon_f32(
+                    vec3::Vec3::dot(&normal, &direction),
+                    -1.0,
+                    math::EPSILON_F32_5
+                ));
+            }
             _ => {}
         }
     }

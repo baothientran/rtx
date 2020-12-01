@@ -14,7 +14,7 @@ impl SurfaceInfo {
     pub fn is_none(&self) -> bool {
         return match self {
             SurfaceInfo::None => true,
-            _ => false
+            _ => false,
         };
     }
 }
@@ -35,7 +35,7 @@ mod test {
         surface_info = SurfaceInfo::Hit {
             ray_time: 0.4,
             position: vec3::Vec3::from(1.0),
-            normal: vec3::Vec3::new(0.0, 0.0, 1.0)
+            normal: vec3::Vec3::new(0.0, 0.0, 1.0),
         };
 
         assert!(!surface_info.is_none());
