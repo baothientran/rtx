@@ -1,5 +1,4 @@
 - tests: 
-    + camera [planned]
     + hittable [planned]
     + cli [planned]
 
@@ -50,7 +49,7 @@
         + tests:
             * sphere [done]
             * ray [done]
-            * camera
+            * camera [done]
             * hittable
             * cli
 
