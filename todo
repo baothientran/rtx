@@ -1,5 +1,4 @@
 - tests: 
-    + sphere [planned]
     + camera [planned]
     + hittable [planned]
     + cli [planned]
@@ -49,7 +48,7 @@
             * lambertian material
 
         + tests:
-            * sphere
+            * sphere [done]
             * ray [done]
             * camera
             * hittable
