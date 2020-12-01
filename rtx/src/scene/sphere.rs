@@ -99,7 +99,8 @@ mod test {
     }
 
     #[test]
-    fn test_intersect_ray() {}
+    fn test_intersect_ray() {
+    }
 
     #[test]
     fn test_calc_normal() {}

@@ -13,8 +13,8 @@ fn main() {
         0.2,
     )));
 
-    let view_location = vec3::Vec3::new(2.0, 2.0, 2.0);
-    let mut view_out = vec3::Vec3::new(0.0, 0.0, 0.0) - view_location;
+    let view_location = vec3::Vec3::from(2.0);
+    let mut view_out = vec3::Vec3::from(0.0) - view_location;
     view_out = vec3::Vec3::normalize(&view_out).unwrap();
     let view_up = vec3::Vec3::new(0.0, 1.0, 0.0);
     let view_angle = math::degree_to_radian(60.0);
