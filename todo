@@ -1,6 +1,5 @@
 - tests: 
     + sphere [planned]
-    + ray [planned]
     + camera [planned]
     + hittable [planned]
     + cli [planned]
@@ -44,14 +43,14 @@
 
 - plans:
     Period: 11/29/2020 - 11/29/2020
-        + background image
+        + background image [done]
 
         + materials:
             * lambertian material
 
         + tests:
             * sphere
-            * ray
+            * ray [done]
             * camera
             * hittable
             * cli

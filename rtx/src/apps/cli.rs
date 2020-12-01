@@ -6,7 +6,7 @@ use std::vec;
 
 pub fn render(
     camera: &impl camera::Camera,
-    renderables: &vec::Vec<&dyn renderable::Renderable>,
+    renderables: &vec::Vec<Box<dyn renderable::Renderable>>,
     image: &mut image::Image,
 ) {
     let image_width = image.width();

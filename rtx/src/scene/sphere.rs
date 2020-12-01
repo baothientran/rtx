@@ -32,7 +32,7 @@ impl Sphere {
 
         let oc = center - *ray.origin();
         let oc_length_sq = vec3::Vec3::length_sq(&oc);
-        let origin_outside = oc_length_sq > radius_sq;
+        let origin_outside = oc_length_sq >= radius_sq;
 
         let tca = vec3::Vec3::dot(&oc, ray.direction());
         if tca < 0.0 && origin_outside {
@@ -40,6 +40,10 @@ impl Sphere {
         }
 
         let hc_length_sq = radius * radius - oc_length_sq + tca * tca;
+        if hc_length_sq < 0.0 {
+            return None;
+        }
+
         if origin_outside {
             return Some(tca - f32::sqrt(hc_length_sq));
         }
@@ -95,5 +99,11 @@ mod test {
     }
 
     #[test]
+    fn test_intersect_ray() {}
+
+    #[test]
     fn test_calc_normal() {}
+
+    #[test]
+    fn test_renderable_intersect_ray() {}
 }

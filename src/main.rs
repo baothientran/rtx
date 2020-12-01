@@ -1,16 +1,21 @@
 use rtx::apps;
 use rtx::core::{image, math, vec3};
 use rtx::exporter::ppm;
-use rtx::scene::{perspective_camera, renderable};
+use rtx::scene::{perspective_camera, renderable, sphere};
 
 fn main() {
     // setup scene
     let mut img = image::Image::new(1000, 500);
 
-    let hittables = Vec::<&dyn renderable::Renderable>::new();
+    let mut renderables = Vec::<Box<dyn renderable::Renderable>>::new();
+    renderables.push(Box::new(sphere::Sphere::new(
+        vec3::Vec3::new(0.0, 0.0, 0.0),
+        0.2,
+    )));
 
-    let view_location = vec3::Vec3::new(0.0, 0.0, 2.0);
-    let view_out = vec3::Vec3::new(0.0, 0.0, -1.0);
+    let view_location = vec3::Vec3::new(2.0, 2.0, 2.0);
+    let mut view_out = vec3::Vec3::new(0.0, 0.0, 0.0) - view_location;
+    view_out = vec3::Vec3::normalize(&view_out).unwrap();
     let view_up = vec3::Vec3::new(0.0, 1.0, 0.0);
     let view_angle = math::degree_to_radian(60.0);
     let distance_to_image = 10.0;
@@ -40,7 +45,7 @@ fn main() {
     }
 
     // render objects
-    apps::cli::render(&camera, &hittables, &mut img);
+    apps::cli::render(&camera, &renderables, &mut img);
 
     // export to file
     ppm::write_to_file("test.ppm", &img).unwrap();
