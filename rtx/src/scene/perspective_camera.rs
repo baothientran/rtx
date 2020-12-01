@@ -78,6 +78,7 @@ impl camera::Camera for PerspectiveCamera {
 mod test {
     use super::*;
     use crate::core::math;
+    use crate::scene::camera::Camera;
 
     #[test]
     fn test_create() {
@@ -168,6 +169,60 @@ mod test {
         assert!(math::equal_epsilon_f32(
             camera.top_left_position.z,
             -7.09608,
+            math::EPSILON_F32_5
+        ));
+    }
+
+    #[test]
+    fn test_create_ray() {
+        let location = vec3::Vec3::from(1.0);
+        let mut out_direction = vec3::Vec3::from(0.0) - location;
+        out_direction = vec3::Vec3::normalize(&out_direction).unwrap();
+        let up_direction = vec3::Vec3::new(0.0, 1.0, 0.0);
+
+        let camera = PerspectiveCamera::new(
+            location,
+            out_direction,
+            up_direction,
+            math::degree_to_radian(60.0),
+            20.0,
+            200,
+            200,
+        );
+
+        let ray = camera.create_ray(199.0 / 2.0, 199.0 / 2.0);
+
+        // check origin
+        assert!(math::equal_epsilon_f32(
+            ray.origin().x,
+            camera.location.x,
+            math::EPSILON_F32_5
+        ));
+        assert!(math::equal_epsilon_f32(
+            ray.origin().y,
+            camera.location.y,
+            math::EPSILON_F32_5
+        ));
+        assert!(math::equal_epsilon_f32(
+            ray.origin().z,
+            camera.location.z,
+            math::EPSILON_F32_5
+        ));
+
+        // check direction
+        assert!(math::equal_epsilon_f32(
+            ray.direction().x,
+            camera.view_z_axis.x,
+            math::EPSILON_F32_5
+        ));
+        assert!(math::equal_epsilon_f32(
+            ray.direction().y,
+            camera.view_z_axis.y,
+            math::EPSILON_F32_5
+        ));
+        assert!(math::equal_epsilon_f32(
+            ray.direction().z,
+            camera.view_z_axis.z,
             math::EPSILON_F32_5
         ));
     }
