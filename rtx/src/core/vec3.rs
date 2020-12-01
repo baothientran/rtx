@@ -1,5 +1,5 @@
-use std::ops;
 use std::convert;
+use std::ops;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Vec3 {
@@ -58,8 +58,20 @@ impl Vec3 {
 }
 
 impl convert::From<f32> for Vec3 {
-    fn from(num: f32) -> Self { 
+    fn from(num: f32) -> Self {
         return Vec3::new(num, num, num);
+    }
+}
+
+impl ops::Neg for Vec3 {
+    type Output = Vec3;
+
+    fn neg(self) -> Self { 
+        return Vec3 {
+            x: -self.x,
+            y: -self.y,
+            z: -self.z
+        };
     }
 }
 
@@ -453,5 +465,15 @@ mod test {
         assert!(math::equal_epsilon_f32(v.x, -12.0, math::EPSILON_F32_5));
         assert!(math::equal_epsilon_f32(v.y, -12.0, math::EPSILON_F32_5));
         assert!(math::equal_epsilon_f32(v.z, -12.0, math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_neg() {
+        let v = Vec3::new(-12.0, -1.0, -2.0);
+        let result = -v;
+
+        assert!(math::equal_epsilon_f32(result.x, 12.0, math::EPSILON_F32_5));
+        assert!(math::equal_epsilon_f32(result.y, 1.0, math::EPSILON_F32_5));
+        assert!(math::equal_epsilon_f32(result.z, 2.0, math::EPSILON_F32_5));
     }
 }
