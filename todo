@@ -12,7 +12,7 @@
 
     + meshes: 
         * triangle mesh [planned]
-        * plane
+        * plane [planned]
         * cone
         * ellipsoid
         * cube
@@ -40,11 +40,8 @@
         * path tracing
 
 - plans:
-    Period: 11/29/2020 - 11/29/2020
+    Period: 11/30/2020 -  12/06/2020
         + background image [done]
-
-        + materials:
-            * lambertian material
 
         + tests:
             * sphere [done]
@@ -53,8 +50,11 @@
             * hittable
             * cli
 
-    Period: 11/30/2020 -  12/06/2020
+        + materials:
+            * lambertian material
+
         + meshes:
+            * plane
             * triangle mesh
 
         + parsers:
