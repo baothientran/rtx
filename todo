@@ -12,7 +12,6 @@
 
     + meshes: 
         * triangle mesh [planned]
-        * plane [planned]
         * cone
         * ellipsoid
         * cube
@@ -54,7 +53,7 @@
             * lambertian material
 
         + meshes:
-            * plane
+            * plane [done]
             * triangle mesh
 
         + parsers:
