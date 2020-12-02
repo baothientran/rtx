@@ -40,12 +40,7 @@
 
 - plans:
     Period: 11/30/2020 -  12/06/2020
-        + background image [done]
-
         + tests:
-            * sphere [done]
-            * ray [done]
-            * camera [done]
             * hittable
             * cli
 
@@ -53,7 +48,6 @@
             * lambertian material
 
         + meshes:
-            * plane [done]
             * triangle mesh
 
         + parsers:
@@ -86,3 +80,14 @@
     Period: 12/28/2020 - 01/03/2021
         + rendering effects:
             * surface textures
+
+- done:
+    + background image [done]
+
+    + tests:
+        * sphere [done]
+        * ray [done]
+        * camera [done]
+
+    + meshes:
+        * plane [done]
