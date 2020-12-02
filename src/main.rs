@@ -1,7 +1,7 @@
 use rtx::apps;
 use rtx::core::{image, math, vec3};
 use rtx::exporter::ppm;
-use rtx::scene::{perspective_camera, renderable, sphere};
+use rtx::scene::{perspective_camera, plane, renderable, sphere};
 
 fn main() {
     // setup scene
@@ -12,8 +12,12 @@ fn main() {
         vec3::Vec3::new(0.0, 0.0, 0.0),
         0.2,
     )));
+    renderables.push(Box::new(plane::Plane::new(
+        vec3::Vec3::new(0.0, 1.0, 0.0),
+        0.2,
+    )));
 
-    let view_location = vec3::Vec3::from(2.0);
+    let view_location = vec3::Vec3::new(0.0, 0.1, 2.0);
     let mut view_out = vec3::Vec3::from(0.0) - view_location;
     view_out = vec3::Vec3::normalize(&view_out).unwrap();
     let view_up = vec3::Vec3::new(0.0, 1.0, 0.0);
