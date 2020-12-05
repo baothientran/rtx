@@ -1,7 +1,7 @@
 use rtx::apps;
 use rtx::core::{image, math, vec3};
 use rtx::exporter::ppm;
-use rtx::scene::perspective_camera::PerspectiveCamera;
+use rtx::scene::camera::perspective_camera;
 use rtx::scene::renderable::{plane as renderable_plane, sphere as renderable_sphere, Renderable};
 
 fn main() {
@@ -24,7 +24,7 @@ fn main() {
     let view_up = vec3::Vec3::new(0.0, 1.0, 0.0);
     let view_angle = math::degree_to_radian(60.0);
     let distance_to_image = 10.0;
-    let camera = PerspectiveCamera::new(
+    let camera = perspective_camera::PerspectiveCamera::new(
         view_location,
         view_out,
         view_up,

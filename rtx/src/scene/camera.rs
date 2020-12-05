@@ -1,3 +1,5 @@
+pub mod perspective_camera;
+
 use crate::scene::ray;
 
 pub trait Camera {
