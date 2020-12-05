@@ -1,19 +1,20 @@
 use rtx::apps;
 use rtx::core::{image, math, vec3};
 use rtx::exporter::ppm;
-use rtx::scene::{perspective_camera, plane, renderable, sphere};
+use rtx::scene::perspective_camera::PerspectiveCamera;
+use rtx::scene::renderable::{plane as renderable_plane, sphere as renderable_sphere, Renderable};
 
 fn main() {
     // setup scene
     let mut img = image::Image::new(1000, 500);
 
-    let mut renderables = Vec::<Box<dyn renderable::Renderable>>::new();
-    renderables.push(Box::new(sphere::Sphere::new(
-        vec3::Vec3::new(0.0, 0.0, 0.0),
+    let mut renderables = Vec::<Box<dyn Renderable>>::new();
+    renderables.push(Box::new(renderable_plane::RenderablePlane::new(
+        vec3::Vec3::new(0.0, 1.0, 0.0),
         0.2,
     )));
-    renderables.push(Box::new(plane::Plane::new(
-        vec3::Vec3::new(0.0, 1.0, 0.0),
+    renderables.push(Box::new(renderable_sphere::RenderableSphere::new(
+        vec3::Vec3::new(0.0, 0.0, 0.0),
         0.2,
     )));
 
@@ -23,7 +24,7 @@ fn main() {
     let view_up = vec3::Vec3::new(0.0, 1.0, 0.0);
     let view_angle = math::degree_to_radian(60.0);
     let distance_to_image = 10.0;
-    let camera = perspective_camera::PerspectiveCamera::new(
+    let camera = PerspectiveCamera::new(
         view_location,
         view_out,
         view_up,
