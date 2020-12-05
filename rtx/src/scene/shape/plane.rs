@@ -26,7 +26,7 @@ impl Plane {
 }
 
 impl shape::Shape for Plane {
-    fn intersect_ray(&self, ray: &ray::Ray) -> Option<f32> {
+    fn intersect_ray(&self, ray: &ray::Ray) -> Option<shape::HitRecord> {
         let vd = vec3::Vec3::dot(&self.normal, ray.direction());
         if math::equal_epsilon_f32(vd, 0.0, math::EPSILON_F32_6) {
             return None;
@@ -38,7 +38,11 @@ impl shape::Shape for Plane {
             return None;
         }
 
-        return Some(t);
+        return Some(shape::HitRecord {
+            ray_time: t,
+            position: ray.calc_position(t),
+            normal: self.normal,
+        });
     }
 }
 
@@ -64,23 +68,89 @@ mod test {
     }
 
     #[test]
-    fn test_intersect_ray() {
+    fn test_intersect_ray_away() {
         let plane = Plane::new(vec3::Vec3::new(0.0, 1.0, 0.0), 0.2);
 
-        let ray_origin = vec3::Vec3::new(0.0, 1.0, 1.0);
+        let ray_origin = vec3::Vec3::new(0.0, -4.0, 1.0);
+        let mut ray_direction = vec3::Vec3::new(0.0, 1.0, 1.0);
+        ray_direction = vec3::Vec3::normalize(&ray_direction).unwrap();
+        let ray = ray::Ray::new(ray_origin, ray_direction);
+
+        assert!(vec3::Vec3::dot(ray.direction(), &plane.normal) > 0.0);
+
+        match plane.intersect_ray(&ray) {
+            None => {
+                assert!(false);
+            }
+            Some(hit_record) => {
+                let plane_func =
+                    vec3::Vec3::dot(&hit_record.position, &plane.normal) + plane.distance;
+                assert!(math::equal_epsilon_f32(
+                    plane_func,
+                    0.0,
+                    math::EPSILON_F32_5
+                ));
+
+                assert!(math::equal_epsilon_f32(
+                    hit_record.normal.x,
+                    plane.normal.x,
+                    math::EPSILON_F32_5
+                ));
+                assert!(math::equal_epsilon_f32(
+                    hit_record.normal.y,
+                    plane.normal.y,
+                    math::EPSILON_F32_5
+                ));
+                assert!(math::equal_epsilon_f32(
+                    hit_record.normal.z,
+                    plane.normal.z,
+                    math::EPSILON_F32_5
+                ));
+            }
+        }
+    }
+
+    #[test]
+    fn test_intersect_ray_toward() {
+        let plane = Plane::new(vec3::Vec3::new(0.0, 1.0, 0.0), 0.2);
+
+        let ray_origin = vec3::Vec3::new(1.0, 1.0, 1.0);
         let mut ray_direction = vec3::Vec3::from(0.0) - ray_origin;
         ray_direction = vec3::Vec3::normalize(&ray_direction).unwrap();
         let ray = ray::Ray::new(ray_origin, ray_direction);
 
-        let intersect = plane.intersect_ray(&ray).unwrap();
-        let position = ray.calc_position(intersect);
+        assert!(vec3::Vec3::dot(ray.direction(), &plane.normal) < 0.0);
 
-        let plane_func = vec3::Vec3::dot(&position, plane.normal()) + plane.distance();
-        assert!(math::equal_epsilon_f32(
-            plane_func,
-            0.0,
-            math::EPSILON_F32_5
-        ));
+        match plane.intersect_ray(&ray) {
+            None => {
+                assert!(false);
+            }
+            Some(hit_record) => {
+                let plane_func =
+                    vec3::Vec3::dot(&hit_record.position, &plane.normal) + plane.distance;
+                assert!(math::equal_epsilon_f32(
+                    plane_func,
+                    0.0,
+                    math::EPSILON_F32_5
+                ));
+
+                assert!(math::equal_epsilon_f32(
+                    hit_record.normal.x,
+                    plane.normal.x,
+                    math::EPSILON_F32_5
+                ));
+                assert!(math::equal_epsilon_f32(
+                    hit_record.normal.y,
+                    plane.normal.y,
+                    math::EPSILON_F32_5
+                ));
+                assert!(math::equal_epsilon_f32(
+                    hit_record.normal.z,
+                    plane.normal.z,
+                    math::EPSILON_F32_5
+                ));
+            }
+        }
     }
 
     #[test]

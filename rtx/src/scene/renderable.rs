@@ -1,16 +1,15 @@
-pub mod plane;
-pub mod sphere;
+use crate::scene::shape;
 
-use crate::core::vec3;
-use crate::scene::ray;
-
-#[derive(Copy, Clone, Debug)]
-pub struct SurfaceInfo {
-    pub ray_time: f32,
-    pub position: vec3::Vec3,
-    pub normal: vec3::Vec3,
+pub struct Renderable {
+    shape: Box<dyn shape::Shape>,
 }
 
-pub trait Renderable {
-    fn intersect_ray(&self, ray: &ray::Ray) -> Option<SurfaceInfo>;
+impl Renderable {
+    pub fn new(shape: Box<dyn shape::Shape>) -> Renderable {
+        return Renderable { shape };
+    }
+
+    pub fn shape(&self) -> &dyn shape::Shape {
+        return self.shape.as_ref();
+    }
 }
