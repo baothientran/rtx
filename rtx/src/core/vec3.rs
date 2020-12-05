@@ -10,19 +10,19 @@ pub struct Vec3 {
 
 impl Vec3 {
     pub fn new(x: f32, y: f32, z: f32) -> Vec3 {
-        Vec3 { x, y, z }
+        return Vec3 { x, y, z };
     }
 
     pub fn dot(lhs: &Vec3, rhs: &Vec3) -> f32 {
-        lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z
+        return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
     }
 
     pub fn cross(lhs: &Vec3, rhs: &Vec3) -> Vec3 {
-        Vec3::new(
+        return Vec3::new(
             lhs.y * rhs.z - lhs.z * rhs.y,
             lhs.z * rhs.x - lhs.x * rhs.z,
             lhs.x * rhs.y - lhs.y * rhs.x,
-        )
+        );
     }
 
     pub fn distance(from: &Vec3, to: &Vec3) -> f32 {
@@ -31,7 +31,7 @@ impl Vec3 {
     }
 
     pub fn length_sq(v: &Vec3) -> f32 {
-        Vec3::dot(v, v)
+        return Vec3::dot(v, v);
     }
 
     pub fn length(v: &Vec3) -> f32 {
@@ -49,11 +49,11 @@ impl Vec3 {
     }
 
     pub fn abs(v: &Vec3) -> Vec3 {
-        Vec3 {
+        return Vec3 {
             x: f32::abs(v.x),
             y: f32::abs(v.y),
             z: f32::abs(v.z),
-        }
+        };
     }
 }
 

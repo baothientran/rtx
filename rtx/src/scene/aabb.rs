@@ -7,19 +7,19 @@ pub struct AABB {
 
 impl AABB {
     pub fn new(min: vec3::Vec3, max: vec3::Vec3) -> AABB {
-        AABB { min, max }
+        return AABB { min, max };
     }
 
     pub fn min(&self) -> &vec3::Vec3 {
-        &self.min
+        return &self.min;
     }
 
     pub fn max(&self) -> &vec3::Vec3 {
-        &self.max
+        return &self.max;
     }
 
     pub fn center(&self) -> vec3::Vec3 {
-        (self.min + self.max) / 2.0
+        return (self.min + self.max) / 2.0;
     }
 
     pub fn merge(&mut self, v: &vec3::Vec3) {

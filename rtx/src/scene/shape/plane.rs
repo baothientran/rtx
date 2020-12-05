@@ -10,10 +10,10 @@ pub struct Plane {
 
 impl Plane {
     pub fn new(normal: vec3::Vec3, distance: f32) -> Plane {
-        Plane {
+        return Plane {
             normal: vec3::Vec3::normalize(&normal).unwrap(),
             distance,
-        }
+        };
     }
 
     pub fn normal(&self) -> &vec3::Vec3 {

@@ -8,15 +8,15 @@ pub struct Ray {
 
 impl Ray {
     pub fn new(origin: vec3::Vec3, direction: vec3::Vec3) -> Ray {
-        Ray { origin, direction }
+        return Ray { origin, direction };
     }
 
     pub fn origin(&self) -> &vec3::Vec3 {
-        &self.origin
+        return &self.origin;
     }
 
     pub fn direction(&self) -> &vec3::Vec3 {
-        &self.direction
+        return &self.direction;
     }
 
     pub fn calc_position(&self, t: f32) -> vec3::Vec3 {

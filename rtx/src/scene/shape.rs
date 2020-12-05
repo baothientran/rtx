@@ -1,8 +1,8 @@
 pub mod plane;
 pub mod sphere;
 
-use crate::scene::ray;
 use crate::core::vec3;
+use crate::scene::ray;
 
 #[derive(Copy, Clone, Debug)]
 pub struct HitRecord {

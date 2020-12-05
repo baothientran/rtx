@@ -10,7 +10,7 @@ pub struct Color {
 
 impl Color {
     pub fn new(red: u8, blue: u8, green: u8) -> Color {
-        Color { red, blue, green }
+        return Color { red, blue, green };
     }
 
     pub fn from_vec3(v: &vec3::Vec3) -> Color {

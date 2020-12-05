@@ -42,7 +42,7 @@ impl PerspectiveCamera {
             - image_horizontal_length / 2.0 * view_x_axis
             + image_vertical_length / 2.0 * view_y_axis;
 
-        PerspectiveCamera {
+        return PerspectiveCamera {
             location,
             view_x_axis,
             view_y_axis,
@@ -54,7 +54,7 @@ impl PerspectiveCamera {
             image_horizontal_length,
             image_vertical_length,
             top_left_position,
-        }
+        };
     }
 }
 

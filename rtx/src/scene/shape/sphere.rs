@@ -10,15 +10,15 @@ pub struct Sphere {
 
 impl Sphere {
     pub fn new(center: vec3::Vec3, radius: f32) -> Sphere {
-        Sphere { center, radius }
+        return Sphere { center, radius };
     }
 
     pub fn center(&self) -> &vec3::Vec3 {
-        &self.center
+        return &self.center;
     }
 
     pub fn radius(&self) -> f32 {
-        self.radius
+        return self.radius;
     }
 }
 
