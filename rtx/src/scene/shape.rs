@@ -5,12 +5,34 @@ use crate::core::vec3;
 use crate::scene::ray;
 
 #[derive(Copy, Clone, Debug)]
-pub struct HitRecord {
-    pub ray_time: f32,
-    pub position: vec3::Vec3,
-    pub normal: vec3::Vec3,
+pub struct ShapeSurface {
+    ray_time: f32,
+    position: vec3::Vec3,
+    normal: vec3::Vec3,
+}
+
+impl ShapeSurface {
+    pub fn new(ray_time: f32, position: vec3::Vec3, normal: vec3::Vec3) -> ShapeSurface {
+        return ShapeSurface {
+            ray_time,
+            position,
+            normal,
+        };
+    }
+
+    pub fn ray_time(&self) -> f32 {
+        return self.ray_time;
+    }
+
+    pub fn position(&self) -> &vec3::Vec3 {
+        return &self.position;
+    }
+
+    pub fn normal(&self) -> &vec3::Vec3 {
+        return &self.normal;
+    }
 }
 
 pub trait Shape {
-    fn intersect_ray(&self, ray: &ray::Ray) -> Option<HitRecord>;
+    fn intersect_ray(&self, ray: &ray::Ray) -> Option<ShapeSurface>;
 }

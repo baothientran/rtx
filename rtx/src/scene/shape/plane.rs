@@ -26,7 +26,7 @@ impl Plane {
 }
 
 impl shape::Shape for Plane {
-    fn intersect_ray(&self, ray: &ray::Ray) -> Option<shape::HitRecord> {
+    fn intersect_ray(&self, ray: &ray::Ray) -> Option<shape::ShapeSurface> {
         let vd = vec3::Vec3::dot(&self.normal, ray.direction());
         if math::equal_epsilon_f32(vd, 0.0, math::EPSILON_F32_6) {
             return None;
@@ -38,11 +38,11 @@ impl shape::Shape for Plane {
             return None;
         }
 
-        return Some(shape::HitRecord {
-            ray_time: t,
-            position: ray.calc_position(t),
-            normal: self.normal,
-        });
+        return Some(shape::ShapeSurface::new(
+            t,
+            ray.calc_position(t),
+            self.normal,
+        ));
     }
 }
 
@@ -82,9 +82,9 @@ mod test {
             None => {
                 assert!(false);
             }
-            Some(hit_record) => {
+            Some(shape_surface) => {
                 let plane_func =
-                    vec3::Vec3::dot(&hit_record.position, &plane.normal) + plane.distance;
+                    vec3::Vec3::dot(shape_surface.position(), &plane.normal) + plane.distance;
                 assert!(math::equal_epsilon_f32(
                     plane_func,
                     0.0,
@@ -92,17 +92,17 @@ mod test {
                 ));
 
                 assert!(math::equal_epsilon_f32(
-                    hit_record.normal.x,
+                    shape_surface.normal().x,
                     plane.normal.x,
                     math::EPSILON_F32_5
                 ));
                 assert!(math::equal_epsilon_f32(
-                    hit_record.normal.y,
+                    shape_surface.normal().y,
                     plane.normal.y,
                     math::EPSILON_F32_5
                 ));
                 assert!(math::equal_epsilon_f32(
-                    hit_record.normal.z,
+                    shape_surface.normal().z,
                     plane.normal.z,
                     math::EPSILON_F32_5
                 ));
@@ -125,9 +125,9 @@ mod test {
             None => {
                 assert!(false);
             }
-            Some(hit_record) => {
+            Some(shape_surface) => {
                 let plane_func =
-                    vec3::Vec3::dot(&hit_record.position, &plane.normal) + plane.distance;
+                    vec3::Vec3::dot(shape_surface.position(), &plane.normal) + plane.distance;
                 assert!(math::equal_epsilon_f32(
                     plane_func,
                     0.0,
@@ -135,17 +135,17 @@ mod test {
                 ));
 
                 assert!(math::equal_epsilon_f32(
-                    hit_record.normal.x,
+                    shape_surface.normal().x,
                     plane.normal.x,
                     math::EPSILON_F32_5
                 ));
                 assert!(math::equal_epsilon_f32(
-                    hit_record.normal.y,
+                    shape_surface.normal().y,
                     plane.normal.y,
                     math::EPSILON_F32_5
                 ));
                 assert!(math::equal_epsilon_f32(
-                    hit_record.normal.z,
+                    shape_surface.normal().z,
                     plane.normal.z,
                     math::EPSILON_F32_5
                 ));

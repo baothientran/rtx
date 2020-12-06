@@ -1,20 +1,22 @@
-use rtx::apps;
 use rtx::core::{image, math, vec3};
 use rtx::exporter::ppm;
 use rtx::scene::camera::perspective_camera;
-use rtx::scene::renderable;
 use rtx::scene::shape;
+use rtx::scene::world;
+use rtx::tracer;
 
 fn main() {
     // setup scene
     let mut img = image::Image::new(1000, 500);
 
-    let mut renderables = Vec::<renderable::Renderable>::new();
-    renderables.push(renderable::Renderable::new(Box::new(
-        shape::plane::Plane::new(vec3::Vec3::new(0.0, 1.0, 0.0), 0.2),
+    let mut world = world::World::new();
+    world.add_shape(Box::new(shape::plane::Plane::new(
+        vec3::Vec3::new(0.0, 1.0, 0.0),
+        0.2,
     )));
-    renderables.push(renderable::Renderable::new(Box::new(
-        shape::sphere::Sphere::new(vec3::Vec3::new(0.0, 0.0, 0.0), 0.2),
+    world.add_shape(Box::new(shape::sphere::Sphere::new(
+        vec3::Vec3::new(0.0, 0.0, 0.0),
+        0.2,
     )));
 
     let view_location = vec3::Vec3::new(0.0, 0.1, 2.0);
@@ -49,7 +51,7 @@ fn main() {
     }
 
     // render objects
-    apps::cli::render(&camera, &renderables, &mut img);
+    tracer::path_tracer::render(&camera, &world, &mut img);
 
     // export to file
     ppm::write_to_file("test.ppm", &img).unwrap();
