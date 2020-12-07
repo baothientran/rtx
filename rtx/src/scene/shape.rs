@@ -34,5 +34,7 @@ impl ShapeSurface {
 }
 
 pub trait Shape {
+    fn is_intersect(&self, ray: &ray::Ray, max_distance: f32) -> bool;
+
     fn intersect_ray(&self, ray: &ray::Ray) -> Option<ShapeSurface>;
 }

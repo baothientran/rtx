@@ -23,6 +23,35 @@ impl Sphere {
 }
 
 impl shape::Shape for Sphere {
+    fn is_intersect(&self, ray: &ray::Ray, max_distance: f32) -> bool {
+        let center = self.center;
+        let radius = self.radius;
+        let radius_sq = radius * radius;
+
+        let oc = center - *ray.origin();
+        let oc_length_sq = vec3::Vec3::length_sq(&oc);
+        let origin_outside = oc_length_sq >= radius_sq;
+
+        let tca = vec3::Vec3::dot(&oc, ray.direction());
+        if tca < 0.0 && origin_outside {
+            return false;
+        }
+
+        let hc_length_sq = radius * radius - oc_length_sq + tca * tca;
+        if hc_length_sq < 0.0 {
+            return false;
+        }
+
+        let t: f32;
+        if origin_outside {
+            t = tca - f32::sqrt(hc_length_sq);
+        } else {
+            t = tca + f32::sqrt(hc_length_sq);
+        }
+
+        return t < max_distance;
+    }
+
     fn intersect_ray(&self, ray: &ray::Ray) -> Option<shape::ShapeSurface> {
         let center = self.center;
         let radius = self.radius;

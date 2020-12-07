@@ -1,7 +1,10 @@
 use crate::scene::light;
+use crate::scene::material;
 use crate::scene::ray;
 use crate::scene::renderable;
 use crate::scene::shape;
+use std::rc;
+use std::slice;
 
 pub struct World {
     renderables: Vec<renderable::Renderable>,
@@ -10,18 +13,37 @@ pub struct World {
 
 impl World {
     pub fn new() -> World {
-        World {
+        return World {
             renderables: Vec::<renderable::Renderable>::new(),
             lights: Vec::<Box<dyn light::Light>>::new(),
-        }
+        };
     }
 
-    pub fn add_shape(&mut self, shape: Box<dyn shape::Shape>) {
-        self.renderables.push(renderable::Renderable::new(shape));
+    pub fn add_shape(
+        &mut self,
+        shape: rc::Rc<dyn shape::Shape>,
+        material: rc::Rc<dyn material::Material>,
+    ) {
+        self.renderables
+            .push(renderable::Renderable::new(shape, material));
     }
 
     pub fn add_light(&mut self, light: Box<dyn light::Light>) {
         self.lights.push(light);
+    }
+
+    pub fn lights(&self) -> slice::Iter<'_, std::boxed::Box<dyn light::Light>> {
+        return self.lights.iter();
+    }
+
+    pub fn is_intersect(&self, ray: &ray::Ray, max_distance: f32) -> bool {
+        for renderable in self.renderables.iter() {
+            if renderable.is_intersect(ray, max_distance) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     pub fn intersect_ray(&self, ray: &ray::Ray) -> Option<renderable::RenderableSurface> {

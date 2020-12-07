@@ -26,6 +26,17 @@ impl Plane {
 }
 
 impl shape::Shape for Plane {
+    fn is_intersect(&self, ray: &ray::Ray, max_distance: f32) -> bool {
+        let vd = vec3::Vec3::dot(&self.normal, ray.direction());
+        if math::equal_epsilon_f32(vd, 0.0, math::EPSILON_F32_6) {
+            return false;
+        }
+
+        let vo = -vec3::Vec3::dot(&self.normal, ray.origin()) - self.distance;
+        let t = vo / vd;
+        return t > 0.0 && t < max_distance;
+    }
+
     fn intersect_ray(&self, ray: &ray::Ray) -> Option<shape::ShapeSurface> {
         let vd = vec3::Vec3::dot(&self.normal, ray.direction());
         if math::equal_epsilon_f32(vd, 0.0, math::EPSILON_F32_6) {

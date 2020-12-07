@@ -1,5 +1,5 @@
-use crate::core::vec3;
 use crate::core::math;
+use crate::core::vec3;
 use crate::scene::material;
 
 pub struct Lambertian {

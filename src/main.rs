@@ -1,25 +1,41 @@
 use rtx::core::{image, math, vec3};
 use rtx::exporter::ppm;
 use rtx::scene::camera::perspective_camera;
+use rtx::scene::light;
+use rtx::scene::material::lambertian;
 use rtx::scene::shape;
 use rtx::scene::world;
 use rtx::tracer;
+use std::rc;
 
 fn main() {
-    // setup scene
+    // setup image
     let mut img = image::Image::new(1000, 500);
 
-    let mut world = world::World::new();
-    world.add_shape(Box::new(shape::plane::Plane::new(
+    // setup scene
+    let plane = rc::Rc::new(shape::plane::Plane::new(
         vec3::Vec3::new(0.0, 1.0, 0.0),
         0.2,
-    )));
-    world.add_shape(Box::new(shape::sphere::Sphere::new(
+    ));
+    let sphere = rc::Rc::new(shape::sphere::Sphere::new(
         vec3::Vec3::new(0.0, 0.0, 0.0),
         0.2,
-    )));
+    ));
+    let lambertian = rc::Rc::new(lambertian::Lambertian::new(vec3::Vec3::new(0.5, 0.8, 0.7)));
 
-    let view_location = vec3::Vec3::new(0.0, 0.1, 2.0);
+    let point_light = Box::new(light::point_light::PointLight::new(
+        vec3::Vec3::new(0.0, 1.0, 1.0),
+        vec3::Vec3::from(2.0),
+        6.0,
+    ));
+
+    let mut world = world::World::new();
+    world.add_shape(plane, lambertian.clone());
+    world.add_shape(sphere, lambertian.clone());
+    world.add_light(point_light);
+
+    // setup camera
+    let view_location = vec3::Vec3::new(2.0, 0.3, 2.0);
     let mut view_out = vec3::Vec3::from(0.0) - view_location;
     view_out = vec3::Vec3::normalize(&view_out).unwrap();
     let view_up = vec3::Vec3::new(0.0, 1.0, 0.0);

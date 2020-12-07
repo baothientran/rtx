@@ -8,7 +8,11 @@ pub struct Ray {
 
 impl Ray {
     pub fn new(origin: vec3::Vec3, direction: vec3::Vec3) -> Ray {
-        return Ray { origin, direction };
+        let norm_direction = vec3::Vec3::normalize(&direction).unwrap();
+        return Ray {
+            origin,
+            direction: norm_direction,
+        };
     }
 
     pub fn origin(&self) -> &vec3::Vec3 {
@@ -43,18 +47,23 @@ mod test {
         assert!(math::equal_epsilon_f32(origin.z, 1.2, math::EPSILON_F32_5));
 
         assert!(math::equal_epsilon_f32(
+            vec3::Vec3::length(direction),
+            1.0,
+            math::EPSILON_F32_5
+        ));
+        assert!(math::equal_epsilon_f32(
             direction.x,
-            2.0,
+            0.66666,
             math::EPSILON_F32_5
         ));
         assert!(math::equal_epsilon_f32(
             direction.y,
-            2.0,
+            0.66666,
             math::EPSILON_F32_5
         ));
         assert!(math::equal_epsilon_f32(
             direction.z,
-            1.0,
+            0.33333,
             math::EPSILON_F32_5
         ));
     }
