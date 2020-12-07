@@ -21,7 +21,9 @@ fn main() {
         vec3::Vec3::new(0.0, 0.0, 0.0),
         0.2,
     ));
-    let lambertian = rc::Rc::new(lambertian::Lambertian::new(vec3::Vec3::new(0.5, 0.8, 0.7)));
+    let green_lambertian = rc::Rc::new(lambertian::Lambertian::new(vec3::Vec3::new(0.5, 0.8, 0.7)));
+    let purple_lambertian =
+        rc::Rc::new(lambertian::Lambertian::new(vec3::Vec3::new(0.8, 0.6, 0.7)));
 
     let point_light = Box::new(light::point_light::PointLight::new(
         vec3::Vec3::new(0.0, 1.0, 1.0),
@@ -30,8 +32,8 @@ fn main() {
     ));
 
     let mut world = world::World::new();
-    world.add_shape(plane, lambertian.clone());
-    world.add_shape(sphere, lambertian.clone());
+    world.add_shape(plane, green_lambertian);
+    world.add_shape(sphere, purple_lambertian);
     world.add_light(point_light);
 
     // setup camera

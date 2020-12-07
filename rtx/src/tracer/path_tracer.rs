@@ -1,6 +1,6 @@
 use crate::core::image;
-use crate::core::vec3;
 use crate::core::math;
+use crate::core::vec3;
 use crate::scene::camera;
 use crate::scene::world;
 
