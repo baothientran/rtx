@@ -1,3 +1,4 @@
+use crate::core::math;
 use std::convert;
 use std::ops;
 
@@ -54,6 +55,12 @@ impl Vec3 {
             y: f32::abs(v.y),
             z: f32::abs(v.z),
         };
+    }
+
+    pub fn equal_epsilon(lhs: &Vec3, rhs: &Vec3, epsilon: f32) -> bool {
+        return math::equal_epsilon_f32(lhs.x, rhs.x, epsilon) && 
+               math::equal_epsilon_f32(lhs.y, rhs.y, epsilon) && 
+               math::equal_epsilon_f32(lhs.z, rhs.z, epsilon); 
     }
 }
 
@@ -475,5 +482,19 @@ mod test {
         assert!(math::equal_epsilon_f32(result.x, 12.0, math::EPSILON_F32_5));
         assert!(math::equal_epsilon_f32(result.y, 1.0, math::EPSILON_F32_5));
         assert!(math::equal_epsilon_f32(result.z, 2.0, math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_equal_epsilon() {
+        let lhs = Vec3::new(2.000002, 3.000004, 2.000001);
+        let rhs = Vec3::new(2.000001, 3.000003, 2.000001);
+        assert!(Vec3::equal_epsilon(&lhs, &rhs, math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_not_equal_epsilon() {
+        let lhs = Vec3::new(2.000002, 3.000004, 2.000001);
+        let rhs = Vec3::new(2.00002, 3.00003, 2.000001);
+        assert!(!Vec3::equal_epsilon(&lhs, &rhs, math::EPSILON_F32_5));
     }
 }

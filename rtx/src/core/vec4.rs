@@ -1,7 +1,9 @@
+use crate::core::math;
+use crate::core::vec3;
 use std::convert;
 use std::ops;
-use crate::core::vec3;
 
+#[derive(Copy, Clone, Debug)]
 pub struct Vec4 {
     pub x: f32,
     pub y: f32,
@@ -56,6 +58,13 @@ impl Vec4 {
             z: f32::abs(v.z),
             w: f32::abs(v.w),
         };
+    }
+
+    pub fn equal_epsilon(lhs: &Vec4, rhs: &Vec4, epsilon: f32) -> bool {
+        return math::equal_epsilon_f32(lhs.x, rhs.x, epsilon) && 
+               math::equal_epsilon_f32(lhs.y, rhs.y, epsilon) && 
+               math::equal_epsilon_f32(lhs.z, rhs.z, epsilon) &&
+               math::equal_epsilon_f32(lhs.w, rhs.w, epsilon);
     }
 }
 
