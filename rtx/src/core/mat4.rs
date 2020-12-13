@@ -210,6 +210,36 @@ impl ops::Div<f32> for Mat4 {
     }
 }
 
+impl ops::AddAssign<Mat4> for Mat4 {
+    fn add_assign(&mut self, rhs: Mat4) {
+        *self = *self + rhs;
+    }
+}
+
+impl ops::SubAssign<Mat4> for Mat4 {
+    fn sub_assign(&mut self, rhs: Mat4) {
+        *self = *self - rhs;
+    }
+}
+
+impl ops::MulAssign<Mat4> for Mat4 {
+    fn mul_assign(&mut self, rhs: Mat4) {
+        *self = *self * rhs;
+    }
+}
+
+impl ops::MulAssign<f32> for Mat4 {
+    fn mul_assign(&mut self, rhs: f32) {
+        *self = *self * rhs;
+    }
+}
+
+impl ops::DivAssign<f32> for Mat4 {
+    fn div_assign(&mut self, rhs: f32) {
+        *self = *self / rhs;
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
@@ -554,6 +584,97 @@ mod test {
             3.4, 2.3, 4.4, 5.4);
         let rhs = 2.0;
         let result = lhs / rhs;
+        let expected = Mat4::from_scalars(
+            0.5, 1.0, 0.5, 2.0, 
+            0.5, 1.5, 2.0, 6.05, 
+            0.5, 11.5, 7.0, 6.05, 
+            1.7, 1.15, 2.2, 2.7);
+        assert!(Mat4::equal_epsilon(&result, &expected, math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_add_assign() {
+        let mut result = Mat4::new();
+        let rhs = Mat4::from_scalars(
+            1.0, 2.0, 1.0, 4.0,
+            1.0, 3.0, 4.0, 12.1, 
+            1.0, 23.0, 14.0, 12.1, 
+            3.4, 2.3, 4.4, 5.4);
+        result += rhs;
+        let expected = Mat4::from_scalars(
+            2.0, 2.0, 1.0, 4.0, 
+            1.0, 4.0, 4.0, 12.1, 
+            1.0, 23.0, 15.0, 12.1, 
+            3.4, 2.3, 4.4, 6.4);
+        assert!(Mat4::equal_epsilon(&result, &expected, math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_sub_assign() {
+        let mut result = Mat4::from_scalars(
+            1.0, 2.0, 1.0, 4.0,
+            1.0, 3.0, 4.0, 12.1, 
+            1.0, 23.0, 14.0, 12.1, 
+            3.4, 2.3, 4.4, 5.4);
+        let rhs = Mat4::new();
+        result -= rhs;
+        let expected = Mat4::from_scalars(
+            0.0, 2.0, 1.0, 4.0, 
+            1.0, 2.0, 4.0, 12.1, 
+            1.0, 23.0, 13.0, 12.1, 
+            3.4, 2.3, 4.4, 4.4);
+        assert!(Mat4::equal_epsilon(&result, &expected, math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_mul_assign_mat4_mat4() {
+        let c0 = vec4::Vec4::new(2.0, 2.0, 3.0, 4.0);
+        let c1 = vec4::Vec4::new(1.0, 2.0, 2.0, 1.0);
+        let c2 = vec4::Vec4::new(1.0, 2.0, 4.0, 1.0);
+        let c3 = vec4::Vec4::new(1.0, 2.0, 2.0, 1.2);
+        let mut result = Mat4::from_vec4s(&c0, &c1, &c2, &c3);
+
+        let mut axis = vec3::Vec3::new(1.0, 0.0, 1.0);
+        axis = vec3::Vec3::normalize(&axis).unwrap();
+        let angle = math::degree_to_radian(30.0);
+        let mut rhs = Mat4::new();
+        rhs = Mat4::rotate(&rhs, angle, &axis);
+
+        result *= rhs;
+        let expected_col0 = vec4::Vec4::new(2.2865663, 2.7071072, 3.7740947, 4.1525917);
+        let expected_col1 = vec4::Vec4::new(0.5124718, 1.7320506, 2.0856041, -0.1946352);
+        let expected_col2 = vec4::Vec4::new(0.713434, 1.2928932, 3.225906, 0.8474088);
+        let expected_col3 = vec4::Vec4::new(1.0, 2.0, 2.0, 1.2);
+        let expected = Mat4::from_vec4s(&expected_col0, &expected_col1, &expected_col2, &expected_col3);
+        assert!(Mat4::equal_epsilon(&result, &expected, math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_mul_assign_mat4_f32() {
+        let mut result = Mat4::from_scalars(
+            1.0, 2.0, 1.0, 4.0,
+            1.0, 3.0, 4.0, 12.1, 
+            1.0, 23.0, 14.0, 12.1, 
+            3.4, 2.3, 4.4, 5.4);
+        let rhs = 2.0;
+        result *= rhs;
+        let expected = Mat4::from_scalars(
+            2.0, 4.0, 2.0, 8.0, 
+            2.0, 6.0, 8.0, 24.2, 
+            2.0, 46.0, 28.0, 24.2, 
+            6.8, 4.6, 8.8, 10.8);
+        assert!(Mat4::equal_epsilon(&result, &expected, math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_div_assign_mat4_f32() {
+        let mut result = Mat4::from_scalars(
+            1.0, 2.0, 1.0, 4.0,
+            1.0, 3.0, 4.0, 12.1, 
+            1.0, 23.0, 14.0, 12.1, 
+            3.4, 2.3, 4.4, 5.4);
+        let rhs = 2.0;
+        result /= rhs;
         let expected = Mat4::from_scalars(
             0.5, 1.0, 0.5, 2.0, 
             0.5, 1.5, 2.0, 6.05, 
