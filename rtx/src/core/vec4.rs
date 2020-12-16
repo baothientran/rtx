@@ -61,10 +61,10 @@ impl Vec4 {
     }
 
     pub fn equal_epsilon(lhs: &Vec4, rhs: &Vec4, epsilon: f32) -> bool {
-        return math::equal_epsilon_f32(lhs.x, rhs.x, epsilon) && 
-               math::equal_epsilon_f32(lhs.y, rhs.y, epsilon) && 
-               math::equal_epsilon_f32(lhs.z, rhs.z, epsilon) &&
-               math::equal_epsilon_f32(lhs.w, rhs.w, epsilon);
+        return math::equal_epsilon_f32(lhs.x, rhs.x, epsilon)
+            && math::equal_epsilon_f32(lhs.y, rhs.y, epsilon)
+            && math::equal_epsilon_f32(lhs.z, rhs.z, epsilon)
+            && math::equal_epsilon_f32(lhs.w, rhs.w, epsilon);
     }
 }
 

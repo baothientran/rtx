@@ -57,10 +57,14 @@ impl Vec3 {
         };
     }
 
+    pub fn reflect(v: &Vec3, normal: &Vec3) -> Vec3 {
+        return -*v + 2.0 * Vec3::dot(normal, v) * (*normal);
+    }
+
     pub fn equal_epsilon(lhs: &Vec3, rhs: &Vec3, epsilon: f32) -> bool {
-        return math::equal_epsilon_f32(lhs.x, rhs.x, epsilon) && 
-               math::equal_epsilon_f32(lhs.y, rhs.y, epsilon) && 
-               math::equal_epsilon_f32(lhs.z, rhs.z, epsilon); 
+        return math::equal_epsilon_f32(lhs.x, rhs.x, epsilon)
+            && math::equal_epsilon_f32(lhs.y, rhs.y, epsilon)
+            && math::equal_epsilon_f32(lhs.z, rhs.z, epsilon);
     }
 }
 
@@ -482,6 +486,18 @@ mod test {
         assert!(math::equal_epsilon_f32(result.x, 12.0, math::EPSILON_F32_5));
         assert!(math::equal_epsilon_f32(result.y, 1.0, math::EPSILON_F32_5));
         assert!(math::equal_epsilon_f32(result.z, 2.0, math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_reflect() {
+        let v = Vec3::normalize(&Vec3::new(1.0, 1.0, 0.0)).unwrap();
+        let n = Vec3::new(0.0, 1.0, 0.0);
+        let reflect = Vec3::reflect(&v, &n);
+        assert!(Vec3::equal_epsilon(
+            &reflect,
+            &Vec3::normalize(&Vec3::new(-1.0, 1.0, 0.0)).unwrap(),
+            math::EPSILON_F32_5
+        ));
     }
 
     #[test]

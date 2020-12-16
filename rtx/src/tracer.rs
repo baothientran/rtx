@@ -1,1 +1,1 @@
-pub mod path_tracer;
+pub mod whitted;
