@@ -1,4 +1,3 @@
-use crate::core::vec3;
 use crate::scene::fresnel;
 
 pub struct Dielectrics {
@@ -13,8 +12,8 @@ impl Dielectrics {
 }
 
 impl fresnel::Fresnel for Dielectrics {
-    fn evaluate(&self, normal: &vec3::Vec3, wo: &vec3::Vec3) -> f32 {
-        let mut cos_theta_wo = vec3::Vec3::dot(normal, wo);
+    fn evaluate(&self, dot_normal_wo: f32) -> f32 {
+        let mut cos_theta_wo = dot_normal_wo;
         let eta_i;
         let eta_t;
         if cos_theta_wo > 0.0 {

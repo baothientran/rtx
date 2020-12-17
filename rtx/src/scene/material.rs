@@ -20,6 +20,7 @@ pub trait Material {
 
     fn brdf(
         &self,
+        dot_normal_wo: f32,
         normal: &vec3::Vec3,
         wo: &vec3::Vec3,
         wi: &vec3::Vec3,
@@ -27,6 +28,7 @@ pub trait Material {
 
     fn sample_brdf(
         &self,
+        dot_normal_wo: f32,
         normal: &vec3::Vec3,
         wo: &vec3::Vec3,
         wi: &mut vec3::Vec3,
