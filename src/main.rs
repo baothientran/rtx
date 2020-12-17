@@ -3,7 +3,7 @@ use rtx::exporter::ppm;
 use rtx::scene::camera::perspective_camera;
 use rtx::scene::fresnel::dielectrics;
 use rtx::scene::light;
-use rtx::scene::material::{lambertian, specular_reflection};
+use rtx::scene::material::{lambertian, reflection};
 use rtx::scene::shape;
 use rtx::scene::world;
 use rtx::tracer;
@@ -30,7 +30,7 @@ fn main() {
         vec3::Vec3::new(0.4, 0.0, 0.0),
         0.2,
     ));
-    let mirror = rc::Rc::new(specular_reflection::SpecularReflection::new(
+    let mirror = rc::Rc::new(reflection::Reflection::new(
         vec3::Vec3::from(0.9),
         rc::Rc::new(dielectrics::Dielectrics::new(1.0, 3.2)),
     ));

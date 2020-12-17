@@ -1,5 +1,6 @@
 pub mod lambertian;
-pub mod specular_reflection;
+pub mod reflection;
+pub mod refraction;
 
 use crate::core::vec3;
 
