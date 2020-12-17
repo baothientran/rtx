@@ -1,12 +1,8 @@
 use crate::scene::material;
 
-pub struct Refraction {
+pub struct Refraction {}
 
-}
-
-impl Refraction {
-
-}
+impl Refraction {}
 
 impl material::Material for Refraction {
     fn has_types(&self, flags: u32) -> bool {

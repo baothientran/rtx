@@ -1,93 +1,49 @@
-- tests: 
-    + hittable [planned]
-    + cli [planned]
-
 - features:
     + concurrency:
-        * multithreaded [planned]
+        * multithreaded 
 
     + materials:
-        * lambertian material [planned]
-        * metal material [planned]
+        * metal 
+        * surface textures 
+        * solid textures
+        * depth of field 
+        * motion blur
+        * volume and media
+        * caustic
 
     + meshes: 
-        * triangle mesh [planned]
+        * triangle mesh 
         * cone
         * ellipsoid
         * cube
 
     + spatial structures:
-        * bvh [planned]
+        * bvh 
         * kd-tree
         * octree
 
     + parsers:
-        * obj parser [planned]
-        * custom scene description file [planned]
-
-    + rendering effects:
-        * surface textures [planned]
-        * solid textures
-        * reflection [planned]
-        * refraction [planned]
-        * depth of field [planned]
-        * motion blur
-        * volume and media
-        * caustic
+        * obj parser 
+        * custom scene description file 
 
     + rendering methods:
         * path tracing
 
-- plans:
-    Period: 11/30/2020 -  12/06/2020
-        + tests:
-            * hittable
-            * cli
-
-        + materials:
-            * lambertian material
-
-        + meshes:
-            * triangle mesh
-
-        + parsers:
-            * obj parser
-
-    Period: 12/07/2020 - 12/13/2020
-        + spatial structures:
-            * bvh
-
-        + rendering effects:
-            * reflection
-
-    Period: 12/14/2020 - 12/20/2020
-        + concurrency:
-            * multithreaded
-
-        + rendering effects:
-            * refraction
-
-    Period: 12/21/2020 - 12/27/2020
-        + parsers:
-            * custom scene description file
-
-        + material:
-            * metal material
-
-        + rendering effects:
-            * depth of field
-
-    Period: 12/28/2020 - 01/03/2021
-        + rendering effects:
-            * surface textures
+- on going:
+    + material:
+        * refraction 
 
 - done:
-    + background image [done]
+    + background image
+
+    + material:
+        * lambertian 
+        * reflection
 
     + tests:
-        * sphere [done]
-        * ray [done]
-        * camera [done]
+        * sphere
+        * ray
+        * camera
 
     + meshes:
-        * plane [done]
+        * plane

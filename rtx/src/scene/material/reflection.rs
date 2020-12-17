@@ -38,6 +38,7 @@ impl material::Material for Reflection {
     ) -> vec3::Vec3 {
         *wi = vec3::Vec3::reflect(wo, normal);
         let cos_theta_wi = vec3::Vec3::dot(normal, wi);
-        return (vec3::Vec3::from(1.0) - self.fresnel.evaluate(dot_normal_wo)) * self.kr / f32::abs(cos_theta_wi);
+        return (vec3::Vec3::from(1.0) - self.fresnel.evaluate(dot_normal_wo)) * self.kr
+            / f32::abs(cos_theta_wi);
     }
 }

@@ -18,11 +18,10 @@ fn ray_trace(
         let surface_material = surface.material();
         let wo = -*ray.direction();
         let surface_point;
-        let dot_normal_wo = vec3::Vec3::dot(normal, &wo); 
+        let dot_normal_wo = vec3::Vec3::dot(normal, &wo);
         if dot_normal_wo > 0.0 {
             surface_point = *surface.position() + math::EPSILON_F32_4 * *normal;
-        }
-        else {
+        } else {
             surface_point = *surface.position() - math::EPSILON_F32_4 * *normal;
         }
 
@@ -36,9 +35,11 @@ fn ray_trace(
             }
         }
 
+        // add reflection or refraction
         if depth <= max_depth {
-            // reflection
-            if surface_material.has_types(material::MaterialType::Reflection as u32) {
+            if surface_material.has_types(material::MaterialType::Reflection as u32)
+                || surface_material.has_types(material::MaterialType::Refraction as u32)
+            {
                 let mut wi = vec3::Vec3::from(0.0);
                 let brdf = surface_material.sample_brdf(dot_normal_wo, normal, &wo, &mut wi);
                 let ray = ray::Ray::new(surface_point, wi);

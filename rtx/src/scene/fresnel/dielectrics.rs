@@ -41,6 +41,8 @@ impl fresnel::Fresnel for Dielectrics {
         let r_perpendicular = (eta_i * cos_theta_wo - eta_t * cos_theta_wi)
             / (eta_i * cos_theta_wo + eta_t * cos_theta_wi);
 
-        return vec3::Vec3::from(0.5 * (r_parallel * r_parallel + r_perpendicular * r_perpendicular));
+        return vec3::Vec3::from(
+            0.5 * (r_parallel * r_parallel + r_perpendicular * r_perpendicular),
+        );
     }
 }

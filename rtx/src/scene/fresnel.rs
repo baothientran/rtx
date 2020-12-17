@@ -1,5 +1,5 @@
-pub mod dielectrics;
 pub mod conductor;
+pub mod dielectrics;
 
 use crate::core::vec3;
 

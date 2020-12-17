@@ -7,7 +7,7 @@ use crate::core::vec3;
 pub enum MaterialType {
     Lambertian = 1 << 0,
     Reflection = 1 << 1,
-    Transmission = 1 << 2,
+    Refraction = 1 << 2,
 }
 
 impl MaterialType {

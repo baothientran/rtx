@@ -37,8 +37,7 @@ fn main() {
     let green_lambertian = rc::Rc::new(lambertian::Lambertian::new(vec3::Vec3::new(0.5, 0.8, 0.7)));
     let purple_lambertian =
         rc::Rc::new(lambertian::Lambertian::new(vec3::Vec3::new(0.8, 0.6, 0.7)));
-    let blue_lambertian =
-        rc::Rc::new(lambertian::Lambertian::new(vec3::Vec3::new(0.3, 0.6, 0.7)));
+    let blue_lambertian = rc::Rc::new(lambertian::Lambertian::new(vec3::Vec3::new(0.3, 0.6, 0.7)));
 
     let point_light_front = Box::new(light::point_light::PointLight::new(
         vec3::Vec3::new(0.0, 1.0, 1.0),
