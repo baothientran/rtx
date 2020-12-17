@@ -20,7 +20,6 @@ pub trait Material {
 
     fn brdf(
         &self,
-        surface_point: &vec3::Vec3,
         normal: &vec3::Vec3,
         wo: &vec3::Vec3,
         wi: &vec3::Vec3,
@@ -28,7 +27,6 @@ pub trait Material {
 
     fn sample_brdf(
         &self,
-        surface_point: &vec3::Vec3,
         normal: &vec3::Vec3,
         wo: &vec3::Vec3,
         wi: &mut vec3::Vec3,
