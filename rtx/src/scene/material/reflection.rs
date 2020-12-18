@@ -31,14 +31,13 @@ impl material::Material for Reflection {
 
     fn sample_brdf(
         &self,
-        dot_normal_wo: f32,
+        _dot_normal_wo: f32,
         normal: &vec3::Vec3,
         wo: &vec3::Vec3,
         wi: &mut vec3::Vec3,
     ) -> vec3::Vec3 {
         *wi = vec3::Vec3::reflect(wo, normal);
         let cos_theta_wi = vec3::Vec3::dot(normal, wi);
-        return (vec3::Vec3::from(1.0) - self.fresnel.evaluate(dot_normal_wo)) * self.kr
-            / f32::abs(cos_theta_wi);
+        return self.fresnel.evaluate(cos_theta_wi) * self.kr / f32::abs(cos_theta_wi);
     }
 }

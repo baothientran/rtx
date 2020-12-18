@@ -52,7 +52,7 @@ fn ray_trace(
         return Some(lo);
     }
 
-    return None;
+    return Some(vec3::Vec3::from(1.0));
 }
 
 pub fn render(
