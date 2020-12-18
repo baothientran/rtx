@@ -60,6 +60,15 @@ impl Vec4 {
         };
     }
 
+    pub fn sqrt(v: &Vec4) -> Vec4 {
+        return Vec4 {
+            x: f32::sqrt(v.x),
+            y: f32::sqrt(v.y),
+            z: f32::sqrt(v.z),
+            w: f32::sqrt(v.w),
+        };
+    }
+
     pub fn equal_epsilon(lhs: &Vec4, rhs: &Vec4, epsilon: f32) -> bool {
         return math::equal_epsilon_f32(lhs.x, rhs.x, epsilon)
             && math::equal_epsilon_f32(lhs.y, rhs.y, epsilon)

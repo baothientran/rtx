@@ -57,6 +57,14 @@ impl Vec3 {
         };
     }
 
+    pub fn sqrt(v: &Vec3) -> Vec3 {
+        return Vec3 {
+            x: f32::sqrt(v.x),
+            y: f32::sqrt(v.y),
+            z: f32::sqrt(v.z),
+        };
+    }
+
     pub fn reflect(v: &Vec3, normal: &Vec3) -> Vec3 {
         return -*v + 2.0 * Vec3::dot(normal, v) * (*normal);
     }
@@ -468,6 +476,16 @@ mod test {
         assert!(math::equal_epsilon_f32(result.x, 12.0, math::EPSILON_F32_5));
         assert!(math::equal_epsilon_f32(result.y, 1.0, math::EPSILON_F32_5));
         assert!(math::equal_epsilon_f32(result.z, 2.0, math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_sqrt() {
+        let v = Vec3::new(4.0, 9.0, 16.0);
+        let result = Vec3::sqrt(&v);
+
+        assert!(math::equal_epsilon_f32(result.x, 2.0, math::EPSILON_F32_5));
+        assert!(math::equal_epsilon_f32(result.y, 3.0, math::EPSILON_F32_5));
+        assert!(math::equal_epsilon_f32(result.z, 4.0, math::EPSILON_F32_5));
     }
 
     #[test]
