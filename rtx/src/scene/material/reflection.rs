@@ -21,7 +21,6 @@ impl material::Material for Reflection {
 
     fn brdf(
         &self,
-        _dot_normal_wo: f32,
         _normal: &vec3::Vec3,
         _wo: &vec3::Vec3,
         _wi: &vec3::Vec3,
@@ -31,7 +30,6 @@ impl material::Material for Reflection {
 
     fn sample_brdf(
         &self,
-        _dot_normal_wo: f32,
         normal: &vec3::Vec3,
         wo: &vec3::Vec3,
         wi: &mut vec3::Vec3,

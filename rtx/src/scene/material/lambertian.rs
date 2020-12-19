@@ -21,7 +21,6 @@ impl material::Material for Lambertian {
 
     fn brdf(
         &self,
-        _dot_normal_wo: f32,
         _normal: &vec3::Vec3,
         _wo: &vec3::Vec3,
         _wi: &vec3::Vec3,
@@ -31,7 +30,6 @@ impl material::Material for Lambertian {
 
     fn sample_brdf(
         &self,
-        _dot_normal_wo: f32,
         _normal: &vec3::Vec3,
         _wo: &vec3::Vec3,
         _wi: &mut vec3::Vec3,

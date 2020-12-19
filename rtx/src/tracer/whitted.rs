@@ -33,7 +33,7 @@ fn ray_trace(
             if light.is_visible(&surface_point_above, world) {
                 let mut wi = vec3::Vec3::from(0.0);
                 let li = light.li(&surface_point_above, &mut wi);
-                let brdf = surface_material.brdf(dot_normal_wo, normal, &wo, &wi);
+                let brdf = surface_material.brdf(normal, &wo, &wi);
                 lo += brdf * li * f32::abs(vec3::Vec3::dot(normal, &wi));
             }
         }
@@ -42,7 +42,7 @@ fn ray_trace(
         if depth <= max_depth {
             if surface_material.has_types(material::MaterialType::Reflection as u32) {
                 let mut wi = vec3::Vec3::from(0.0);
-                let brdf = surface_material.sample_brdf(dot_normal_wo, normal, &wo, &mut wi);
+                let brdf = surface_material.sample_brdf(normal, &wo, &mut wi);
                 if !vec3::Vec3::equal_epsilon(&brdf, &vec3::Vec3::from(0.0), math::EPSILON_F32_6) {
                     let ray = ray::Ray::new(surface_point_above, wi);
                     if let Some(li) = ray_trace(&ray, world, depth + 1, max_depth) {
@@ -53,7 +53,7 @@ fn ray_trace(
 
             if surface_material.has_types(material::MaterialType::Refraction as u32) {
                 let mut wi = vec3::Vec3::from(0.0);
-                let brdf = surface_material.sample_brdf(dot_normal_wo, normal, &wo, &mut wi);
+                let brdf = surface_material.sample_brdf(normal, &wo, &mut wi);
                 if !vec3::Vec3::equal_epsilon(&brdf, &vec3::Vec3::from(0.0), math::EPSILON_F32_6) {
                     let ray = ray::Ray::new(surface_point_below, wi);
                     if let Some(li) = ray_trace(&ray, world, depth + 1, max_depth) {

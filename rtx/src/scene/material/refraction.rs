@@ -28,7 +28,6 @@ impl material::Material for Refraction {
 
     fn brdf(
         &self,
-        _dot_normal_wo: f32,
         _normal: &crate::core::vec3::Vec3,
         _wo: &crate::core::vec3::Vec3,
         _wi: &crate::core::vec3::Vec3,
@@ -38,16 +37,15 @@ impl material::Material for Refraction {
 
     fn sample_brdf(
         &self,
-        dot_normal_wo: f32,
         normal: &vec3::Vec3,
         wo: &vec3::Vec3,
         wi: &mut vec3::Vec3,
     ) -> vec3::Vec3 {
-        let mut cos_normal_wo = dot_normal_wo;
+        let mut cos_normal_wo = vec3::Vec3::dot(normal, wo);
         let mut n = *normal;
         let eta_i;
         let eta_t;
-        if dot_normal_wo > 0.0 {
+        if cos_normal_wo > 0.0 {
             eta_i = self.eta_i;
             eta_t = self.eta_t;
         } else {
