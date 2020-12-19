@@ -11,11 +11,7 @@ pub struct Refraction {
 }
 
 impl Refraction {
-    pub fn new(
-        eta_i: f32,
-        eta_t: f32,
-        kt: vec3::Vec3,
-    ) -> Refraction {
+    pub fn new(eta_i: f32, eta_t: f32, kt: vec3::Vec3) -> Refraction {
         return Refraction {
             eta_i,
             eta_t,

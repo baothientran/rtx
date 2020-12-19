@@ -1,9 +1,8 @@
 use rtx::core::{image, math, vec3};
 use rtx::exporter::ppm;
 use rtx::scene::camera::perspective_camera;
-use rtx::scene::fresnel::{conductor, dielectrics};
 use rtx::scene::light;
-use rtx::scene::material::{lambertian, reflection, refraction};
+use rtx::scene::material::{lambertian, refraction};
 use rtx::scene::shape;
 use rtx::scene::world;
 use rtx::tracer;
@@ -29,10 +28,6 @@ fn main() {
     let sphere_right = rc::Rc::new(shape::sphere::Sphere::new(
         vec3::Vec3::new(0.4, 0.0, 0.0),
         0.2,
-    ));
-    let mirror = rc::Rc::new(reflection::Reflection::new(
-        vec3::Vec3::from(1.0),
-        rc::Rc::new(dielectrics::Dielectrics::new(1.0, 1.77)),
     ));
     let glass = rc::Rc::new(refraction::Refraction::new(
         1.0,
