@@ -23,12 +23,7 @@ impl material::Material for Lambertian {
         return self.kd / math::PI_F32;
     }
 
-    fn sample_brdf(
-        &self,
-        normal: &vec3::Vec3,
-        wo: &vec3::Vec3,
-        wi: &mut vec3::Vec3,
-    ) -> vec3::Vec3 {
+    fn sample_brdf(&self, normal: &vec3::Vec3, wo: &vec3::Vec3, wi: &mut vec3::Vec3) -> vec3::Vec3 {
         return self.brdf(normal, wo, wi);
     }
 }

@@ -1,4 +1,5 @@
-use crate::core::vec3;
+use shape::ShapeSurface;
+
 use crate::scene::material;
 use crate::scene::ray;
 use crate::scene::shape;
@@ -20,16 +21,8 @@ impl RenderableSurface<'_> {
         };
     }
 
-    pub fn ray_time(&self) -> f32 {
-        return self.shape_surface.ray_time();
-    }
-
-    pub fn position(&self) -> &vec3::Vec3 {
-        return self.shape_surface.position();
-    }
-
-    pub fn normal(&self) -> &vec3::Vec3 {
-        return self.shape_surface.normal();
+    pub fn shape_surface(&self) -> &ShapeSurface {
+        return &self.shape_surface;
     }
 
     pub fn material(&self) -> &dyn material::Material {

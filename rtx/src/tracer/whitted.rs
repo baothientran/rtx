@@ -12,10 +12,11 @@ fn ray_trace(
     depth: u32,
     max_depth: u32,
 ) -> Option<vec3::Vec3> {
-    if let Some(surface) = world.intersect_ray(ray) {
+    if let Some(renderable_surface) = world.intersect_ray(ray) {
         let mut lo = vec3::Vec3::from(0.0);
+        let surface = renderable_surface.shape_surface();
         let normal = surface.normal();
-        let surface_material = surface.material();
+        let surface_material = renderable_surface.material();
         let wo = -*ray.direction();
         let surface_point_above;
         let surface_point_below;

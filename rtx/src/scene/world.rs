@@ -50,10 +50,12 @@ impl World {
         let mut intersect: Option<renderable::RenderableSurface> = None;
         for renderable in self.renderables.iter() {
             match intersect.as_mut() {
-                Some(surface) => {
-                    if let Some(renderable_surface) = renderable.intersect_ray(&ray) {
-                        if surface.ray_time() > renderable_surface.ray_time() {
-                            *surface = renderable_surface;
+                Some(curr_renderable_surface) => {
+                    if let Some(potential_renderable_surface) = renderable.intersect_ray(&ray) {
+                        if curr_renderable_surface.shape_surface().ray_time()
+                            > potential_renderable_surface.shape_surface().ray_time()
+                        {
+                            *curr_renderable_surface = potential_renderable_surface;
                         }
                     }
                 }
