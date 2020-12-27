@@ -35,12 +35,7 @@ impl material::Material for Refraction {
         return vec3::Vec3::from(0.0);
     }
 
-    fn sample_brdf(
-        &self,
-        normal: &vec3::Vec3,
-        wo: &vec3::Vec3,
-        wi: &mut vec3::Vec3,
-    ) -> vec3::Vec3 {
+    fn sample_brdf(&self, normal: &vec3::Vec3, wo: &vec3::Vec3, wi: &mut vec3::Vec3) -> vec3::Vec3 {
         let mut cos_normal_wo = vec3::Vec3::dot(normal, wo);
         let mut n = *normal;
         let eta_i;

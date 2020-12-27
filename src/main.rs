@@ -1,9 +1,9 @@
 use rtx::core::{image, math, vec3};
 use rtx::exporter::ppm;
 use rtx::scene::camera::perspective_camera;
+use rtx::scene::fresnel::dielectrics;
 use rtx::scene::light;
 use rtx::scene::material::{lambertian, reflection, refraction};
-use rtx::scene::fresnel::{dielectrics};
 use rtx::scene::shape;
 use rtx::scene::world;
 use rtx::tracer;

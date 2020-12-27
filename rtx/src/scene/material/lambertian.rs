@@ -19,21 +19,16 @@ impl material::Material for Lambertian {
         return MaterialType::contain(material::MaterialType::Lambertian as u32, flags);
     }
 
-    fn brdf(
-        &self,
-        _normal: &vec3::Vec3,
-        _wo: &vec3::Vec3,
-        _wi: &vec3::Vec3,
-    ) -> vec3::Vec3 {
+    fn brdf(&self, _normal: &vec3::Vec3, _wo: &vec3::Vec3, _wi: &vec3::Vec3) -> vec3::Vec3 {
         return self.kd / math::PI_F32;
     }
 
     fn sample_brdf(
         &self,
-        _normal: &vec3::Vec3,
-        _wo: &vec3::Vec3,
-        _wi: &mut vec3::Vec3,
+        normal: &vec3::Vec3,
+        wo: &vec3::Vec3,
+        wi: &mut vec3::Vec3,
     ) -> vec3::Vec3 {
-        return self.kd / math::PI_F32;
+        return self.brdf(normal, wo, wi);
     }
 }
