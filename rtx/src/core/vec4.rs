@@ -207,3 +207,203 @@ impl ops::DivAssign<f32> for Vec4 {
         *self = *self / rhs;
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+    use crate::core::math;
+
+    #[test]
+    fn test_dot() {
+        let lhs = Vec4::new(12.0, 34.0, 12.0, 2.0);
+        let rhs = Vec4::new(2.0, 1.0, 2.0, 1.0);
+        let result = Vec4::dot(&lhs, &rhs);
+        assert!(math::equal_epsilon_f32(result, 84.0, math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_distance() {
+        let from = Vec4::new(12.0, 2.0, 3.0, 1.0);
+        let to = Vec4::new(1.0, 2.0, 1.0, 2.0);
+        let dist = Vec4::distance(&from, &to);
+        assert!(math::equal_epsilon_f32(dist, 11.224972, math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_length_sq() {
+        let v = Vec4::new(12.2, 21.0, 34.4, 2.0);
+        let expected = v.x * v.x + v.y * v.y + v.z * v.z + v.w * v.w;
+        assert!(math::equal_epsilon_f32(
+            expected,
+            Vec4::length_sq(&v),
+            math::EPSILON_F32_5
+        ));
+    }
+
+    #[test]
+    fn test_length() {
+        let v = Vec4::new(12.0, 0.0, 0.0, 2.0);
+        assert!(math::equal_epsilon_f32(
+            12.165525,
+            Vec4::length(&v),
+            math::EPSILON_F32_5
+        ));
+    }
+
+    #[test]
+    fn test_normalize() {
+        let v = Vec4::new(12.2, 21.0, 34.4, 2.0);
+        let n = Vec4::normalize(&v).unwrap();
+        assert!(math::equal_epsilon_f32(
+            Vec4::length(&n),
+            1.0,
+            math::EPSILON_F32_5
+        ));
+    }
+
+    #[test]
+    fn test_add() {
+        let lhs = Vec4::new(12.0, 21.0, 34.4, 2.0);
+        let rhs = Vec4::new(23.0, 20.0, 10.0, 1.0);
+
+        let result = lhs + rhs;
+        assert!(Vec4::equal_epsilon(&result, &Vec4::new(35.0, 41.0, 44.4, 3.0), math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_sub() {
+        let lhs = Vec4::new(12.0, 21.0, 34.4, 2.0);
+        let rhs = Vec4::new(23.0, 20.0, 10.0, 3.0);
+
+        let result = lhs - rhs;
+        assert!(Vec4::equal_epsilon(&result, &Vec4::new(-11.0, 1.0, 24.4, -1.0), math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_mul() {
+        let lhs = Vec4::new(12.0, 21.0, 34.4, 2.0);
+        let rhs = Vec4::new(23.0, 20.0, 10.0, 21.0);
+
+        let result = lhs * rhs;
+        assert!(Vec4::equal_epsilon(&result, &Vec4::new(276.0, 420.0, 344.0, 42.0), math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_mul_f32_rhs() {
+        let lhs = Vec4::new(12.0, 21.0, 34.4, 2.0);
+        let rhs: f32 = 10.0;
+
+        let result = lhs * rhs;
+        assert!(Vec4::equal_epsilon(&result, &Vec4::new(120.0, 210.0, 344.0, 20.0), math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_mul_f32_lhs() {
+        let lhs: f32 = 10.0;
+        let rhs = Vec4::new(12.0, 21.0, 34.4, 2.1);
+
+        let result = lhs * rhs;
+        assert!(Vec4::equal_epsilon(&result, &Vec4::new(120.0, 210.0, 344.0, 21.0), math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_div() {
+        let lhs = Vec4::new(12.0, 21.0, 34.4, 1.0);
+        let rhs = Vec4::new(12.0, 10.0, 2.0, 2.0);
+
+        let result = lhs / rhs;
+        assert!(Vec4::equal_epsilon(&result, &Vec4::new(1.0, 2.1, 17.2, 0.5), math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_div_f32_rhs() {
+        let lhs = Vec4::new(12.0, 21.0, 34.4, 1.0);
+        let rhs: f32 = 10.0;
+
+        let result = lhs / rhs;
+        assert!(Vec4::equal_epsilon(&result, &Vec4::new(1.2, 2.1, 3.44, 0.1), math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_add_assign() {
+        let mut result = Vec4::new(12.0, 21.0, 34.4, 2.0);
+        result += Vec4::new(23.0, 20.0, 10.0, 2.0);
+        assert!(Vec4::equal_epsilon(&result, &Vec4::new(35.0, 41.0, 44.4, 4.0), math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_sub_assign() {
+        let mut result = Vec4::new(12.0, 21.0, 34.4, 5.0);
+        result -= Vec4::new(23.0, 20.0, 10.0, 1.0);
+        assert!(Vec4::equal_epsilon(&result, &Vec4::new(-11.0, 1.0, 24.4, 4.0), math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_mul_assign() {
+        let mut result = Vec4::new(12.0, 21.0, 34.4, 2.0);
+        result *= Vec4::new(23.0, 20.0, 10.0, 1.0);
+        assert!(Vec4::equal_epsilon(&result, &Vec4::new(276.0, 420.0, 344.0, 2.0), math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_mul_assign_f32_rhs() {
+        let mut result = Vec4::new(12.0, 21.0, 34.4, 1.0);
+        result *= 10.0;
+        assert!(Vec4::equal_epsilon(&result, &Vec4::new(120.0, 210.0, 344.0, 10.0), math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_div_assign() {
+        let mut result = Vec4::new(12.0, 21.0, 34.4, 1.0);
+        result /= Vec4::new(12.0, 10.0, 2.0, 2.0);
+        assert!(Vec4::equal_epsilon(&result, &Vec4::new(1.0, 2.1, 17.2, 0.5), math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_div_assign_f32_rhs() {
+        let mut result = Vec4::new(12.0, 21.0, 34.4, 20.0);
+        result /= 10.0;
+        assert!(Vec4::equal_epsilon(&result, &Vec4::new(1.2, 2.1, 3.44, 2.0), math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_abs() {
+        let v = Vec4::new(-12.0, -1.0, -2.0, -0.5);
+        let result = Vec4::abs(&v);
+        assert!(Vec4::equal_epsilon(&result, &Vec4::new(12.0, 1.0, 2.0, 0.5), math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_sqrt() {
+        let v = Vec4::new(4.0, 9.0, 16.0, 9.0);
+        let result = Vec4::sqrt(&v);
+        assert!(Vec4::equal_epsilon(&result, &Vec4::new(2.0, 3.0, 4.0, 3.0), math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_from_f32() {
+        let v = Vec4::from(-12.0);
+        assert!(Vec4::equal_epsilon(&v, &Vec4::new(-12.0, -12.0, -12.0, -12.0), math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_neg() {
+        let v = Vec4::new(-12.0, -1.0, -2.0, -1.0);
+        let result = -v;
+        assert!(Vec4::equal_epsilon(&result, &Vec4::new(12.0, 1.0, 2.0, 1.0), math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_equal_epsilon() {
+        let lhs = Vec4::new(2.000002, 3.000004, 2.000001, 1.000001);
+        let rhs = Vec4::new(2.000001, 3.000003, 2.000001, 1.000001);
+        assert!(Vec4::equal_epsilon(&lhs, &rhs, math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_not_equal_epsilon() {
+        let lhs = Vec4::new(2.000002, 3.000004, 2.000001, 1.0);
+        let rhs = Vec4::new(2.00002, 3.00003, 2.000001, 1.0);
+        assert!(!Vec4::equal_epsilon(&lhs, &rhs, math::EPSILON_F32_5));
+    }
+}

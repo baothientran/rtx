@@ -53,6 +53,10 @@ impl shape::Shape for Plane {
             t,
             ray.calc_position(t),
             self.normal,
+            0.0,
+            0.0,
+            vec3::Vec3::from(0.0),
+            vec3::Vec3::from(0.0)
         ));
     }
 }
