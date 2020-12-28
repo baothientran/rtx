@@ -91,21 +91,14 @@ impl shape::Shape for Sphere {
         let mut normal = position - self.center;
         normal = vec3::Vec3::normalize(&normal).unwrap();
 
-        // calculate u, v
-        let theta = f32::acos(-vec3::Vec3::dot(&normal, &self.pole));
-        let v = theta / math::PI_F32;
-
+        // calculate dpdu and dpdv
         let two_pi = math::PI_F32 * 2.0;
+        let theta = f32::acos(-vec3::Vec3::dot(&normal, &self.pole));
         let mut phi = f32::acos(vec3::Vec3::dot(&self.equator, &normal)) / f32::sin(theta);
-        let u;
-        if vec3::Vec3::dot(&self.cross_pole_equator, &normal) > 0.0 {
-            u = phi / two_pi;
-        } else {
+        if vec3::Vec3::dot(&self.cross_pole_equator, &normal) <= 0.0 {
             phi = two_pi - phi;
-            u = phi / two_pi;
         }
 
-        // calculate dpdu and dpdv
         let dpdu = vec3::Vec3::new(-two_pi * position.z, 0.0, two_pi * position.x);
         let dpdv = math::PI_F32
             * vec3::Vec3::new(
@@ -115,7 +108,7 @@ impl shape::Shape for Sphere {
             );
 
         return Some(shape::ShapeSurface::new(
-            t, position, normal, u, v, dpdu, dpdv,
+            t, position, normal, dpdu, dpdv,
         ));
     }
 }

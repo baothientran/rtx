@@ -49,14 +49,20 @@ impl shape::Shape for Plane {
             return None;
         }
 
+        // calculate intersection point
+        let surface_point = ray.calc_position(t);
+
+        // calculate dpdu and dpdv
+        let mut dpdu = vec3::Vec3::from(0.0);
+        let mut dpdv = vec3::Vec3::from(0.0);
+        vec3::Vec3::coordinate_system(&self.normal, &mut dpdv, &mut dpdu);
+
         return Some(shape::ShapeSurface::new(
             t,
-            ray.calc_position(t),
+            surface_point,
             self.normal,
-            0.0,
-            0.0,
-            vec3::Vec3::from(0.0),
-            vec3::Vec3::from(0.0)
+            dpdu,
+            dpdv 
         ));
     }
 }

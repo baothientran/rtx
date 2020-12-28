@@ -75,7 +75,7 @@ fn main() {
     world.add_light(point_light_back);
 
     // setup camera
-    let view_location = vec3::Vec3::new(-1.5, 1.0, 1.5);
+    let view_location = vec3::Vec3::new(-1.5, 1.5, 1.5);
     let mut view_out = vec3::Vec3::from(0.0) - view_location;
     view_out = vec3::Vec3::normalize(&view_out).unwrap();
     let view_up = vec3::Vec3::new(0.0, 1.0, 0.0);

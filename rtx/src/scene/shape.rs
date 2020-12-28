@@ -9,8 +9,6 @@ pub struct ShapeSurface {
     ray_time: f32,
     position: vec3::Vec3,
     normal: vec3::Vec3,
-    u: f32,
-    v: f32,
     dpdu: vec3::Vec3,
     dpdv: vec3::Vec3,
 }
@@ -20,8 +18,6 @@ impl ShapeSurface {
         ray_time: f32,
         position: vec3::Vec3,
         normal: vec3::Vec3,
-        u: f32,
-        v: f32,
         dpdu: vec3::Vec3,
         dpdv: vec3::Vec3,
     ) -> ShapeSurface {
@@ -29,8 +25,6 @@ impl ShapeSurface {
             ray_time,
             position,
             normal,
-            u,
-            v,
             dpdu,
             dpdv,
         };
@@ -46,14 +40,6 @@ impl ShapeSurface {
 
     pub fn normal(&self) -> &vec3::Vec3 {
         return &self.normal;
-    }
-
-    pub fn u(&self) -> f32 {
-        return self.u;
-    }
-
-    pub fn v(&self) -> f32 {
-        return self.v;
     }
 
     pub fn dpdu(&self) -> &vec3::Vec3 {

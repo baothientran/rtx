@@ -69,6 +69,17 @@ impl Vec3 {
         return -*v + 2.0 * Vec3::dot(normal, v) * (*normal);
     }
 
+    pub fn coordinate_system(v1: &Vec3, v2: &mut Vec3, v3: &mut Vec3) {
+        if f32::abs(v1.x) >  f32::abs(v1.y) {
+            *v2 = Vec3::normalize(&Vec3::new(v1.z, 0.0, -v1.x)).unwrap(); // cross(y, v1)
+        }
+        else {
+            *v2 = Vec3::normalize(&Vec3::new(0.0, -v1.z, v1.y)).unwrap(); // cross(x, v1)
+        }
+
+        *v3 = Vec3::cross(v1, v2);
+    }
+
     pub fn equal_epsilon(lhs: &Vec3, rhs: &Vec3, epsilon: f32) -> bool {
         return math::equal_epsilon_f32(lhs.x, rhs.x, epsilon)
             && math::equal_epsilon_f32(lhs.y, rhs.y, epsilon)
@@ -516,6 +527,16 @@ mod test {
             &Vec3::normalize(&Vec3::new(-1.0, 1.0, 0.0)).unwrap(),
             math::EPSILON_F32_5
         ));
+    }
+
+    #[test]
+    fn test_coordinate_system() {
+        let y_axis = Vec3::normalize(&Vec3::new(1.0, 0.0, 1.0)).unwrap();
+        let mut z_axis = Vec3::from(0.0);
+        let mut x_axis = Vec3::from(0.0);
+        Vec3::coordinate_system(&y_axis, &mut z_axis, &mut x_axis);
+        assert!(Vec3::equal_epsilon(&Vec3::cross(&x_axis, &y_axis), &z_axis, math::EPSILON_F32_5));
+        assert!(Vec3::equal_epsilon(&Vec3::cross(&y_axis, &z_axis), &x_axis, math::EPSILON_F32_5));
     }
 
     #[test]
