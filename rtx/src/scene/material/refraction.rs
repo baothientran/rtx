@@ -59,7 +59,7 @@ impl material::Material for Refraction {
             return vec3::Vec3::from(0.0);
         }
 
-        *wi = r * (-*wo) + (r * cos_normal_wo - f32::sqrt(cos_normal_wi_sq)) * n;
+        *wi = r * (-wo) + (r * cos_normal_wo - f32::sqrt(cos_normal_wi_sq)) * n;
 
         // calculate brdf of refraction
         let cos_normal_wi = vec3::Vec3::dot(normal, wi);

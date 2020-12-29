@@ -29,7 +29,7 @@ impl shape::Shape for Sphere {
         let radius = self.radius;
         let radius_sq = radius * radius;
 
-        let oc = center - *ray.origin();
+        let oc = center - ray.origin();
         let oc_length_sq = vec3::Vec3::length_sq(&oc);
         let origin_outside = oc_length_sq >= radius_sq;
 

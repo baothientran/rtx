@@ -17,16 +17,16 @@ fn ray_trace(
         let surface = renderable_surface.shape_surface();
         let normal = surface.normal();
         let surface_material = renderable_surface.material();
-        let wo = -*ray.direction();
+        let wo = -ray.direction();
         let surface_point_above;
         let surface_point_below;
         let dot_normal_wo = vec3::Vec3::dot(normal, &wo);
         if dot_normal_wo > 0.0 {
-            surface_point_above = *surface.position() + math::EPSILON_F32_4 * *normal;
-            surface_point_below = *surface.position() - math::EPSILON_F32_4 * *normal;
+            surface_point_above = *surface.position() + math::EPSILON_F32_4 * normal;
+            surface_point_below = *surface.position() - math::EPSILON_F32_4 * normal;
         } else {
-            surface_point_above = *surface.position() - math::EPSILON_F32_4 * *normal;
-            surface_point_below = *surface.position() + math::EPSILON_F32_4 * *normal;
+            surface_point_above = *surface.position() - math::EPSILON_F32_4 * normal;
+            surface_point_below = *surface.position() + math::EPSILON_F32_4 * normal;
         }
 
         // add color from lights around the world
