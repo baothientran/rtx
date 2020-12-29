@@ -1,7 +1,7 @@
 use crate::core::math;
 use crate::core::vec3;
 use crate::core::vec4;
-use std::ops;
+use auto_ops::{impl_op_ex, impl_op_ex_commutative};
 
 #[derive(Copy, Clone, Debug)]
 pub struct Mat4 {
@@ -262,153 +262,104 @@ impl Mat4 {
     }
 }
 
-impl ops::Add<Mat4> for Mat4 {
-    type Output = Mat4;
+impl_op_ex!(+ |lhs: &Mat4, rhs: &Mat4| -> Mat4 {
+    return Mat4 {
+        cols: [
+            lhs.cols[0] + rhs.cols[0],
+            lhs.cols[1] + rhs.cols[1],
+            lhs.cols[2] + rhs.cols[2],
+            lhs.cols[3] + rhs.cols[3],
+        ],
+    };
+});
 
-    fn add(self, rhs: Mat4) -> Mat4 {
-        return Mat4 {
-            cols: [
-                self.cols[0] + rhs.cols[0],
-                self.cols[1] + rhs.cols[1],
-                self.cols[2] + rhs.cols[2],
-                self.cols[3] + rhs.cols[3],
-            ],
-        };
-    }
-}
+impl_op_ex!(-|lhs: &Mat4, rhs: &Mat4| -> Mat4 {
+    return Mat4 {
+        cols: [
+            lhs.cols[0] - rhs.cols[0],
+            lhs.cols[1] - rhs.cols[1],
+            lhs.cols[2] - rhs.cols[2],
+            lhs.cols[3] - rhs.cols[3],
+        ],
+    };
+});
 
-impl ops::Sub<Mat4> for Mat4 {
-    type Output = Mat4;
+impl_op_ex!(*|lhs: &Mat4, rhs: &Mat4| -> Mat4 {
+    let c0 = lhs.cols[0] * rhs.cols[0].x
+        + lhs.cols[1] * rhs.cols[0].y
+        + lhs.cols[2] * rhs.cols[0].z
+        + lhs.cols[3] * rhs.cols[0].w;
+    let c1 = lhs.cols[0] * rhs.cols[1].x
+        + lhs.cols[1] * rhs.cols[1].y
+        + lhs.cols[2] * rhs.cols[1].z
+        + lhs.cols[3] * rhs.cols[1].w;
+    let c2 = lhs.cols[0] * rhs.cols[2].x
+        + lhs.cols[1] * rhs.cols[2].y
+        + lhs.cols[2] * rhs.cols[2].z
+        + lhs.cols[3] * rhs.cols[2].w;
+    let c3 = lhs.cols[0] * rhs.cols[3].x
+        + lhs.cols[1] * rhs.cols[3].y
+        + lhs.cols[2] * rhs.cols[3].z
+        + lhs.cols[3] * rhs.cols[3].w;
+    return Mat4 {
+        cols: [c0, c1, c2, c3],
+    };
+});
 
-    fn sub(self, rhs: Mat4) -> Mat4 {
-        return Mat4 {
-            cols: [
-                self.cols[0] - rhs.cols[0],
-                self.cols[1] - rhs.cols[1],
-                self.cols[2] - rhs.cols[2],
-                self.cols[3] - rhs.cols[3],
-            ],
-        };
-    }
-}
+impl_op_ex!(*|lhs: &Mat4, rhs: &vec4::Vec4| -> vec4::Vec4 {
+    return lhs.cols[0] * rhs.x + lhs.cols[1] * rhs.y + lhs.cols[2] * rhs.z + lhs.cols[3] * rhs.w;
+});
 
-impl ops::Mul<Mat4> for Mat4 {
-    type Output = Mat4;
+impl_op_ex!(*|lhs: &vec4::Vec4, rhs: &Mat4| -> vec4::Vec4 {
+    return vec4::Vec4::new(
+        vec4::Vec4::dot(&lhs, &rhs.cols[0]),
+        vec4::Vec4::dot(&lhs, &rhs.cols[1]),
+        vec4::Vec4::dot(&lhs, &rhs.cols[2]),
+        vec4::Vec4::dot(&lhs, &rhs.cols[3]),
+    );
+});
 
-    fn mul(self, rhs: Mat4) -> Mat4 {
-        let c0 = self.cols[0] * rhs.cols[0].x
-            + self.cols[1] * rhs.cols[0].y
-            + self.cols[2] * rhs.cols[0].z
-            + self.cols[3] * rhs.cols[0].w;
-        let c1 = self.cols[0] * rhs.cols[1].x
-            + self.cols[1] * rhs.cols[1].y
-            + self.cols[2] * rhs.cols[1].z
-            + self.cols[3] * rhs.cols[1].w;
-        let c2 = self.cols[0] * rhs.cols[2].x
-            + self.cols[1] * rhs.cols[2].y
-            + self.cols[2] * rhs.cols[2].z
-            + self.cols[3] * rhs.cols[2].w;
-        let c3 = self.cols[0] * rhs.cols[3].x
-            + self.cols[1] * rhs.cols[3].y
-            + self.cols[2] * rhs.cols[3].z
-            + self.cols[3] * rhs.cols[3].w;
-        return Mat4 {
-            cols: [c0, c1, c2, c3],
-        };
-    }
-}
+impl_op_ex_commutative!(*|lhs: &Mat4, rhs: &f32| -> Mat4 {
+    return Mat4 {
+        cols: [
+            lhs.cols[0] * rhs,
+            lhs.cols[1] * rhs,
+            lhs.cols[2] * rhs,
+            lhs.cols[3] * rhs,
+        ],
+    };
+});
 
-impl ops::Mul<vec4::Vec4> for Mat4 {
-    type Output = vec4::Vec4;
+impl_op_ex!(/ |lhs: &Mat4, rhs: &f32| -> Mat4 {
+    return Mat4 {
+        cols: [
+            lhs.cols[0] / rhs,
+            lhs.cols[1] / rhs,
+            lhs.cols[2] / rhs,
+            lhs.cols[3] / rhs,
+        ],
+    };
+});
 
-    fn mul(self, rhs: vec4::Vec4) -> vec4::Vec4 {
-        return self.cols[0] * rhs.x
-            + self.cols[1] * rhs.y
-            + self.cols[2] * rhs.z
-            + self.cols[3] * rhs.w;
-    }
-}
+impl_op_ex!(+= |lhs: &mut Mat4, rhs: &Mat4| {
+    *lhs = lhs as &Mat4 + rhs;
+});
 
-impl ops::Mul<Mat4> for vec4::Vec4 {
-    type Output = vec4::Vec4;
+impl_op_ex!(-= |lhs: &mut Mat4, rhs: &Mat4| {
+    *lhs = lhs as &Mat4 - rhs;
+});
 
-    fn mul(self, rhs: Mat4) -> vec4::Vec4 {
-        return vec4::Vec4::new(
-            vec4::Vec4::dot(&self, &rhs.cols[0]),
-            vec4::Vec4::dot(&self, &rhs.cols[1]),
-            vec4::Vec4::dot(&self, &rhs.cols[2]),
-            vec4::Vec4::dot(&self, &rhs.cols[3]),
-        );
-    }
-}
+impl_op_ex!(*= |lhs: &mut Mat4, rhs: &Mat4| {
+    *lhs = lhs as &Mat4 * rhs;
+});
 
-impl ops::Mul<f32> for Mat4 {
-    type Output = Mat4;
+impl_op_ex!(*= |lhs: &mut Mat4, rhs: &f32| {
+    *lhs = lhs as &Mat4 * rhs;
+});
 
-    fn mul(self, rhs: f32) -> Mat4 {
-        return Mat4 {
-            cols: [
-                self.cols[0] * rhs,
-                self.cols[1] * rhs,
-                self.cols[2] * rhs,
-                self.cols[3] * rhs,
-            ],
-        };
-    }
-}
-
-impl ops::Mul<Mat4> for f32 {
-    type Output = Mat4;
-
-    fn mul(self, rhs: Mat4) -> Mat4 {
-        return rhs * self;
-    }
-}
-
-impl ops::Div<f32> for Mat4 {
-    type Output = Mat4;
-
-    fn div(self, rhs: f32) -> Mat4 {
-        return Mat4 {
-            cols: [
-                self.cols[0] / rhs,
-                self.cols[1] / rhs,
-                self.cols[2] / rhs,
-                self.cols[3] / rhs,
-            ],
-        };
-    }
-}
-
-impl ops::AddAssign<Mat4> for Mat4 {
-    fn add_assign(&mut self, rhs: Mat4) {
-        *self = *self + rhs;
-    }
-}
-
-impl ops::SubAssign<Mat4> for Mat4 {
-    fn sub_assign(&mut self, rhs: Mat4) {
-        *self = *self - rhs;
-    }
-}
-
-impl ops::MulAssign<Mat4> for Mat4 {
-    fn mul_assign(&mut self, rhs: Mat4) {
-        *self = *self * rhs;
-    }
-}
-
-impl ops::MulAssign<f32> for Mat4 {
-    fn mul_assign(&mut self, rhs: f32) {
-        *self = *self * rhs;
-    }
-}
-
-impl ops::DivAssign<f32> for Mat4 {
-    fn div_assign(&mut self, rhs: f32) {
-        *self = *self / rhs;
-    }
-}
+impl_op_ex!(/= |lhs: &mut Mat4, rhs: &f32| {
+    *lhs = lhs as &Mat4 / rhs;
+});
 
 #[cfg(test)]
 mod test {

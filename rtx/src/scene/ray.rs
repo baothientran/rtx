@@ -31,8 +31,8 @@ impl Ray {
 
     pub fn transform(ray: &Ray, mat: &mat4::Mat4) -> Ray {
         return Ray::new(
-            vec4::Vec4::to_vec3(&(*mat * vec4::Vec4::from_vec3(&ray.origin, 1.0))),
-            vec4::Vec4::to_vec3(&(*mat * vec4::Vec4::from_vec3(&ray.direction, 0.0))),
+            vec4::Vec4::to_vec3(&(mat * vec4::Vec4::from_vec3(&ray.origin, 1.0))),
+            vec4::Vec4::to_vec3(&(mat * vec4::Vec4::from_vec3(&ray.direction, 0.0))),
         );
     }
 }

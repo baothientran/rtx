@@ -1,6 +1,6 @@
 use crate::core::math;
-use std::convert;
 use auto_ops::{impl_op_ex, impl_op_ex_commutative};
+use std::convert;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Vec3 {
@@ -92,7 +92,7 @@ impl convert::From<f32> for Vec3 {
     }
 }
 
-impl_op_ex!(- |a: &Vec3| -> Vec3 {
+impl_op_ex!(-|a: &Vec3| -> Vec3 {
     return Vec3 {
         x: -a.x,
         y: -a.y,
@@ -104,15 +104,15 @@ impl_op_ex!(+ |lhs: &Vec3, rhs: &Vec3| -> Vec3 {
     return Vec3::new(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
 });
 
-impl_op_ex!(- |lhs: &Vec3, rhs: &Vec3| -> Vec3 {
+impl_op_ex!(-|lhs: &Vec3, rhs: &Vec3| -> Vec3 {
     return Vec3::new(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
 });
 
-impl_op_ex!(* |lhs: &Vec3, rhs: &Vec3| -> Vec3 {
+impl_op_ex!(*|lhs: &Vec3, rhs: &Vec3| -> Vec3 {
     return Vec3::new(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z);
 });
 
-impl_op_ex_commutative!(* |lhs: &Vec3, rhs: &f32| -> Vec3 {
+impl_op_ex_commutative!(*|lhs: &Vec3, rhs: &f32| -> Vec3 {
     return Vec3::new(lhs.x * rhs, lhs.y * rhs, lhs.z * rhs);
 });
 
@@ -352,9 +352,21 @@ mod test {
         let rhs = Vec3::new(12.0, 21.0, 34.4);
 
         let result = lhs / rhs;
-        assert!(math::equal_epsilon_f32(result.x, 0.83333, math::EPSILON_F32_5));
-        assert!(math::equal_epsilon_f32(result.y, 0.47619, math::EPSILON_F32_5));
-        assert!(math::equal_epsilon_f32(result.z, 0.29069, math::EPSILON_F32_5));
+        assert!(math::equal_epsilon_f32(
+            result.x,
+            0.83333,
+            math::EPSILON_F32_5
+        ));
+        assert!(math::equal_epsilon_f32(
+            result.y,
+            0.47619,
+            math::EPSILON_F32_5
+        ));
+        assert!(math::equal_epsilon_f32(
+            result.z,
+            0.29069,
+            math::EPSILON_F32_5
+        ));
     }
 
     #[test]

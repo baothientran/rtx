@@ -1,7 +1,7 @@
 use crate::core::math;
 use crate::core::vec3;
-use std::convert;
 use auto_ops::{impl_op_ex, impl_op_ex_commutative};
+use std::convert;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Vec4 {
@@ -83,7 +83,7 @@ impl convert::From<f32> for Vec4 {
     }
 }
 
-impl_op_ex!(- |a: &Vec4| -> Vec4 {
+impl_op_ex!(-|a: &Vec4| -> Vec4 {
     return Vec4 {
         x: -a.x,
         y: -a.y,
@@ -101,25 +101,15 @@ impl_op_ex!(+ |lhs: &Vec4, rhs: &Vec4| -> Vec4 {
     );
 });
 
-impl_op_ex!(- |lhs: &Vec4, rhs: &Vec4| -> Vec4 {
-    return Vec4::new(
-        lhs.x - rhs.x,
-        lhs.y - rhs.y,
-        lhs.z - rhs.z,
-        lhs.w - rhs.w,
-    );
+impl_op_ex!(-|lhs: &Vec4, rhs: &Vec4| -> Vec4 {
+    return Vec4::new(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z, lhs.w - rhs.w);
 });
 
-impl_op_ex!(* |lhs: &Vec4, rhs: &Vec4| -> Vec4 {
-    return Vec4::new(
-        lhs.x * rhs.x,
-        lhs.y * rhs.y,
-        lhs.z * rhs.z,
-        lhs.w * rhs.w,
-    );
+impl_op_ex!(*|lhs: &Vec4, rhs: &Vec4| -> Vec4 {
+    return Vec4::new(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z, lhs.w * rhs.w);
 });
 
-impl_op_ex_commutative!(* |lhs: &Vec4, rhs: &f32| -> Vec4 {
+impl_op_ex_commutative!(*|lhs: &Vec4, rhs: &f32| -> Vec4 {
     return Vec4::new(lhs.x * rhs, lhs.y * rhs, lhs.z * rhs, lhs.w * rhs);
 });
 
