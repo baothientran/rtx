@@ -1,6 +1,6 @@
 use crate::core::math;
 use std::convert;
-use std::ops;
+use auto_ops::{impl_op_ex, impl_op_ex_commutative};
 
 #[derive(Copy, Clone, Debug)]
 pub struct Vec3 {
@@ -27,7 +27,7 @@ impl Vec3 {
     }
 
     pub fn distance(from: &Vec3, to: &Vec3) -> f32 {
-        let direction = *to - *from;
+        let direction = to - from;
         return Vec3::length(&direction);
     }
 
@@ -46,7 +46,7 @@ impl Vec3 {
         }
 
         let inv_len = 1.0 / len;
-        return Some(*v * inv_len);
+        return Some(v * inv_len);
     }
 
     pub fn abs(v: &Vec3) -> Vec3 {
@@ -66,7 +66,7 @@ impl Vec3 {
     }
 
     pub fn reflect(v: &Vec3, normal: &Vec3) -> Vec3 {
-        return -*v + 2.0 * Vec3::dot(normal, v) * (*normal);
+        return -v + 2.0 * Vec3::dot(normal, v) * normal;
     }
 
     pub fn coordinate_system(v1: &Vec3, v2: &mut Vec3, v3: &mut Vec3) {
@@ -92,109 +92,65 @@ impl convert::From<f32> for Vec3 {
     }
 }
 
-impl ops::Neg for Vec3 {
-    type Output = Vec3;
+impl_op_ex!(- |a: &Vec3| -> Vec3 {
+    return Vec3 {
+        x: -a.x,
+        y: -a.y,
+        z: -a.z,
+    };
+});
 
-    fn neg(self) -> Self {
-        return Vec3 {
-            x: -self.x,
-            y: -self.y,
-            z: -self.z,
-        };
-    }
-}
+impl_op_ex!(+ |lhs: &Vec3, rhs: &Vec3| -> Vec3 {
+    return Vec3::new(lhs.x + rhs.x, lhs.y + rhs.y, lhs.z + rhs.z);
+});
 
-impl ops::Add for Vec3 {
-    type Output = Vec3;
+impl_op_ex!(- |lhs: &Vec3, rhs: &Vec3| -> Vec3 {
+    return Vec3::new(lhs.x - rhs.x, lhs.y - rhs.y, lhs.z - rhs.z);
+});
 
-    fn add(self, rhs: Vec3) -> Vec3 {
-        return Vec3::new(self.x + rhs.x, self.y + rhs.y, self.z + rhs.z);
-    }
-}
+impl_op_ex!(* |lhs: &Vec3, rhs: &Vec3| -> Vec3 {
+    return Vec3::new(lhs.x * rhs.x, lhs.y * rhs.y, lhs.z * rhs.z);
+});
 
-impl ops::Sub for Vec3 {
-    type Output = Vec3;
+impl_op_ex_commutative!(* |lhs: &Vec3, rhs: &f32| -> Vec3 {
+    return Vec3::new(lhs.x * rhs, lhs.y * rhs, lhs.z * rhs);
+});
 
-    fn sub(self, rhs: Vec3) -> Vec3 {
-        return Vec3::new(self.x - rhs.x, self.y - rhs.y, self.z - rhs.z);
-    }
-}
+impl_op_ex!(/ |lhs: &Vec3, rhs: &Vec3| -> Vec3 {
+    return Vec3::new(lhs.x / rhs.x, lhs.y / rhs.y, lhs.z / rhs.z);
+});
 
-impl ops::Mul for Vec3 {
-    type Output = Vec3;
+impl_op_ex!(/ |lhs: &Vec3, rhs: &f32| -> Vec3 {
+    return Vec3::new(lhs.x / rhs, lhs.y / rhs, lhs.z / rhs);
+});
 
-    fn mul(self, rhs: Vec3) -> Vec3 {
-        return Vec3::new(self.x * rhs.x, self.y * rhs.y, self.z * rhs.z);
-    }
-}
+impl_op_ex!(/ |lhs: &f32, rhs: &Vec3| -> Vec3 {
+    return Vec3::new(lhs / rhs.x, lhs / rhs.y, lhs / rhs.z);
+});
 
-impl ops::Mul<f32> for Vec3 {
-    type Output = Vec3;
+impl_op_ex!(+= |lhs: &mut Vec3, rhs: &Vec3| {
+    *lhs = lhs as &Vec3 + rhs;
+});
 
-    fn mul(self, rhs: f32) -> Vec3 {
-        return Vec3::new(self.x * rhs, self.y * rhs, self.z * rhs);
-    }
-}
+impl_op_ex!(-= |lhs: &mut Vec3, rhs: &Vec3| {
+    *lhs = lhs as &Vec3 - rhs;
+});
 
-impl ops::Mul<Vec3> for f32 {
-    type Output = Vec3;
+impl_op_ex!(*= |lhs: &mut Vec3, rhs: &Vec3| {
+    *lhs = lhs as &Vec3 * rhs;
+});
 
-    fn mul(self, rhs: Vec3) -> Vec3 {
-        return rhs * self;
-    }
-}
+impl_op_ex!(*= |lhs: &mut Vec3, rhs: &f32| {
+    *lhs = lhs as &Vec3 * rhs;
+});
 
-impl ops::Div for Vec3 {
-    type Output = Vec3;
+impl_op_ex!(/= |lhs: &mut Vec3, rhs: &Vec3| {
+    *lhs = lhs as &Vec3 / rhs;
+});
 
-    fn div(self, rhs: Vec3) -> Vec3 {
-        return Vec3::new(self.x / rhs.x, self.y / rhs.y, self.z / rhs.z);
-    }
-}
-
-impl ops::Div<f32> for Vec3 {
-    type Output = Vec3;
-
-    fn div(self, rhs: f32) -> Vec3 {
-        return Vec3::new(self.x / rhs, self.y / rhs, self.z / rhs);
-    }
-}
-
-impl ops::AddAssign for Vec3 {
-    fn add_assign(&mut self, rhs: Vec3) {
-        *self = *self + rhs;
-    }
-}
-
-impl ops::SubAssign for Vec3 {
-    fn sub_assign(&mut self, rhs: Vec3) {
-        *self = *self - rhs;
-    }
-}
-
-impl ops::MulAssign for Vec3 {
-    fn mul_assign(&mut self, rhs: Vec3) {
-        *self = *self * rhs;
-    }
-}
-
-impl ops::MulAssign<f32> for Vec3 {
-    fn mul_assign(&mut self, rhs: f32) {
-        *self = *self * rhs;
-    }
-}
-
-impl ops::DivAssign for Vec3 {
-    fn div_assign(&mut self, rhs: Vec3) {
-        *self = *self / rhs;
-    }
-}
-
-impl ops::DivAssign<f32> for Vec3 {
-    fn div_assign(&mut self, rhs: f32) {
-        *self = *self / rhs;
-    }
-}
+impl_op_ex!(/= |lhs: &mut Vec3, rhs: &f32| {
+    *lhs = lhs as &Vec3 / rhs;
+});
 
 #[cfg(test)]
 mod test {
@@ -388,6 +344,17 @@ mod test {
         assert!(math::equal_epsilon_f32(result.x, 1.2, math::EPSILON_F32_5));
         assert!(math::equal_epsilon_f32(result.y, 2.1, math::EPSILON_F32_5));
         assert!(math::equal_epsilon_f32(result.z, 3.44, math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_div_f32_lhs() {
+        let lhs: f32 = 10.0;
+        let rhs = Vec3::new(12.0, 21.0, 34.4);
+
+        let result = lhs / rhs;
+        assert!(math::equal_epsilon_f32(result.x, 0.83333, math::EPSILON_F32_5));
+        assert!(math::equal_epsilon_f32(result.y, 0.47619, math::EPSILON_F32_5));
+        assert!(math::equal_epsilon_f32(result.z, 0.29069, math::EPSILON_F32_5));
     }
 
     #[test]
