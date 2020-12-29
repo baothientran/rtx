@@ -235,10 +235,22 @@ impl Mat4 {
 
     pub fn transpose(mat: &Mat4) -> Mat4 {
         return Mat4::from_scalars(
-            mat.cols[0].x, mat.cols[1].x, mat.cols[2].x, mat.cols[3].x,
-            mat.cols[0].y, mat.cols[1].y, mat.cols[2].y, mat.cols[3].y,
-            mat.cols[0].z, mat.cols[1].z, mat.cols[2].z, mat.cols[3].z,
-            mat.cols[0].w, mat.cols[1].w, mat.cols[2].w, mat.cols[3].w,
+            mat.cols[0].x,
+            mat.cols[1].x,
+            mat.cols[2].x,
+            mat.cols[3].x,
+            mat.cols[0].y,
+            mat.cols[1].y,
+            mat.cols[2].y,
+            mat.cols[3].y,
+            mat.cols[0].z,
+            mat.cols[1].z,
+            mat.cols[2].z,
+            mat.cols[3].z,
+            mat.cols[0].w,
+            mat.cols[1].w,
+            mat.cols[2].w,
+            mat.cols[3].w,
         );
     }
 

@@ -1,4 +1,6 @@
+use crate::core::mat4;
 use crate::core::vec3;
+use crate::core::vec4;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Ray {
@@ -25,6 +27,13 @@ impl Ray {
 
     pub fn calc_position(&self, t: f32) -> vec3::Vec3 {
         return self.origin + t * self.direction;
+    }
+
+    pub fn transform(ray: &Ray, mat: &mat4::Mat4) -> Ray {
+        return Ray::new(
+            vec4::Vec4::to_vec3(&(*mat * vec4::Vec4::from_vec3(&ray.origin, 1.0))),
+            vec4::Vec4::to_vec3(&(*mat * vec4::Vec4::from_vec3(&ray.direction, 0.0))),
+        );
     }
 }
 
