@@ -233,6 +233,15 @@ impl Mat4 {
         return Some(inv * det);
     }
 
+    pub fn transpose(mat: &Mat4) -> Mat4 {
+        return Mat4::from_scalars(
+            mat.cols[0].x, mat.cols[1].x, mat.cols[2].x, mat.cols[3].x,
+            mat.cols[0].y, mat.cols[1].y, mat.cols[2].y, mat.cols[3].y,
+            mat.cols[0].z, mat.cols[1].z, mat.cols[2].z, mat.cols[3].z,
+            mat.cols[0].w, mat.cols[1].w, mat.cols[2].w, mat.cols[3].w,
+        );
+    }
+
     pub fn equal_epsilon(lhs: &Mat4, rhs: &Mat4, epsilon: f32) -> bool {
         return vec4::Vec4::equal_epsilon(&lhs.cols[0], &rhs.cols[0], epsilon)
             && vec4::Vec4::equal_epsilon(&lhs.cols[1], &rhs.cols[1], epsilon)
@@ -892,14 +901,18 @@ mod test {
             &vec4::Vec4::new(0.0, 1.0, 2.0, 1.0),
             &vec4::Vec4::new(0.3, 4.2, 1.2, 1.0),
             &vec4::Vec4::new(0.2, 1.0, 3.0, 4.0),
-        )).unwrap();
-        assert!(Mat4::equal_epsilon(&result, 
+        ))
+        .unwrap();
+        assert!(Mat4::equal_epsilon(
+            &result,
             &Mat4::from_vec4s(
-                &vec4::Vec4::new(1.3751868, 0.1345291, -0.3736920, -1.315396), 
-                &vec4::Vec4::new(-0.1001494, -0.1076233, 0.2989536, 0.0523168), 
-                &vec4::Vec4::new(0.115097, 0.8699551, -0.1943198, -0.2840059), 
-                &vec4::Vec4::new(-0.1300448, -0.6322868, 0.0896860, 0.5156950)), 
-            math::EPSILON_F32_5));
+                &vec4::Vec4::new(1.3751868, 0.1345291, -0.3736920, -1.315396),
+                &vec4::Vec4::new(-0.1001494, -0.1076233, 0.2989536, 0.0523168),
+                &vec4::Vec4::new(0.115097, 0.8699551, -0.1943198, -0.2840059),
+                &vec4::Vec4::new(-0.1300448, -0.6322868, 0.0896860, 0.5156950)
+            ),
+            math::EPSILON_F32_5
+        ));
     }
 
     #[test]
@@ -909,15 +922,19 @@ mod test {
             &vec4::Vec4::new(0.0, 4.5, 0.0, 0.0),
             &vec4::Vec4::new(0.0, 0.0, 2.2, 0.0),
             &vec4::Vec4::new(2.4, 2.3, 1.0, 1.0),
-        )).unwrap();
+        ))
+        .unwrap();
 
-        assert!(Mat4::equal_epsilon(&result, 
+        assert!(Mat4::equal_epsilon(
+            &result,
             &Mat4::from_vec4s(
-                &vec4::Vec4::new(1.0/1.4, 0.0, 0.0, 0.0), 
-                &vec4::Vec4::new(0.0, 1.0/4.5, 0.0, 0.0), 
-                &vec4::Vec4::new(0.0, 0.0, 1.0/2.2, 0.0), 
-                &vec4::Vec4::new(-1.7142856, -0.5111111, -0.4545454, 1.0)), 
-            math::EPSILON_F32_5));
+                &vec4::Vec4::new(1.0 / 1.4, 0.0, 0.0, 0.0),
+                &vec4::Vec4::new(0.0, 1.0 / 4.5, 0.0, 0.0),
+                &vec4::Vec4::new(0.0, 0.0, 1.0 / 2.2, 0.0),
+                &vec4::Vec4::new(-1.7142856, -0.5111111, -0.4545454, 1.0)
+            ),
+            math::EPSILON_F32_5
+        ));
     }
 
     #[test]
@@ -930,5 +947,26 @@ mod test {
         ));
 
         assert!(result.is_none());
+    }
+
+    #[test]
+    fn test_transpose() {
+        let result = Mat4::transpose(&Mat4::from_vec4s(
+            &vec4::Vec4::new(1.4, 0.0, 0.0, 0.0),
+            &vec4::Vec4::new(2.0, 4.5, 0.0, 0.0),
+            &vec4::Vec4::new(4.0, 0.0, 2.2, 0.0),
+            &vec4::Vec4::new(2.4, 2.3, 1.0, 1.0),
+        ));
+
+        assert!(Mat4::equal_epsilon(
+            &result,
+            &Mat4::from_vec4s(
+                &vec4::Vec4::new(1.4, 2.0, 4.0, 2.4),
+                &vec4::Vec4::new(0.0, 4.5, 0.0, 2.3),
+                &vec4::Vec4::new(0.0, 0.0, 2.2, 1.0),
+                &vec4::Vec4::new(0.0, 0.0, 0.0, 1.0)
+            ),
+            math::EPSILON_F32_5
+        ));
     }
 }
