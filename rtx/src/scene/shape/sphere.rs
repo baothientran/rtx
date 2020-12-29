@@ -7,17 +7,11 @@ use crate::scene::shape;
 pub struct Sphere {
     center: vec3::Vec3,
     radius: f32,
-    pole: vec3::Vec3,
-    equator: vec3::Vec3,
-    cross_pole_equator: vec3::Vec3
 }
 
 impl Sphere {
     pub fn new(center: vec3::Vec3, radius: f32) -> Sphere {
-        let pole: vec3::Vec3 = vec3::Vec3::new(0.0, 1.0, 0.0);
-        let equator: vec3::Vec3 = vec3::Vec3::new(1.0, 0.0, 0.0);
-        let cross_pole_equator: vec3::Vec3 = vec3::Vec3::cross(&pole, &equator);
-        return Sphere { center, radius, pole, equator, cross_pole_equator };
+        return Sphere { center, radius };
     }
 
     pub fn center(&self) -> &vec3::Vec3 {
@@ -27,7 +21,6 @@ impl Sphere {
     pub fn radius(&self) -> f32 {
         return self.radius;
     }
-
 }
 
 impl shape::Shape for Sphere {
@@ -93,23 +86,32 @@ impl shape::Shape for Sphere {
 
         // calculate dpdu and dpdv
         let two_pi = math::PI_F32 * 2.0;
-        let theta = f32::acos(-vec3::Vec3::dot(&normal, &self.pole));
-        let mut phi = f32::acos(vec3::Vec3::dot(&self.equator, &normal)) / f32::sin(theta);
-        if vec3::Vec3::dot(&self.cross_pole_equator, &normal) <= 0.0 {
-            phi = two_pi - phi;
-        }
+        let theta = f32::acos(math::clamp(
+            (position.y - center.y) / self.radius,
+            -1.0,
+            1.0,
+        ));
 
-        let dpdu = vec3::Vec3::new(-two_pi * position.z, 0.0, two_pi * position.x);
+        let inv_y_radius = 1.0
+            / f32::sqrt(
+                (position.x - center.x) * (position.x - center.x)
+                    + (position.z - center.z) * (position.z - center.z),
+            );
+        let sin_phi = (position.z - center.z) * inv_y_radius;
+        let cos_phi = (position.x - center.x) * inv_y_radius;
+        let dpdu = vec3::Vec3::new(
+            -two_pi * (position.z - center.z),
+            0.0,
+            two_pi * (position.x - center.x),
+        );
         let dpdv = math::PI_F32
             * vec3::Vec3::new(
-                position.y * f32::cos(phi),
+                (position.y - center.y) * cos_phi,
                 -self.radius * f32::sin(theta),
-                position.y * f32::sin(phi),
+                (position.y - center.y) * sin_phi,
             );
 
-        return Some(shape::ShapeSurface::new(
-            t, position, normal, dpdu, dpdv,
-        ));
+        return Some(shape::ShapeSurface::new(t, position, normal, dpdu, dpdv));
     }
 }
 

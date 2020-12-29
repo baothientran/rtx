@@ -1,3 +1,4 @@
+use crate::core::math;
 use crate::core::vec3;
 use crate::core::vec4;
 use std::ops;
@@ -103,6 +104,133 @@ impl Mat4 {
         cols[2] = mat.cols[0] * x2 + mat.cols[1] * y2 + mat.cols[2] * z2;
 
         return Mat4 { cols };
+    }
+
+    pub fn inverse(mat: &Mat4) -> Option<Mat4> {
+        let mut inv = Mat4::new();
+        inv.cols[0].x = mat.cols[1].y * mat.cols[2].z * mat.cols[3].w
+            - mat.cols[1].y * mat.cols[3].z * mat.cols[2].w
+            - mat.cols[1].z * mat.cols[2].y * mat.cols[3].w
+            + mat.cols[1].z * mat.cols[3].y * mat.cols[2].w
+            + mat.cols[1].w * mat.cols[2].y * mat.cols[3].z
+            - mat.cols[1].w * mat.cols[3].y * mat.cols[2].z;
+
+        inv.cols[0].y = -mat.cols[0].y * mat.cols[2].z * mat.cols[3].w
+            + mat.cols[0].y * mat.cols[3].z * mat.cols[2].w
+            + mat.cols[0].z * mat.cols[2].y * mat.cols[3].w
+            - mat.cols[0].z * mat.cols[3].y * mat.cols[2].w
+            - mat.cols[0].w * mat.cols[2].y * mat.cols[3].z
+            + mat.cols[0].w * mat.cols[3].y * mat.cols[2].z;
+
+        inv.cols[0].z = mat.cols[0].y * mat.cols[1].z * mat.cols[3].w
+            - mat.cols[0].y * mat.cols[3].z * mat.cols[1].w
+            - mat.cols[0].z * mat.cols[1].y * mat.cols[3].w
+            + mat.cols[0].z * mat.cols[3].y * mat.cols[1].w
+            + mat.cols[0].w * mat.cols[1].y * mat.cols[3].z
+            - mat.cols[0].w * mat.cols[3].y * mat.cols[1].z;
+
+        inv.cols[0].w = -mat.cols[0].y * mat.cols[1].z * mat.cols[2].w
+            + mat.cols[0].y * mat.cols[2].z * mat.cols[1].w
+            + mat.cols[0].z * mat.cols[1].y * mat.cols[2].w
+            - mat.cols[0].z * mat.cols[2].y * mat.cols[1].w
+            - mat.cols[0].w * mat.cols[1].y * mat.cols[2].z
+            + mat.cols[0].w * mat.cols[2].y * mat.cols[1].z;
+
+        inv.cols[1].x = -mat.cols[1].x * mat.cols[2].z * mat.cols[3].w
+            + mat.cols[1].x * mat.cols[3].z * mat.cols[2].w
+            + mat.cols[1].z * mat.cols[2].x * mat.cols[3].w
+            - mat.cols[1].z * mat.cols[3].x * mat.cols[2].w
+            - mat.cols[1].w * mat.cols[2].x * mat.cols[3].z
+            + mat.cols[1].w * mat.cols[3].x * mat.cols[2].z;
+
+        inv.cols[1].y = mat.cols[0].x * mat.cols[2].z * mat.cols[3].w
+            - mat.cols[0].x * mat.cols[3].z * mat.cols[2].w
+            - mat.cols[0].z * mat.cols[2].x * mat.cols[3].w
+            + mat.cols[0].z * mat.cols[3].x * mat.cols[2].w
+            + mat.cols[0].w * mat.cols[2].x * mat.cols[3].z
+            - mat.cols[0].w * mat.cols[3].x * mat.cols[2].z;
+
+        inv.cols[1].z = -mat.cols[0].x * mat.cols[1].z * mat.cols[3].w
+            + mat.cols[0].x * mat.cols[3].z * mat.cols[1].w
+            + mat.cols[0].z * mat.cols[1].x * mat.cols[3].w
+            - mat.cols[0].z * mat.cols[3].x * mat.cols[1].w
+            - mat.cols[0].w * mat.cols[1].x * mat.cols[3].z
+            + mat.cols[0].w * mat.cols[3].x * mat.cols[1].z;
+
+        inv.cols[1].w = mat.cols[0].x * mat.cols[1].z * mat.cols[2].w
+            - mat.cols[0].x * mat.cols[2].z * mat.cols[1].w
+            - mat.cols[0].z * mat.cols[1].x * mat.cols[2].w
+            + mat.cols[0].z * mat.cols[2].x * mat.cols[1].w
+            + mat.cols[0].w * mat.cols[1].x * mat.cols[2].z
+            - mat.cols[0].w * mat.cols[2].x * mat.cols[1].z;
+
+        inv.cols[2].x = mat.cols[1].x * mat.cols[2].y * mat.cols[3].w
+            - mat.cols[1].x * mat.cols[3].y * mat.cols[2].w
+            - mat.cols[1].y * mat.cols[2].x * mat.cols[3].w
+            + mat.cols[1].y * mat.cols[3].x * mat.cols[2].w
+            + mat.cols[1].w * mat.cols[2].x * mat.cols[3].y
+            - mat.cols[1].w * mat.cols[3].x * mat.cols[2].y;
+
+        inv.cols[2].y = -mat.cols[0].x * mat.cols[2].y * mat.cols[3].w
+            + mat.cols[0].x * mat.cols[3].y * mat.cols[2].w
+            + mat.cols[0].y * mat.cols[2].x * mat.cols[3].w
+            - mat.cols[0].y * mat.cols[3].x * mat.cols[2].w
+            - mat.cols[0].w * mat.cols[2].x * mat.cols[3].y
+            + mat.cols[0].w * mat.cols[3].x * mat.cols[2].y;
+
+        inv.cols[2].z = mat.cols[0].x * mat.cols[1].y * mat.cols[3].w
+            - mat.cols[0].x * mat.cols[3].y * mat.cols[1].w
+            - mat.cols[0].y * mat.cols[1].x * mat.cols[3].w
+            + mat.cols[0].y * mat.cols[3].x * mat.cols[1].w
+            + mat.cols[0].w * mat.cols[1].x * mat.cols[3].y
+            - mat.cols[0].w * mat.cols[3].x * mat.cols[1].y;
+
+        inv.cols[2].w = -mat.cols[0].x * mat.cols[1].y * mat.cols[2].w
+            + mat.cols[0].x * mat.cols[2].y * mat.cols[1].w
+            + mat.cols[0].y * mat.cols[1].x * mat.cols[2].w
+            - mat.cols[0].y * mat.cols[2].x * mat.cols[1].w
+            - mat.cols[0].w * mat.cols[1].x * mat.cols[2].y
+            + mat.cols[0].w * mat.cols[2].x * mat.cols[1].y;
+
+        inv.cols[3].x = -mat.cols[1].x * mat.cols[2].y * mat.cols[3].z
+            + mat.cols[1].x * mat.cols[3].y * mat.cols[2].z
+            + mat.cols[1].y * mat.cols[2].x * mat.cols[3].z
+            - mat.cols[1].y * mat.cols[3].x * mat.cols[2].z
+            - mat.cols[1].z * mat.cols[2].x * mat.cols[3].y
+            + mat.cols[1].z * mat.cols[3].x * mat.cols[2].y;
+
+        inv.cols[3].y = mat.cols[0].x * mat.cols[2].y * mat.cols[3].z
+            - mat.cols[0].x * mat.cols[3].y * mat.cols[2].z
+            - mat.cols[0].y * mat.cols[2].x * mat.cols[3].z
+            + mat.cols[0].y * mat.cols[3].x * mat.cols[2].z
+            + mat.cols[0].z * mat.cols[2].x * mat.cols[3].y
+            - mat.cols[0].z * mat.cols[3].x * mat.cols[2].y;
+
+        inv.cols[3].z = -mat.cols[0].x * mat.cols[1].y * mat.cols[3].z
+            + mat.cols[0].x * mat.cols[3].y * mat.cols[1].z
+            + mat.cols[0].y * mat.cols[1].x * mat.cols[3].z
+            - mat.cols[0].y * mat.cols[3].x * mat.cols[1].z
+            - mat.cols[0].z * mat.cols[1].x * mat.cols[3].y
+            + mat.cols[0].z * mat.cols[3].x * mat.cols[1].y;
+
+        inv.cols[3].w = mat.cols[0].x * mat.cols[1].y * mat.cols[2].z
+            - mat.cols[0].x * mat.cols[2].y * mat.cols[1].z
+            - mat.cols[0].y * mat.cols[1].x * mat.cols[2].z
+            + mat.cols[0].y * mat.cols[2].x * mat.cols[1].z
+            + mat.cols[0].z * mat.cols[1].x * mat.cols[2].y
+            - mat.cols[0].z * mat.cols[2].x * mat.cols[1].y;
+
+        let mut det = mat.cols[0].x * inv.cols[0].x
+            + mat.cols[1].x * inv.cols[0].y
+            + mat.cols[2].x * inv.cols[0].z
+            + mat.cols[3].x * inv.cols[0].w;
+
+        if math::equal_epsilon_f32(det, 0.0, math::EPSILON_F32_6) {
+            return None;
+        }
+
+        det = 1.0 / det;
+        return Some(inv * det);
     }
 
     pub fn equal_epsilon(lhs: &Mat4, rhs: &Mat4, epsilon: f32) -> bool {
@@ -755,5 +883,52 @@ mod test {
             0.5, 1.0, 0.5, 2.0, 0.5, 1.5, 2.0, 6.05, 0.5, 11.5, 7.0, 6.05, 1.7, 1.15, 2.2, 2.7,
         );
         assert!(Mat4::equal_epsilon(&result, &expected, math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_inverse_generic() {
+        let result = Mat4::inverse(&Mat4::from_vec4s(
+            &vec4::Vec4::new(1.0, 2.0, 3.0, 4.0),
+            &vec4::Vec4::new(0.0, 1.0, 2.0, 1.0),
+            &vec4::Vec4::new(0.3, 4.2, 1.2, 1.0),
+            &vec4::Vec4::new(0.2, 1.0, 3.0, 4.0),
+        )).unwrap();
+        assert!(Mat4::equal_epsilon(&result, 
+            &Mat4::from_vec4s(
+                &vec4::Vec4::new(1.3751868, 0.1345291, -0.3736920, -1.315396), 
+                &vec4::Vec4::new(-0.1001494, -0.1076233, 0.2989536, 0.0523168), 
+                &vec4::Vec4::new(0.115097, 0.8699551, -0.1943198, -0.2840059), 
+                &vec4::Vec4::new(-0.1300448, -0.6322868, 0.0896860, 0.5156950)), 
+            math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_inverse_translate() {
+        let result = Mat4::inverse(&Mat4::from_vec4s(
+            &vec4::Vec4::new(1.4, 0.0, 0.0, 0.0),
+            &vec4::Vec4::new(0.0, 4.5, 0.0, 0.0),
+            &vec4::Vec4::new(0.0, 0.0, 2.2, 0.0),
+            &vec4::Vec4::new(2.4, 2.3, 1.0, 1.0),
+        )).unwrap();
+
+        assert!(Mat4::equal_epsilon(&result, 
+            &Mat4::from_vec4s(
+                &vec4::Vec4::new(1.0/1.4, 0.0, 0.0, 0.0), 
+                &vec4::Vec4::new(0.0, 1.0/4.5, 0.0, 0.0), 
+                &vec4::Vec4::new(0.0, 0.0, 1.0/2.2, 0.0), 
+                &vec4::Vec4::new(-1.7142856, -0.5111111, -0.4545454, 1.0)), 
+            math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_inverse_singular() {
+        let result = Mat4::inverse(&Mat4::from_vec4s(
+            &vec4::Vec4::from(0.0),
+            &vec4::Vec4::from(0.0),
+            &vec4::Vec4::from(0.0),
+            &vec4::Vec4::from(0.0),
+        ));
+
+        assert!(result.is_none());
     }
 }

@@ -62,7 +62,7 @@ impl shape::Shape for Plane {
             surface_point,
             self.normal,
             dpdu,
-            dpdv 
+            dpdv,
         ));
     }
 }
