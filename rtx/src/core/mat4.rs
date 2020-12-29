@@ -230,7 +230,7 @@ impl Mat4 {
         }
 
         det = 1.0 / det;
-        return Some(inv * det);
+        return Some(&inv * det);
     }
 
     pub fn transpose(mat: &Mat4) -> Mat4 {
@@ -262,10 +262,10 @@ impl Mat4 {
     }
 }
 
-impl ops::Add<Mat4> for Mat4 {
+impl ops::Add<&Mat4> for &Mat4 {
     type Output = Mat4;
 
-    fn add(self, rhs: Mat4) -> Mat4 {
+    fn add(self, rhs: &Mat4) -> Mat4 {
         return Mat4 {
             cols: [
                 self.cols[0] + rhs.cols[0],
@@ -277,10 +277,10 @@ impl ops::Add<Mat4> for Mat4 {
     }
 }
 
-impl ops::Sub<Mat4> for Mat4 {
+impl ops::Sub<&Mat4> for &Mat4 {
     type Output = Mat4;
 
-    fn sub(self, rhs: Mat4) -> Mat4 {
+    fn sub(self, rhs: &Mat4) -> Mat4 {
         return Mat4 {
             cols: [
                 self.cols[0] - rhs.cols[0],
@@ -292,10 +292,10 @@ impl ops::Sub<Mat4> for Mat4 {
     }
 }
 
-impl ops::Mul<Mat4> for Mat4 {
+impl ops::Mul<&Mat4> for &Mat4 {
     type Output = Mat4;
 
-    fn mul(self, rhs: Mat4) -> Mat4 {
+    fn mul(self, rhs: &Mat4) -> Mat4 {
         let c0 = self.cols[0] * rhs.cols[0].x
             + self.cols[1] * rhs.cols[0].y
             + self.cols[2] * rhs.cols[0].z
@@ -318,10 +318,10 @@ impl ops::Mul<Mat4> for Mat4 {
     }
 }
 
-impl ops::Mul<vec4::Vec4> for Mat4 {
+impl ops::Mul<&vec4::Vec4> for &Mat4 {
     type Output = vec4::Vec4;
 
-    fn mul(self, rhs: vec4::Vec4) -> vec4::Vec4 {
+    fn mul(self, rhs: &vec4::Vec4) -> vec4::Vec4 {
         return self.cols[0] * rhs.x
             + self.cols[1] * rhs.y
             + self.cols[2] * rhs.z
@@ -329,10 +329,10 @@ impl ops::Mul<vec4::Vec4> for Mat4 {
     }
 }
 
-impl ops::Mul<Mat4> for vec4::Vec4 {
+impl ops::Mul<&Mat4> for &vec4::Vec4 {
     type Output = vec4::Vec4;
 
-    fn mul(self, rhs: Mat4) -> vec4::Vec4 {
+    fn mul(self, rhs: &Mat4) -> vec4::Vec4 {
         return vec4::Vec4::new(
             vec4::Vec4::dot(&self, &rhs.cols[0]),
             vec4::Vec4::dot(&self, &rhs.cols[1]),
@@ -342,7 +342,7 @@ impl ops::Mul<Mat4> for vec4::Vec4 {
     }
 }
 
-impl ops::Mul<f32> for Mat4 {
+impl ops::Mul<f32> for &Mat4 {
     type Output = Mat4;
 
     fn mul(self, rhs: f32) -> Mat4 {
@@ -357,15 +357,15 @@ impl ops::Mul<f32> for Mat4 {
     }
 }
 
-impl ops::Mul<Mat4> for f32 {
+impl ops::Mul<&Mat4> for f32 {
     type Output = Mat4;
 
-    fn mul(self, rhs: Mat4) -> Mat4 {
+    fn mul(self, rhs: &Mat4) -> Mat4 {
         return rhs * self;
     }
 }
 
-impl ops::Div<f32> for Mat4 {
+impl ops::Div<f32> for &Mat4 {
     type Output = Mat4;
 
     fn div(self, rhs: f32) -> Mat4 {
@@ -380,33 +380,33 @@ impl ops::Div<f32> for Mat4 {
     }
 }
 
-impl ops::AddAssign<Mat4> for Mat4 {
-    fn add_assign(&mut self, rhs: Mat4) {
-        *self = *self + rhs;
+impl ops::AddAssign<&Mat4> for Mat4 {
+    fn add_assign(&mut self, rhs: &Mat4) {
+        *self = self as &Mat4 + rhs;
     }
 }
 
-impl ops::SubAssign<Mat4> for Mat4 {
-    fn sub_assign(&mut self, rhs: Mat4) {
-        *self = *self - rhs;
+impl ops::SubAssign<&Mat4> for Mat4 {
+    fn sub_assign(&mut self, rhs: &Mat4) {
+        *self = self as &Mat4 - rhs;
     }
 }
 
-impl ops::MulAssign<Mat4> for Mat4 {
-    fn mul_assign(&mut self, rhs: Mat4) {
-        *self = *self * rhs;
+impl ops::MulAssign<&Mat4> for Mat4 {
+    fn mul_assign(&mut self, rhs: &Mat4) {
+        *self = self as &Mat4 * rhs;
     }
 }
 
 impl ops::MulAssign<f32> for Mat4 {
     fn mul_assign(&mut self, rhs: f32) {
-        *self = *self * rhs;
+        *self = self as &Mat4 * rhs;
     }
 }
 
 impl ops::DivAssign<f32> for Mat4 {
     fn div_assign(&mut self, rhs: f32) {
-        *self = *self / rhs;
+        *self = self as &Mat4 / rhs;
     }
 }
 
@@ -709,7 +709,7 @@ mod test {
         let rhs = Mat4::from_scalars(
             1.0, 2.0, 1.0, 4.0, 1.0, 3.0, 4.0, 12.1, 1.0, 23.0, 14.0, 12.1, 3.4, 2.3, 4.4, 5.4,
         );
-        let result = lhs + rhs;
+        let result = &lhs + &rhs;
         let expected = Mat4::from_scalars(
             2.0, 2.0, 1.0, 4.0, 1.0, 4.0, 4.0, 12.1, 1.0, 23.0, 15.0, 12.1, 3.4, 2.3, 4.4, 6.4,
         );
@@ -722,7 +722,7 @@ mod test {
             1.0, 2.0, 1.0, 4.0, 1.0, 3.0, 4.0, 12.1, 1.0, 23.0, 14.0, 12.1, 3.4, 2.3, 4.4, 5.4,
         );
         let rhs = Mat4::new();
-        let result = lhs - rhs;
+        let result = &lhs - &rhs;
         let expected = Mat4::from_scalars(
             0.0, 2.0, 1.0, 4.0, 1.0, 2.0, 4.0, 12.1, 1.0, 23.0, 13.0, 12.1, 3.4, 2.3, 4.4, 4.4,
         );
@@ -743,7 +743,7 @@ mod test {
         let mut rhs = Mat4::new();
         rhs = Mat4::rotate(&rhs, angle, &axis);
 
-        let result = lhs * rhs;
+        let result = &lhs * &rhs;
         let expected_col0 = vec4::Vec4::new(2.2865663, 2.7071072, 3.7740947, 4.1525917);
         let expected_col1 = vec4::Vec4::new(0.5124718, 1.7320506, 2.0856041, -0.1946352);
         let expected_col2 = vec4::Vec4::new(0.713434, 1.2928932, 3.225906, 0.8474088);
@@ -763,7 +763,7 @@ mod test {
         let rhs = Mat4::from_scalars(
             1.0, 2.0, 1.0, 4.0, 1.0, 3.0, 4.0, 12.1, 1.0, 23.0, 14.0, 12.1, 3.4, 2.3, 4.4, 5.4,
         );
-        let result = lhs * rhs;
+        let result = &lhs * &rhs;
         let expected = vec4::Vec4::new(10.6, 26.9, 70.9, 25.74);
         assert!(vec4::Vec4::equal_epsilon(
             &result,
@@ -778,7 +778,7 @@ mod test {
             1.0, 2.0, 1.0, 4.0, 1.0, 3.0, 4.0, 12.1, 1.0, 23.0, 14.0, 12.1, 3.4, 2.3, 4.4, 5.4,
         );
         let rhs = vec4::Vec4::new(2.2, 1.0, 2.4, 1.0);
-        let result = lhs * rhs;
+        let result = &lhs * &rhs;
         let expected = vec4::Vec4::new(9.0, 64.9, 44.2, 55.34);
         assert!(vec4::Vec4::equal_epsilon(
             &result,
@@ -793,7 +793,7 @@ mod test {
         let rhs = Mat4::from_scalars(
             1.0, 2.0, 1.0, 4.0, 1.0, 3.0, 4.0, 12.1, 1.0, 23.0, 14.0, 12.1, 3.4, 2.3, 4.4, 5.4,
         );
-        let result = lhs * rhs;
+        let result = lhs * &rhs;
         let expected = Mat4::from_scalars(
             2.0, 4.0, 2.0, 8.0, 2.0, 6.0, 8.0, 24.2, 2.0, 46.0, 28.0, 24.2, 6.8, 4.6, 8.8, 10.8,
         );
@@ -806,7 +806,7 @@ mod test {
             1.0, 2.0, 1.0, 4.0, 1.0, 3.0, 4.0, 12.1, 1.0, 23.0, 14.0, 12.1, 3.4, 2.3, 4.4, 5.4,
         );
         let rhs = 2.0;
-        let result = lhs * rhs;
+        let result = &lhs * rhs;
         let expected = Mat4::from_scalars(
             2.0, 4.0, 2.0, 8.0, 2.0, 6.0, 8.0, 24.2, 2.0, 46.0, 28.0, 24.2, 6.8, 4.6, 8.8, 10.8,
         );
@@ -819,7 +819,7 @@ mod test {
             1.0, 2.0, 1.0, 4.0, 1.0, 3.0, 4.0, 12.1, 1.0, 23.0, 14.0, 12.1, 3.4, 2.3, 4.4, 5.4,
         );
         let rhs = 2.0;
-        let result = lhs / rhs;
+        let result = &lhs / rhs;
         let expected = Mat4::from_scalars(
             0.5, 1.0, 0.5, 2.0, 0.5, 1.5, 2.0, 6.05, 0.5, 11.5, 7.0, 6.05, 1.7, 1.15, 2.2, 2.7,
         );
@@ -832,7 +832,7 @@ mod test {
         let rhs = Mat4::from_scalars(
             1.0, 2.0, 1.0, 4.0, 1.0, 3.0, 4.0, 12.1, 1.0, 23.0, 14.0, 12.1, 3.4, 2.3, 4.4, 5.4,
         );
-        result += rhs;
+        result += &rhs;
         let expected = Mat4::from_scalars(
             2.0, 2.0, 1.0, 4.0, 1.0, 4.0, 4.0, 12.1, 1.0, 23.0, 15.0, 12.1, 3.4, 2.3, 4.4, 6.4,
         );
@@ -845,7 +845,7 @@ mod test {
             1.0, 2.0, 1.0, 4.0, 1.0, 3.0, 4.0, 12.1, 1.0, 23.0, 14.0, 12.1, 3.4, 2.3, 4.4, 5.4,
         );
         let rhs = Mat4::new();
-        result -= rhs;
+        result -= &rhs;
         let expected = Mat4::from_scalars(
             0.0, 2.0, 1.0, 4.0, 1.0, 2.0, 4.0, 12.1, 1.0, 23.0, 13.0, 12.1, 3.4, 2.3, 4.4, 4.4,
         );
@@ -866,7 +866,7 @@ mod test {
         let mut rhs = Mat4::new();
         rhs = Mat4::rotate(&rhs, angle, &axis);
 
-        result *= rhs;
+        result *= &rhs;
         let expected_col0 = vec4::Vec4::new(2.2865663, 2.7071072, 3.7740947, 4.1525917);
         let expected_col1 = vec4::Vec4::new(0.5124718, 1.7320506, 2.0856041, -0.1946352);
         let expected_col2 = vec4::Vec4::new(0.713434, 1.2928932, 3.225906, 0.8474088);
