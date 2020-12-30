@@ -2,7 +2,7 @@ use crate::core::image;
 use crate::core::math;
 use crate::core::vec3;
 use crate::scene::camera;
-use crate::scene::material;
+use crate::scene::reflectance;
 use crate::scene::ray;
 use crate::scene::world;
 
@@ -43,7 +43,7 @@ fn ray_trace(
 
         // add reflection or refraction
         if depth <= max_depth {
-            if surface_material.has_types(material::MaterialType::Reflection as u32) {
+            if surface_material.has_types(reflectance::ReflectanceType::Reflection as u32) {
                 let mut wi = vec3::Vec3::from(0.0);
                 let brdf = surface_material.sample_brdf(&normal, &wo, &mut wi);
                 if !vec3::Vec3::equal_epsilon(&brdf, &vec3::Vec3::from(0.0), math::EPSILON_F32_6) {
@@ -54,7 +54,7 @@ fn ray_trace(
                 }
             }
 
-            if surface_material.has_types(material::MaterialType::Refraction as u32) {
+            if surface_material.has_types(reflectance::ReflectanceType::Refraction as u32) {
                 let mut wi = vec3::Vec3::from(0.0);
                 let brdf = surface_material.sample_brdf(&normal, &wo, &mut wi);
                 if !vec3::Vec3::equal_epsilon(&brdf, &vec3::Vec3::from(0.0), math::EPSILON_F32_6) {

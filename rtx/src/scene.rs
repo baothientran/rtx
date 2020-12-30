@@ -2,7 +2,7 @@ pub mod aabb;
 pub mod camera;
 pub mod fresnel;
 pub mod light;
-pub mod material;
+pub mod reflectance;
 pub mod ray;
 pub mod renderable;
 pub mod shape;
