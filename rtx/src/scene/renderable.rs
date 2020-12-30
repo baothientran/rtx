@@ -6,15 +6,15 @@ use crate::scene::shape;
 use std::rc;
 
 pub struct RenderableSurface<'a> {
-    shape_surface: shape::ShapeSurface,
+    shape_surface: shape::ShapeSurface<'a>,
     material: &'a dyn material::Material,
 }
 
-impl RenderableSurface<'_> {
+impl<'a> RenderableSurface<'a> {
     pub fn new(
-        shape_surface: shape::ShapeSurface,
-        material: &dyn material::Material,
-    ) -> RenderableSurface {
+        shape_surface: shape::ShapeSurface<'a>,
+        material: &'a dyn material::Material,
+    ) -> RenderableSurface<'a> {
         return RenderableSurface {
             shape_surface,
             material,

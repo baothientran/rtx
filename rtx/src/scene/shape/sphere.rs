@@ -1,3 +1,4 @@
+use crate::core::mat4;
 use crate::core::math;
 use crate::core::vec3;
 use crate::scene::ray;
@@ -5,35 +6,37 @@ use crate::scene::shape;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Sphere {
-    center: vec3::Vec3,
     radius: f32,
+    object_to_world: mat4::Mat4,
+    world_to_object: mat4::Mat4,
+    normal_transform: mat4::Mat4,
 }
 
 impl Sphere {
-    pub fn new(center: vec3::Vec3, radius: f32) -> Sphere {
-        return Sphere { center, radius };
-    }
-
-    pub fn center(&self) -> &vec3::Vec3 {
-        return &self.center;
-    }
-
-    pub fn radius(&self) -> f32 {
-        return self.radius;
+    pub fn new(object_to_world: mat4::Mat4, radius: f32) -> Sphere {
+        let world_to_object = mat4::Mat4::inverse(&object_to_world).unwrap();
+        let normal_transform =
+            mat4::Mat4::inverse(&mat4::Mat4::transpose(&object_to_world)).unwrap();
+        return Sphere {
+            radius,
+            object_to_world,
+            world_to_object,
+            normal_transform,
+        };
     }
 }
 
 impl shape::Shape for Sphere {
     fn is_intersect(&self, ray: &ray::Ray, max_distance: f32) -> bool {
-        let center = self.center;
+        let local_ray = ray::Ray::transform(ray, &self.world_to_object);
         let radius = self.radius;
         let radius_sq = radius * radius;
 
-        let oc = center - ray.origin();
+        let oc = -local_ray.origin();
         let oc_length_sq = vec3::Vec3::length_sq(&oc);
         let origin_outside = oc_length_sq >= radius_sq;
 
-        let tca = vec3::Vec3::dot(&oc, ray.direction());
+        let tca = vec3::Vec3::dot(&oc, local_ray.direction());
         if tca < 0.0 && origin_outside {
             return false;
         }
@@ -54,15 +57,15 @@ impl shape::Shape for Sphere {
     }
 
     fn intersect_ray(&self, ray: &ray::Ray) -> Option<shape::ShapeSurface> {
-        let center = self.center;
+        let local_ray = ray::Ray::transform(ray, &self.world_to_object);
         let radius = self.radius;
         let radius_sq = radius * radius;
 
-        let oc = center - *ray.origin();
+        let oc = -local_ray.origin();
         let oc_length_sq = vec3::Vec3::length_sq(&oc);
         let origin_outside = oc_length_sq >= radius_sq;
 
-        let tca = vec3::Vec3::dot(&oc, ray.direction());
+        let tca = vec3::Vec3::dot(&oc, local_ray.direction());
         if tca < 0.0 && origin_outside {
             return None;
         }
@@ -80,38 +83,35 @@ impl shape::Shape for Sphere {
         }
 
         // calculate position and normal
-        let position = ray.calc_position(t);
-        let mut normal = position - self.center;
-        normal = vec3::Vec3::normalize(&normal).unwrap();
+        let local_position = local_ray.calc_position(t);
+        let local_normal = vec3::Vec3::normalize(&local_position).unwrap();
 
         // calculate dpdu and dpdv
         let two_pi = math::PI_F32 * 2.0;
-        let theta = f32::acos(math::clamp(
-            (position.y - center.y) / self.radius,
-            -1.0,
-            1.0,
-        ));
+        let theta = f32::acos(math::clamp(local_position.y / self.radius, -1.0, 1.0));
 
         let inv_y_radius = 1.0
-            / f32::sqrt(
-                (position.x - center.x) * (position.x - center.x)
-                    + (position.z - center.z) * (position.z - center.z),
-            );
-        let sin_phi = (position.z - center.z) * inv_y_radius;
-        let cos_phi = (position.x - center.x) * inv_y_radius;
-        let dpdu = vec3::Vec3::new(
-            -two_pi * (position.z - center.z),
-            0.0,
-            two_pi * (position.x - center.x),
-        );
-        let dpdv = math::PI_F32
+            / f32::sqrt(local_position.x * local_position.x + local_position.z * local_position.z);
+        let sin_phi = local_position.z * inv_y_radius;
+        let cos_phi = local_position.x * inv_y_radius;
+        let local_dpdu =
+            vec3::Vec3::new(-two_pi * local_position.z, 0.0, two_pi * local_position.x);
+        let local_dpdv = math::PI_F32
             * vec3::Vec3::new(
-                (position.y - center.y) * cos_phi,
+                local_position.y * cos_phi,
                 -self.radius * f32::sin(theta),
-                (position.y - center.y) * sin_phi,
+                local_position.y * sin_phi,
             );
 
-        return Some(shape::ShapeSurface::new(t, position, normal, dpdu, dpdv));
+        return Some(shape::ShapeSurface::new(
+            t,
+            local_position,
+            local_normal,
+            local_dpdu,
+            local_dpdv,
+            &self.object_to_world,
+            &self.normal_transform,
+        ));
     }
 }
 
@@ -122,25 +122,16 @@ mod test {
     use crate::scene::shape::Shape;
 
     #[test]
-    fn test_create_sphere() {
-        let sphere = Sphere::new(vec3::Vec3::new(1.0, 2.0, 3.0), 32.0);
-        let center = sphere.center();
-        let radius = sphere.radius();
-        assert!(math::equal_epsilon_f32(center.x, 1.0, math::EPSILON_F32_5));
-        assert!(math::equal_epsilon_f32(center.y, 2.0, math::EPSILON_F32_5));
-        assert!(math::equal_epsilon_f32(center.z, 3.0, math::EPSILON_F32_5));
-        assert!(math::equal_epsilon_f32(radius, 32.0, math::EPSILON_F32_5));
-    }
-
-    #[test]
     fn test_intersect_ray_not_intersect() {
         let ray = ray::Ray::new(
             vec3::Vec3::new(0.0, 1.0, 20.0),
             vec3::Vec3::new(0.0, 12.0, 0.0),
         );
 
-        let sphere = Sphere::new(vec3::Vec3::from(1.0), 4.0);
-        assert!(vec3::Vec3::distance(ray.origin(), sphere.center()) > sphere.radius());
+        let center = vec3::Vec3::from(1.0);
+        let radius = 4.0;
+        let sphere = Sphere::new(mat4::Mat4::translate(&mat4::Mat4::new(), &center), radius);
+        assert!(vec3::Vec3::distance(ray.origin(), &center) > radius);
 
         let intersect = sphere.intersect_ray(&ray);
         assert!(intersect.is_none());
@@ -153,30 +144,32 @@ mod test {
             vec3::Vec3::new(0.0, 0.0, -1.0),
         );
 
-        let sphere = Sphere::new(vec3::Vec3::from(1.0), 2.0);
-        assert!(vec3::Vec3::distance(ray.origin(), &sphere.center) > sphere.radius);
+        let center = vec3::Vec3::from(1.0);
+        let radius = 2.0;
+        let sphere = Sphere::new(mat4::Mat4::translate(&mat4::Mat4::new(), &center), radius);
+        assert!(vec3::Vec3::distance(ray.origin(), &center) > sphere.radius);
 
         match sphere.intersect_ray(&ray) {
             Some(shape_surface) => {
                 // verify the position is on the sphere
                 let intersect_pos = ray.calc_position(shape_surface.ray_time());
                 assert!(math::equal_epsilon_f32(
-                    shape_surface.position().x,
+                    shape_surface.calc_world_position().x,
                     intersect_pos.x,
                     math::EPSILON_F32_5
                 ));
                 assert!(math::equal_epsilon_f32(
-                    shape_surface.position().y,
+                    shape_surface.calc_world_position().y,
                     intersect_pos.y,
                     math::EPSILON_F32_5
                 ));
                 assert!(math::equal_epsilon_f32(
-                    shape_surface.position().z,
+                    shape_surface.calc_world_position().z,
                     intersect_pos.z,
                     math::EPSILON_F32_5
                 ));
 
-                let distance = vec3::Vec3::distance(&sphere.center, &shape_surface.position());
+                let distance = vec3::Vec3::distance(&center, &shape_surface.calc_world_position());
                 assert!(math::equal_epsilon_f32(
                     distance,
                     sphere.radius,
@@ -184,15 +177,15 @@ mod test {
                 ));
 
                 // make sure the normal points out
-                let mut direction = *shape_surface.position() - sphere.center;
+                let mut direction = shape_surface.calc_world_position() - center;
                 direction = vec3::Vec3::normalize(&direction).unwrap();
                 assert!(math::equal_epsilon_f32(
-                    vec3::Vec3::length(shape_surface.normal()),
+                    vec3::Vec3::length(&shape_surface.calc_world_normal()),
                     1.0,
                     math::EPSILON_F32_5
                 ));
                 assert!(math::equal_epsilon_f32(
-                    vec3::Vec3::dot(shape_surface.normal(), &direction),
+                    vec3::Vec3::dot(&shape_surface.calc_world_normal(), &direction),
                     1.0,
                     math::EPSILON_F32_5
                 ));
@@ -210,30 +203,32 @@ mod test {
             vec3::Vec3::new(0.0, 0.0, -1.0),
         );
 
-        let sphere = Sphere::new(vec3::Vec3::from(1.0), 4.0);
-        assert!(vec3::Vec3::distance(ray.origin(), &sphere.center) < sphere.radius);
+        let center = vec3::Vec3::from(1.0);
+        let radius = 4.0;
+        let sphere = Sphere::new(mat4::Mat4::translate(&mat4::Mat4::new(), &center), radius);
+        assert!(vec3::Vec3::distance(ray.origin(), &center) < sphere.radius);
 
         match sphere.intersect_ray(&ray) {
             Some(shape_surface) => {
                 // verify the position is on the sphere
                 let intersect_pos = ray.calc_position(shape_surface.ray_time());
                 assert!(math::equal_epsilon_f32(
-                    shape_surface.position().x,
+                    shape_surface.calc_world_position().x,
                     intersect_pos.x,
                     math::EPSILON_F32_5
                 ));
                 assert!(math::equal_epsilon_f32(
-                    shape_surface.position().y,
+                    shape_surface.calc_world_position().y,
                     intersect_pos.y,
                     math::EPSILON_F32_5
                 ));
                 assert!(math::equal_epsilon_f32(
-                    shape_surface.position().z,
+                    shape_surface.calc_world_position().z,
                     intersect_pos.z,
                     math::EPSILON_F32_5
                 ));
 
-                let distance = vec3::Vec3::distance(&sphere.center, &shape_surface.position());
+                let distance = vec3::Vec3::distance(&center, &shape_surface.calc_world_position());
                 assert!(math::equal_epsilon_f32(
                     distance,
                     sphere.radius,
@@ -241,15 +236,15 @@ mod test {
                 ));
 
                 // make sure the normal points outside
-                let mut direction = *shape_surface.position() - sphere.center;
+                let mut direction = shape_surface.calc_world_position() - center;
                 direction = vec3::Vec3::normalize(&direction).unwrap();
                 assert!(math::equal_epsilon_f32(
-                    vec3::Vec3::length(shape_surface.normal()),
+                    vec3::Vec3::length(&shape_surface.calc_world_normal()),
                     1.0,
                     math::EPSILON_F32_5
                 ));
                 assert!(math::equal_epsilon_f32(
-                    vec3::Vec3::dot(shape_surface.normal(), &direction),
+                    vec3::Vec3::dot(&shape_surface.calc_world_normal(), &direction),
                     1.0,
                     math::EPSILON_F32_5
                 ));

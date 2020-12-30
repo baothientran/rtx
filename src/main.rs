@@ -1,4 +1,4 @@
-use rtx::core::{image, math, vec3};
+use rtx::core::{image, mat4, math, vec3};
 use rtx::exporter::ppm;
 use rtx::scene::camera::perspective_camera;
 use rtx::scene::fresnel::dielectrics;
@@ -15,23 +15,24 @@ fn main() {
 
     // setup scene
     let plane = rc::Rc::new(shape::plane::Plane::new(
+        mat4::Mat4::new(),
         vec3::Vec3::new(0.0, 1.0, 0.0),
         0.2,
     ));
     let sphere_left = rc::Rc::new(shape::sphere::Sphere::new(
-        vec3::Vec3::new(-0.4, 0.0, 0.0),
+        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(-0.4, 0.0, 0.0)),
         0.2,
     ));
     let sphere_behind = rc::Rc::new(shape::sphere::Sphere::new(
-        vec3::Vec3::new(0.0, 0.0, -0.4),
+        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 0.0, -0.4)),
         0.2,
     ));
     let sphere_center = rc::Rc::new(shape::sphere::Sphere::new(
-        vec3::Vec3::new(0.0, 0.0, 0.0),
+        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 0.0, 0.0)),
         0.2,
     ));
     let sphere_right = rc::Rc::new(shape::sphere::Sphere::new(
-        vec3::Vec3::new(0.4, 0.0, 0.0),
+        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.4, 0.0, 0.0)),
         0.2,
     ));
     let mirror = rc::Rc::new(reflection::Reflection::new(
