@@ -23,23 +23,25 @@ impl Refraction {
 
 impl reflectance::Reflectance for Refraction {
     fn has_types(&self, flags: u32) -> bool {
-        return reflectance::ReflectanceType::contain(reflectance::ReflectanceType::Refraction as u32, flags);
+        return reflectance::ReflectanceType::contain(
+            reflectance::ReflectanceType::Refraction as u32,
+            flags,
+        );
     }
 
     fn brdf(
         &self,
-        _normal: &crate::core::vec3::Vec3,
-        _wo: &crate::core::vec3::Vec3,
-        _wi: &crate::core::vec3::Vec3,
+        _shading_wo: &crate::core::vec3::Vec3,
+        _shading_wi: &crate::core::vec3::Vec3,
     ) -> vec3::Vec3 {
         return vec3::Vec3::from(0.0);
     }
 
-    fn sample_brdf(&self, normal: &vec3::Vec3, wo: &vec3::Vec3, wi: &mut vec3::Vec3) -> vec3::Vec3 {
-        let mut cos_normal_wo = vec3::Vec3::dot(normal, wo);
-        let mut n = *normal;
+    fn sample_brdf(&self, shading_wo: &vec3::Vec3, shading_wi: &mut vec3::Vec3) -> vec3::Vec3 {
+        let mut cos_normal_wo = shading_wo.z;
         let eta_i;
         let eta_t;
+        let mut n = vec3::Vec3::new(0.0, 0.0, 1.0);
         if cos_normal_wo > 0.0 {
             eta_i = self.eta_i;
             eta_t = self.eta_t;
@@ -59,10 +61,10 @@ impl reflectance::Reflectance for Refraction {
             return vec3::Vec3::from(0.0);
         }
 
-        *wi = r * (-wo) + (r * cos_normal_wo - f32::sqrt(cos_normal_wi_sq)) * n;
+        *shading_wi = r * (-shading_wo) + (r * cos_normal_wo - f32::sqrt(cos_normal_wi_sq)) * n;
 
         // calculate brdf of refraction
-        let cos_normal_wi = vec3::Vec3::dot(normal, wi);
+        let cos_normal_wi = shading_wi.z;
         r *= r;
         return r * (vec3::Vec3::from(1.0) - self.fresnel.evaluate(cos_normal_wi)) * self.kt
             / f32::abs(cos_normal_wi);

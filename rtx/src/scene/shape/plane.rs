@@ -76,19 +76,16 @@ impl shape::Shape for Plane {
 #[cfg(test)]
 mod test {
     use super::*;
-    use crate::scene::shape::Shape;
     use crate::core::vec4;
+    use crate::scene::shape::Shape;
 
     #[test]
     fn test_intersect_ray_away() {
-        let object_to_world = mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 1.0, 1.0));
-        let normal = vec3::Vec3::new(0.0, 1.0, 0.0); 
+        let object_to_world =
+            mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 1.0, 1.0));
+        let normal = vec3::Vec3::new(0.0, 1.0, 0.0);
         let distance = 0.2;
-        let plane = Plane::new(
-            object_to_world,
-            normal,
-            distance,
-        );
+        let plane = Plane::new(object_to_world, normal, distance);
 
         let ray_origin = vec3::Vec3::new(0.0, -4.0, 1.0);
         let mut ray_direction = vec3::Vec3::new(0.0, 1.0, 1.0);
@@ -102,10 +99,13 @@ mod test {
                 assert!(false);
             }
             Some(shape_surface) => {
-                let transform_plane = mat4::Mat4::inverse(&mat4::Mat4::transpose(&object_to_world)).unwrap() * vec4::Vec4::from_vec3(&normal, distance); 
-                let plane_func =
-                    vec3::Vec3::dot(&shape_surface.calc_world_position(), &shape_surface.calc_world_normal())
-                        + transform_plane.w;
+                let transform_plane = mat4::Mat4::inverse(&mat4::Mat4::transpose(&object_to_world))
+                    .unwrap()
+                    * vec4::Vec4::from_vec3(&normal, distance);
+                let plane_func = vec3::Vec3::dot(
+                    &shape_surface.calc_world_position(),
+                    &shape_surface.calc_world_normal(),
+                ) + transform_plane.w;
                 assert!(math::equal_epsilon_f32(
                     plane_func,
                     0.0,
@@ -133,14 +133,11 @@ mod test {
 
     #[test]
     fn test_intersect_ray_toward() {
-        let object_to_world = mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 1.0, 1.0));
-        let normal = vec3::Vec3::new(0.0, 1.0, 0.0); 
+        let object_to_world =
+            mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 1.0, 1.0));
+        let normal = vec3::Vec3::new(0.0, 1.0, 0.0);
         let distance = 0.2;
-        let plane = Plane::new(
-            object_to_world,
-            normal,
-            distance,
-        );
+        let plane = Plane::new(object_to_world, normal, distance);
 
         let ray_origin = vec3::Vec3::new(1.0, 1.0, 1.0);
         let mut ray_direction = vec3::Vec3::from(0.0) - ray_origin;
@@ -154,10 +151,13 @@ mod test {
                 assert!(false);
             }
             Some(shape_surface) => {
-                let transform_plane = mat4::Mat4::inverse(&mat4::Mat4::transpose(&object_to_world)).unwrap() * vec4::Vec4::from_vec3(&normal, distance); 
-                let plane_func =
-                    vec3::Vec3::dot(&shape_surface.calc_world_position(), &shape_surface.calc_world_normal())
-                        + transform_plane.w;
+                let transform_plane = mat4::Mat4::inverse(&mat4::Mat4::transpose(&object_to_world))
+                    .unwrap()
+                    * vec4::Vec4::from_vec3(&normal, distance);
+                let plane_func = vec3::Vec3::dot(
+                    &shape_surface.calc_world_position(),
+                    &shape_surface.calc_world_normal(),
+                ) + transform_plane.w;
                 assert!(math::equal_epsilon_f32(
                     plane_func,
                     0.0,

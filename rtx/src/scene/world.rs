@@ -1,5 +1,5 @@
 use crate::scene::light;
-use crate::scene::reflectance;
+use crate::scene::material;
 use crate::scene::ray;
 use crate::scene::renderable;
 use crate::scene::shape;
@@ -22,7 +22,7 @@ impl World {
     pub fn add_shape(
         &mut self,
         shape: rc::Rc<dyn shape::Shape>,
-        material: rc::Rc<dyn reflectance::Reflectance>,
+        material: rc::Rc<dyn material::Material>,
     ) {
         self.renderables
             .push(renderable::Renderable::new(shape, material));

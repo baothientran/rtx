@@ -19,20 +19,16 @@ impl OrenNayar {
 
 impl reflectance::Reflectance for OrenNayar {
     fn has_types(&self, flags: u32) -> bool {
-        return reflectance::ReflectanceType::contain(reflectance::ReflectanceType::Microfacet as u32, flags);
+        return reflectance::ReflectanceType::contain(
+            reflectance::ReflectanceType::Microfacet as u32,
+            flags,
+        );
     }
 
-    fn brdf(&self, normal: &vec3::Vec3, wo: &vec3::Vec3, wi: &vec3::Vec3) -> vec3::Vec3 {
-        // determine if wo enters or leaves surface
-        let mut n = *normal;
-        let mut cos_wo_normal = vec3::Vec3::dot(normal, wo);
-        if cos_wo_normal < 0.0 {
-            cos_wo_normal = -cos_wo_normal;
-            n = -n;
-        }
-
+    fn brdf(&self, shading_wo: &vec3::Vec3, shading_wi: &vec3::Vec3) -> vec3::Vec3 {
         // calc sin(alpha) and tan(beta)
-        let cos_wi_normal = vec3::Vec3::dot(&n, wi);
+        let cos_wo_normal = f32::abs(shading_wo.z);
+        let cos_wi_normal = f32::abs(shading_wi.z);
         let sin_alpha;
         let tan_beta;
         if cos_wo_normal > cos_wi_normal {
@@ -52,7 +48,7 @@ impl reflectance::Reflectance for OrenNayar {
             * (self.a + self.b * f32::max(0.0, cos_phi_diff) * sin_alpha * tan_beta);
     }
 
-    fn sample_brdf(&self, normal: &vec3::Vec3, wo: &vec3::Vec3, wi: &mut vec3::Vec3) -> vec3::Vec3 {
-        return self.brdf(normal, wo, wi);
+    fn sample_brdf(&self, shading_wo: &vec3::Vec3, shading_wi: &mut vec3::Vec3) -> vec3::Vec3 {
+        return self.brdf(shading_wo, shading_wi);
     }
 }

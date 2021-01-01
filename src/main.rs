@@ -3,7 +3,7 @@ use rtx::exporter::ppm;
 use rtx::scene::camera::perspective_camera;
 use rtx::scene::fresnel::dielectrics;
 use rtx::scene::light;
-use rtx::scene::reflectance::{lambertian, reflection, refraction};
+use rtx::scene::material::matte;
 use rtx::scene::shape;
 use rtx::scene::world;
 use rtx::tracer;
@@ -35,19 +35,9 @@ fn main() {
         mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.4, 0.0, 0.0)),
         0.2,
     ));
-    let mirror = rc::Rc::new(reflection::Reflection::new(
-        vec3::Vec3::from(1.0),
-        rc::Rc::new(dielectrics::Dielectrics::new(1.0, 1.5)),
-    ));
-    let glass = rc::Rc::new(refraction::Refraction::new(
-        1.0,
-        1.05,
-        vec3::Vec3::from(1.0),
-    ));
-    let green_lambertian = rc::Rc::new(lambertian::Lambertian::new(vec3::Vec3::new(0.5, 0.8, 0.7)));
-    let purple_lambertian =
-        rc::Rc::new(lambertian::Lambertian::new(vec3::Vec3::new(0.8, 0.6, 0.7)));
-    let blue_lambertian = rc::Rc::new(lambertian::Lambertian::new(vec3::Vec3::new(0.3, 0.6, 0.7)));
+    let green_lambertian = rc::Rc::new(matte::Matte::new(vec3::Vec3::new(0.5, 0.8, 0.7)));
+    let purple_lambertian = rc::Rc::new(matte::Matte::new(vec3::Vec3::new(0.8, 0.6, 0.7)));
+    let blue_lambertian = rc::Rc::new(matte::Matte::new(vec3::Vec3::new(0.3, 0.6, 0.7)));
 
     let point_light_front = Box::new(light::point_light::PointLight::new(
         vec3::Vec3::new(0.0, 2.0, 2.0),
@@ -68,8 +58,8 @@ fn main() {
     let mut world = world::World::new();
     world.add_shape(plane, green_lambertian);
     world.add_shape(sphere_left, blue_lambertian);
-    world.add_shape(sphere_center, glass);
-    world.add_shape(sphere_behind, mirror);
+    // world.add_shape(sphere_center, glass);
+    // world.add_shape(sphere_behind, mirror);
     world.add_shape(sphere_right, purple_lambertian);
     world.add_light(point_light_front);
     world.add_light(point_light_center);

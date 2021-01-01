@@ -14,14 +14,17 @@ impl Lambertian {
 
 impl reflectance::Reflectance for Lambertian {
     fn has_types(&self, flags: u32) -> bool {
-        return reflectance::ReflectanceType::contain(reflectance::ReflectanceType::Lambertian as u32, flags);
+        return reflectance::ReflectanceType::contain(
+            reflectance::ReflectanceType::Lambertian as u32,
+            flags,
+        );
     }
 
-    fn brdf(&self, _normal: &vec3::Vec3, _wo: &vec3::Vec3, _wi: &vec3::Vec3) -> vec3::Vec3 {
+    fn brdf(&self, _wo: &vec3::Vec3, _wi: &vec3::Vec3) -> vec3::Vec3 {
         return self.kd / math::PI_F32;
     }
 
-    fn sample_brdf(&self, normal: &vec3::Vec3, wo: &vec3::Vec3, wi: &mut vec3::Vec3) -> vec3::Vec3 {
-        return self.brdf(normal, wo, wi);
+    fn sample_brdf(&self, wo: &vec3::Vec3, wi: &mut vec3::Vec3) -> vec3::Vec3 {
+        return self.brdf(wo, wi);
     }
 }

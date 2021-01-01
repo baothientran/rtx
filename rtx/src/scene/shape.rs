@@ -18,7 +18,7 @@ pub struct ShapeSurface<'a> {
 }
 
 impl<'a> ShapeSurface<'a> {
-    pub fn new (
+    pub fn new(
         ray_time: f32,
         position: vec3::Vec3,
         normal: vec3::Vec3,

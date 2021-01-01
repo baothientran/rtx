@@ -1,19 +1,19 @@
 use shape::ShapeSurface;
 
-use crate::scene::reflectance;
+use crate::scene::material;
 use crate::scene::ray;
 use crate::scene::shape;
 use std::rc;
 
 pub struct RenderableSurface<'a> {
     shape_surface: shape::ShapeSurface<'a>,
-    material: &'a dyn reflectance::Reflectance,
+    material: &'a dyn material::Material,
 }
 
 impl<'a> RenderableSurface<'a> {
     pub fn new(
         shape_surface: shape::ShapeSurface<'a>,
-        material: &'a dyn reflectance::Reflectance,
+        material: &'a dyn material::Material,
     ) -> RenderableSurface<'a> {
         return RenderableSurface {
             shape_surface,
@@ -25,20 +25,20 @@ impl<'a> RenderableSurface<'a> {
         return &self.shape_surface;
     }
 
-    pub fn material(&self) -> &dyn reflectance::Reflectance {
+    pub fn material(&self) -> &dyn material::Material {
         return self.material;
     }
 }
 
 pub struct Renderable {
     shape: rc::Rc<dyn shape::Shape>,
-    material: rc::Rc<dyn reflectance::Reflectance>,
+    material: rc::Rc<dyn material::Material>,
 }
 
 impl Renderable {
     pub fn new(
         shape: rc::Rc<dyn shape::Shape>,
-        material: rc::Rc<dyn reflectance::Reflectance>,
+        material: rc::Rc<dyn material::Material>,
     ) -> Renderable {
         return Renderable { shape, material };
     }
