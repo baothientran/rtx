@@ -1,3 +1,4 @@
+pub mod glass;
 pub mod matte;
 
 use crate::core::vec3;
