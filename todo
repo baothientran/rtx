@@ -30,7 +30,7 @@
         * path tracing
 
 - on going:
-    + need to convert world coordinate to shading coordinate or TBN matrix
+    + gamma correction
     + material:
         * microfacet: oren nayar
 
