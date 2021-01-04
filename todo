@@ -30,7 +30,6 @@
         * path tracing
 
 - on going:
-    + gamma correction
     + material:
         * microfacet: oren nayar
 
@@ -38,6 +37,7 @@
     + background image
 
     + material:
+        * gamma correction
         * lambertian 
         * reflection
 
