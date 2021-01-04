@@ -62,7 +62,7 @@ impl Vec3 {
             x: f32::powf(self.x, num),
             y: f32::powf(self.y, num),
             z: f32::powf(self.z, num),
-        }
+        };
     }
 
     pub fn powi(&self, num: i32) -> Vec3 {
@@ -70,7 +70,7 @@ impl Vec3 {
             x: f32::powi(self.x, num),
             y: f32::powi(self.y, num),
             z: f32::powi(self.z, num),
-        }
+        };
     }
 
     pub fn sqrt(&self) -> Vec3 {
