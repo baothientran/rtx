@@ -40,7 +40,7 @@ mod test {
         let v = vec3::Vec3::new(2.0, 0.3, 0.4);
         let color = Color::from_vec3(&v);
         assert_eq!(color.red, 255);
-        assert_eq!(color.blue, 76);
-        assert_eq!(color.green, 102);
+        assert_eq!(color.blue, 148);
+        assert_eq!(color.green, 168);
     }
 }
