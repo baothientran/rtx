@@ -30,9 +30,9 @@ fn main() {
         mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.4, 0.0, 0.0)),
         0.2,
     ));
-    let green_lambertian = rc::Rc::new(matte::Matte::new(vec3::Vec3::new(0.5, 0.8, 0.7)));
-    let purple_lambertian = rc::Rc::new(matte::Matte::new(vec3::Vec3::new(0.8, 0.6, 0.7)));
-    let blue_lambertian = rc::Rc::new(matte::Matte::new(vec3::Vec3::new(0.3, 0.6, 0.7)));
+    let green_matte = rc::Rc::new(matte::Matte::new(vec3::Vec3::new(0.5, 0.8, 0.7)));
+    let purple_matte = rc::Rc::new(matte::Matte::new(vec3::Vec3::new(0.8, 0.6, 0.7)));
+    let blue_matte = rc::Rc::new(matte::Matte::new(vec3::Vec3::new(0.3, 0.6, 0.7)));
     let glass = rc::Rc::new(glass::Glass::new(
         vec3::Vec3::from(0.0),
         vec3::Vec3::from(1.0),
@@ -57,10 +57,10 @@ fn main() {
     ));
 
     let mut world = world::World::new();
-    world.add_shape(plane, green_lambertian);
-    world.add_shape(sphere_left, blue_lambertian);
+    world.add_shape(plane, green_matte);
+    world.add_shape(sphere_left, blue_matte);
     world.add_shape(sphere_center, glass);
-    world.add_shape(sphere_right, purple_lambertian);
+    world.add_shape(sphere_right, purple_matte);
     world.add_light(point_light_front);
     world.add_light(point_light_center);
     world.add_light(point_light_back);
