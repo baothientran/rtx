@@ -54,21 +54,21 @@ impl Mat4 {
         };
     }
 
-    pub fn translate(mat: &Mat4, v: &vec3::Vec3) -> Mat4 {
-        let mut cols = mat.cols;
-        cols[3] = mat.cols[0] * v.x + mat.cols[1] * v.y + mat.cols[2] * v.z + mat.cols[3];
+    pub fn translate(&self, v: &vec3::Vec3) -> Mat4 {
+        let mut cols = self.cols;
+        cols[3] = self.cols[0] * v.x + self.cols[1] * v.y + self.cols[2] * v.z + self.cols[3];
         return Mat4 { cols };
     }
 
-    pub fn scale(mat: &Mat4, v: &vec3::Vec3) -> Mat4 {
-        let mut cols = mat.cols;
+    pub fn scale(&self, v: &vec3::Vec3) -> Mat4 {
+        let mut cols = self.cols;
         cols[0] *= v.x;
         cols[1] *= v.y;
         cols[2] *= v.z;
         return Mat4 { cols };
     }
 
-    pub fn rotate(mat: &Mat4, angle: f32, axis: &vec3::Vec3) -> Mat4 {
+    pub fn rotate(&self, angle: f32, axis: &vec3::Vec3) -> Mat4 {
         let cos = f32::cos(angle);
         let sin = f32::sin(angle);
         let one_minus_cos = 1.0 - cos;
@@ -98,132 +98,132 @@ impl Mat4 {
         let y2 = yz * one_minus_cos - x_sin;
         let z2 = cos + z_sq * one_minus_cos;
 
-        let mut cols = mat.cols;
-        cols[0] = mat.cols[0] * x0 + mat.cols[1] * y0 + mat.cols[2] * z0;
-        cols[1] = mat.cols[0] * x1 + mat.cols[1] * y1 + mat.cols[2] * z1;
-        cols[2] = mat.cols[0] * x2 + mat.cols[1] * y2 + mat.cols[2] * z2;
+        let mut cols = self.cols;
+        cols[0] = self.cols[0] * x0 + self.cols[1] * y0 + self.cols[2] * z0;
+        cols[1] = self.cols[0] * x1 + self.cols[1] * y1 + self.cols[2] * z1;
+        cols[2] = self.cols[0] * x2 + self.cols[1] * y2 + self.cols[2] * z2;
 
         return Mat4 { cols };
     }
 
-    pub fn inverse(mat: &Mat4) -> Option<Mat4> {
+    pub fn inverse(&self) -> Option<Mat4> {
         let mut inv = Mat4::new();
-        inv.cols[0].x = mat.cols[1].y * mat.cols[2].z * mat.cols[3].w
-            - mat.cols[1].y * mat.cols[3].z * mat.cols[2].w
-            - mat.cols[1].z * mat.cols[2].y * mat.cols[3].w
-            + mat.cols[1].z * mat.cols[3].y * mat.cols[2].w
-            + mat.cols[1].w * mat.cols[2].y * mat.cols[3].z
-            - mat.cols[1].w * mat.cols[3].y * mat.cols[2].z;
+        inv.cols[0].x = self.cols[1].y * self.cols[2].z * self.cols[3].w
+            - self.cols[1].y * self.cols[3].z * self.cols[2].w
+            - self.cols[1].z * self.cols[2].y * self.cols[3].w
+            + self.cols[1].z * self.cols[3].y * self.cols[2].w
+            + self.cols[1].w * self.cols[2].y * self.cols[3].z
+            - self.cols[1].w * self.cols[3].y * self.cols[2].z;
 
-        inv.cols[0].y = -mat.cols[0].y * mat.cols[2].z * mat.cols[3].w
-            + mat.cols[0].y * mat.cols[3].z * mat.cols[2].w
-            + mat.cols[0].z * mat.cols[2].y * mat.cols[3].w
-            - mat.cols[0].z * mat.cols[3].y * mat.cols[2].w
-            - mat.cols[0].w * mat.cols[2].y * mat.cols[3].z
-            + mat.cols[0].w * mat.cols[3].y * mat.cols[2].z;
+        inv.cols[0].y = -self.cols[0].y * self.cols[2].z * self.cols[3].w
+            + self.cols[0].y * self.cols[3].z * self.cols[2].w
+            + self.cols[0].z * self.cols[2].y * self.cols[3].w
+            - self.cols[0].z * self.cols[3].y * self.cols[2].w
+            - self.cols[0].w * self.cols[2].y * self.cols[3].z
+            + self.cols[0].w * self.cols[3].y * self.cols[2].z;
 
-        inv.cols[0].z = mat.cols[0].y * mat.cols[1].z * mat.cols[3].w
-            - mat.cols[0].y * mat.cols[3].z * mat.cols[1].w
-            - mat.cols[0].z * mat.cols[1].y * mat.cols[3].w
-            + mat.cols[0].z * mat.cols[3].y * mat.cols[1].w
-            + mat.cols[0].w * mat.cols[1].y * mat.cols[3].z
-            - mat.cols[0].w * mat.cols[3].y * mat.cols[1].z;
+        inv.cols[0].z = self.cols[0].y * self.cols[1].z * self.cols[3].w
+            - self.cols[0].y * self.cols[3].z * self.cols[1].w
+            - self.cols[0].z * self.cols[1].y * self.cols[3].w
+            + self.cols[0].z * self.cols[3].y * self.cols[1].w
+            + self.cols[0].w * self.cols[1].y * self.cols[3].z
+            - self.cols[0].w * self.cols[3].y * self.cols[1].z;
 
-        inv.cols[0].w = -mat.cols[0].y * mat.cols[1].z * mat.cols[2].w
-            + mat.cols[0].y * mat.cols[2].z * mat.cols[1].w
-            + mat.cols[0].z * mat.cols[1].y * mat.cols[2].w
-            - mat.cols[0].z * mat.cols[2].y * mat.cols[1].w
-            - mat.cols[0].w * mat.cols[1].y * mat.cols[2].z
-            + mat.cols[0].w * mat.cols[2].y * mat.cols[1].z;
+        inv.cols[0].w = -self.cols[0].y * self.cols[1].z * self.cols[2].w
+            + self.cols[0].y * self.cols[2].z * self.cols[1].w
+            + self.cols[0].z * self.cols[1].y * self.cols[2].w
+            - self.cols[0].z * self.cols[2].y * self.cols[1].w
+            - self.cols[0].w * self.cols[1].y * self.cols[2].z
+            + self.cols[0].w * self.cols[2].y * self.cols[1].z;
 
-        inv.cols[1].x = -mat.cols[1].x * mat.cols[2].z * mat.cols[3].w
-            + mat.cols[1].x * mat.cols[3].z * mat.cols[2].w
-            + mat.cols[1].z * mat.cols[2].x * mat.cols[3].w
-            - mat.cols[1].z * mat.cols[3].x * mat.cols[2].w
-            - mat.cols[1].w * mat.cols[2].x * mat.cols[3].z
-            + mat.cols[1].w * mat.cols[3].x * mat.cols[2].z;
+        inv.cols[1].x = -self.cols[1].x * self.cols[2].z * self.cols[3].w
+            + self.cols[1].x * self.cols[3].z * self.cols[2].w
+            + self.cols[1].z * self.cols[2].x * self.cols[3].w
+            - self.cols[1].z * self.cols[3].x * self.cols[2].w
+            - self.cols[1].w * self.cols[2].x * self.cols[3].z
+            + self.cols[1].w * self.cols[3].x * self.cols[2].z;
 
-        inv.cols[1].y = mat.cols[0].x * mat.cols[2].z * mat.cols[3].w
-            - mat.cols[0].x * mat.cols[3].z * mat.cols[2].w
-            - mat.cols[0].z * mat.cols[2].x * mat.cols[3].w
-            + mat.cols[0].z * mat.cols[3].x * mat.cols[2].w
-            + mat.cols[0].w * mat.cols[2].x * mat.cols[3].z
-            - mat.cols[0].w * mat.cols[3].x * mat.cols[2].z;
+        inv.cols[1].y = self.cols[0].x * self.cols[2].z * self.cols[3].w
+            - self.cols[0].x * self.cols[3].z * self.cols[2].w
+            - self.cols[0].z * self.cols[2].x * self.cols[3].w
+            + self.cols[0].z * self.cols[3].x * self.cols[2].w
+            + self.cols[0].w * self.cols[2].x * self.cols[3].z
+            - self.cols[0].w * self.cols[3].x * self.cols[2].z;
 
-        inv.cols[1].z = -mat.cols[0].x * mat.cols[1].z * mat.cols[3].w
-            + mat.cols[0].x * mat.cols[3].z * mat.cols[1].w
-            + mat.cols[0].z * mat.cols[1].x * mat.cols[3].w
-            - mat.cols[0].z * mat.cols[3].x * mat.cols[1].w
-            - mat.cols[0].w * mat.cols[1].x * mat.cols[3].z
-            + mat.cols[0].w * mat.cols[3].x * mat.cols[1].z;
+        inv.cols[1].z = -self.cols[0].x * self.cols[1].z * self.cols[3].w
+            + self.cols[0].x * self.cols[3].z * self.cols[1].w
+            + self.cols[0].z * self.cols[1].x * self.cols[3].w
+            - self.cols[0].z * self.cols[3].x * self.cols[1].w
+            - self.cols[0].w * self.cols[1].x * self.cols[3].z
+            + self.cols[0].w * self.cols[3].x * self.cols[1].z;
 
-        inv.cols[1].w = mat.cols[0].x * mat.cols[1].z * mat.cols[2].w
-            - mat.cols[0].x * mat.cols[2].z * mat.cols[1].w
-            - mat.cols[0].z * mat.cols[1].x * mat.cols[2].w
-            + mat.cols[0].z * mat.cols[2].x * mat.cols[1].w
-            + mat.cols[0].w * mat.cols[1].x * mat.cols[2].z
-            - mat.cols[0].w * mat.cols[2].x * mat.cols[1].z;
+        inv.cols[1].w = self.cols[0].x * self.cols[1].z * self.cols[2].w
+            - self.cols[0].x * self.cols[2].z * self.cols[1].w
+            - self.cols[0].z * self.cols[1].x * self.cols[2].w
+            + self.cols[0].z * self.cols[2].x * self.cols[1].w
+            + self.cols[0].w * self.cols[1].x * self.cols[2].z
+            - self.cols[0].w * self.cols[2].x * self.cols[1].z;
 
-        inv.cols[2].x = mat.cols[1].x * mat.cols[2].y * mat.cols[3].w
-            - mat.cols[1].x * mat.cols[3].y * mat.cols[2].w
-            - mat.cols[1].y * mat.cols[2].x * mat.cols[3].w
-            + mat.cols[1].y * mat.cols[3].x * mat.cols[2].w
-            + mat.cols[1].w * mat.cols[2].x * mat.cols[3].y
-            - mat.cols[1].w * mat.cols[3].x * mat.cols[2].y;
+        inv.cols[2].x = self.cols[1].x * self.cols[2].y * self.cols[3].w
+            - self.cols[1].x * self.cols[3].y * self.cols[2].w
+            - self.cols[1].y * self.cols[2].x * self.cols[3].w
+            + self.cols[1].y * self.cols[3].x * self.cols[2].w
+            + self.cols[1].w * self.cols[2].x * self.cols[3].y
+            - self.cols[1].w * self.cols[3].x * self.cols[2].y;
 
-        inv.cols[2].y = -mat.cols[0].x * mat.cols[2].y * mat.cols[3].w
-            + mat.cols[0].x * mat.cols[3].y * mat.cols[2].w
-            + mat.cols[0].y * mat.cols[2].x * mat.cols[3].w
-            - mat.cols[0].y * mat.cols[3].x * mat.cols[2].w
-            - mat.cols[0].w * mat.cols[2].x * mat.cols[3].y
-            + mat.cols[0].w * mat.cols[3].x * mat.cols[2].y;
+        inv.cols[2].y = -self.cols[0].x * self.cols[2].y * self.cols[3].w
+            + self.cols[0].x * self.cols[3].y * self.cols[2].w
+            + self.cols[0].y * self.cols[2].x * self.cols[3].w
+            - self.cols[0].y * self.cols[3].x * self.cols[2].w
+            - self.cols[0].w * self.cols[2].x * self.cols[3].y
+            + self.cols[0].w * self.cols[3].x * self.cols[2].y;
 
-        inv.cols[2].z = mat.cols[0].x * mat.cols[1].y * mat.cols[3].w
-            - mat.cols[0].x * mat.cols[3].y * mat.cols[1].w
-            - mat.cols[0].y * mat.cols[1].x * mat.cols[3].w
-            + mat.cols[0].y * mat.cols[3].x * mat.cols[1].w
-            + mat.cols[0].w * mat.cols[1].x * mat.cols[3].y
-            - mat.cols[0].w * mat.cols[3].x * mat.cols[1].y;
+        inv.cols[2].z = self.cols[0].x * self.cols[1].y * self.cols[3].w
+            - self.cols[0].x * self.cols[3].y * self.cols[1].w
+            - self.cols[0].y * self.cols[1].x * self.cols[3].w
+            + self.cols[0].y * self.cols[3].x * self.cols[1].w
+            + self.cols[0].w * self.cols[1].x * self.cols[3].y
+            - self.cols[0].w * self.cols[3].x * self.cols[1].y;
 
-        inv.cols[2].w = -mat.cols[0].x * mat.cols[1].y * mat.cols[2].w
-            + mat.cols[0].x * mat.cols[2].y * mat.cols[1].w
-            + mat.cols[0].y * mat.cols[1].x * mat.cols[2].w
-            - mat.cols[0].y * mat.cols[2].x * mat.cols[1].w
-            - mat.cols[0].w * mat.cols[1].x * mat.cols[2].y
-            + mat.cols[0].w * mat.cols[2].x * mat.cols[1].y;
+        inv.cols[2].w = -self.cols[0].x * self.cols[1].y * self.cols[2].w
+            + self.cols[0].x * self.cols[2].y * self.cols[1].w
+            + self.cols[0].y * self.cols[1].x * self.cols[2].w
+            - self.cols[0].y * self.cols[2].x * self.cols[1].w
+            - self.cols[0].w * self.cols[1].x * self.cols[2].y
+            + self.cols[0].w * self.cols[2].x * self.cols[1].y;
 
-        inv.cols[3].x = -mat.cols[1].x * mat.cols[2].y * mat.cols[3].z
-            + mat.cols[1].x * mat.cols[3].y * mat.cols[2].z
-            + mat.cols[1].y * mat.cols[2].x * mat.cols[3].z
-            - mat.cols[1].y * mat.cols[3].x * mat.cols[2].z
-            - mat.cols[1].z * mat.cols[2].x * mat.cols[3].y
-            + mat.cols[1].z * mat.cols[3].x * mat.cols[2].y;
+        inv.cols[3].x = -self.cols[1].x * self.cols[2].y * self.cols[3].z
+            + self.cols[1].x * self.cols[3].y * self.cols[2].z
+            + self.cols[1].y * self.cols[2].x * self.cols[3].z
+            - self.cols[1].y * self.cols[3].x * self.cols[2].z
+            - self.cols[1].z * self.cols[2].x * self.cols[3].y
+            + self.cols[1].z * self.cols[3].x * self.cols[2].y;
 
-        inv.cols[3].y = mat.cols[0].x * mat.cols[2].y * mat.cols[3].z
-            - mat.cols[0].x * mat.cols[3].y * mat.cols[2].z
-            - mat.cols[0].y * mat.cols[2].x * mat.cols[3].z
-            + mat.cols[0].y * mat.cols[3].x * mat.cols[2].z
-            + mat.cols[0].z * mat.cols[2].x * mat.cols[3].y
-            - mat.cols[0].z * mat.cols[3].x * mat.cols[2].y;
+        inv.cols[3].y = self.cols[0].x * self.cols[2].y * self.cols[3].z
+            - self.cols[0].x * self.cols[3].y * self.cols[2].z
+            - self.cols[0].y * self.cols[2].x * self.cols[3].z
+            + self.cols[0].y * self.cols[3].x * self.cols[2].z
+            + self.cols[0].z * self.cols[2].x * self.cols[3].y
+            - self.cols[0].z * self.cols[3].x * self.cols[2].y;
 
-        inv.cols[3].z = -mat.cols[0].x * mat.cols[1].y * mat.cols[3].z
-            + mat.cols[0].x * mat.cols[3].y * mat.cols[1].z
-            + mat.cols[0].y * mat.cols[1].x * mat.cols[3].z
-            - mat.cols[0].y * mat.cols[3].x * mat.cols[1].z
-            - mat.cols[0].z * mat.cols[1].x * mat.cols[3].y
-            + mat.cols[0].z * mat.cols[3].x * mat.cols[1].y;
+        inv.cols[3].z = -self.cols[0].x * self.cols[1].y * self.cols[3].z
+            + self.cols[0].x * self.cols[3].y * self.cols[1].z
+            + self.cols[0].y * self.cols[1].x * self.cols[3].z
+            - self.cols[0].y * self.cols[3].x * self.cols[1].z
+            - self.cols[0].z * self.cols[1].x * self.cols[3].y
+            + self.cols[0].z * self.cols[3].x * self.cols[1].y;
 
-        inv.cols[3].w = mat.cols[0].x * mat.cols[1].y * mat.cols[2].z
-            - mat.cols[0].x * mat.cols[2].y * mat.cols[1].z
-            - mat.cols[0].y * mat.cols[1].x * mat.cols[2].z
-            + mat.cols[0].y * mat.cols[2].x * mat.cols[1].z
-            + mat.cols[0].z * mat.cols[1].x * mat.cols[2].y
-            - mat.cols[0].z * mat.cols[2].x * mat.cols[1].y;
+        inv.cols[3].w = self.cols[0].x * self.cols[1].y * self.cols[2].z
+            - self.cols[0].x * self.cols[2].y * self.cols[1].z
+            - self.cols[0].y * self.cols[1].x * self.cols[2].z
+            + self.cols[0].y * self.cols[2].x * self.cols[1].z
+            + self.cols[0].z * self.cols[1].x * self.cols[2].y
+            - self.cols[0].z * self.cols[2].x * self.cols[1].y;
 
-        let mut det = mat.cols[0].x * inv.cols[0].x
-            + mat.cols[1].x * inv.cols[0].y
-            + mat.cols[2].x * inv.cols[0].z
-            + mat.cols[3].x * inv.cols[0].w;
+        let mut det = self.cols[0].x * inv.cols[0].x
+            + self.cols[1].x * inv.cols[0].y
+            + self.cols[2].x * inv.cols[0].z
+            + self.cols[3].x * inv.cols[0].w;
 
         if math::equal_epsilon_f32(det, 0.0, math::EPSILON_F32_6) {
             return None;
@@ -233,32 +233,32 @@ impl Mat4 {
         return Some(inv * det);
     }
 
-    pub fn transpose(mat: &Mat4) -> Mat4 {
+    pub fn transpose(&self) -> Mat4 {
         return Mat4::from_scalars(
-            mat.cols[0].x,
-            mat.cols[1].x,
-            mat.cols[2].x,
-            mat.cols[3].x,
-            mat.cols[0].y,
-            mat.cols[1].y,
-            mat.cols[2].y,
-            mat.cols[3].y,
-            mat.cols[0].z,
-            mat.cols[1].z,
-            mat.cols[2].z,
-            mat.cols[3].z,
-            mat.cols[0].w,
-            mat.cols[1].w,
-            mat.cols[2].w,
-            mat.cols[3].w,
+            self.cols[0].x,
+            self.cols[1].x,
+            self.cols[2].x,
+            self.cols[3].x,
+            self.cols[0].y,
+            self.cols[1].y,
+            self.cols[2].y,
+            self.cols[3].y,
+            self.cols[0].z,
+            self.cols[1].z,
+            self.cols[2].z,
+            self.cols[3].z,
+            self.cols[0].w,
+            self.cols[1].w,
+            self.cols[2].w,
+            self.cols[3].w,
         );
     }
 
-    pub fn equal_epsilon(lhs: &Mat4, rhs: &Mat4, epsilon: f32) -> bool {
-        return vec4::Vec4::equal_epsilon(&lhs.cols[0], &rhs.cols[0], epsilon)
-            && vec4::Vec4::equal_epsilon(&lhs.cols[1], &rhs.cols[1], epsilon)
-            && vec4::Vec4::equal_epsilon(&lhs.cols[2], &rhs.cols[2], epsilon)
-            && vec4::Vec4::equal_epsilon(&lhs.cols[3], &rhs.cols[3], epsilon);
+    pub fn equal_epsilon(&self, rhs: &Mat4, epsilon: f32) -> bool {
+        return vec4::Vec4::equal_epsilon(&self.cols[0], &rhs.cols[0], epsilon)
+            && vec4::Vec4::equal_epsilon(&self.cols[1], &rhs.cols[1], epsilon)
+            && vec4::Vec4::equal_epsilon(&self.cols[2], &rhs.cols[2], epsilon)
+            && vec4::Vec4::equal_epsilon(&self.cols[3], &rhs.cols[3], epsilon);
     }
 }
 

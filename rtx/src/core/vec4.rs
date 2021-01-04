@@ -20,60 +20,78 @@ impl Vec4 {
         return Vec4::new(v.x, v.y, v.z, w);
     }
 
-    pub fn to_vec3(v: &Vec4) -> vec3::Vec3 {
-        return vec3::Vec3::new(v.x, v.y, v.z);
+    pub fn to_vec3(&self) -> vec3::Vec3 {
+        return vec3::Vec3::new(self.x, self.y, self.z);
     }
 
-    pub fn dot(lhs: &Vec4, rhs: &Vec4) -> f32 {
-        return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z + lhs.w * rhs.w;
+    pub fn dot(&self, rhs: &Vec4) -> f32 {
+        return self.x * rhs.x + self.y * rhs.y + self.z * rhs.z + self.w * rhs.w;
     }
 
-    pub fn distance(from: &Vec4, to: &Vec4) -> f32 {
-        let direction = to - from;
+    pub fn distance(&self, to: &Vec4) -> f32 {
+        let direction = to - self;
         return Vec4::length(&direction);
     }
 
-    pub fn length_sq(v: &Vec4) -> f32 {
-        return Vec4::dot(v, v);
+    pub fn length_sq(&self) -> f32 {
+        return Vec4::dot(self, self);
     }
 
-    pub fn length(v: &Vec4) -> f32 {
-        return f32::sqrt(Vec4::length_sq(v));
+    pub fn length(&self) -> f32 {
+        return f32::sqrt(Vec4::length_sq(self));
     }
 
-    pub fn normalize(v: &Vec4) -> Option<Vec4> {
-        let len = Vec4::length(v);
+    pub fn normalize(&self) -> Option<Vec4> {
+        let len = Vec4::length(self);
         if len == 0.0 {
             return None;
         }
 
         let inv_len = 1.0 / len;
-        return Some(v * inv_len);
+        return Some(self * inv_len);
     }
 
-    pub fn abs(v: &Vec4) -> Vec4 {
+    pub fn abs(&self) -> Vec4 {
         return Vec4 {
-            x: f32::abs(v.x),
-            y: f32::abs(v.y),
-            z: f32::abs(v.z),
-            w: f32::abs(v.w),
+            x: f32::abs(self.x),
+            y: f32::abs(self.y),
+            z: f32::abs(self.z),
+            w: f32::abs(self.w),
         };
     }
 
-    pub fn sqrt(v: &Vec4) -> Vec4 {
+    pub fn powf(&self, num: f32) -> Vec4 {
         return Vec4 {
-            x: f32::sqrt(v.x),
-            y: f32::sqrt(v.y),
-            z: f32::sqrt(v.z),
-            w: f32::sqrt(v.w),
+            x: f32::powf(self.x, num),
+            y: f32::powf(self.y, num),
+            z: f32::powf(self.z, num),
+            w: f32::powf(self.w, num),
+        }
+    }
+
+    pub fn powi(&self, num: i32) -> Vec4 {
+        return Vec4 {
+            x: f32::powi(self.x, num),
+            y: f32::powi(self.y, num),
+            z: f32::powi(self.z, num),
+            w: f32::powi(self.w, num),
+        }
+    }
+
+    pub fn sqrt(&self) -> Vec4 {
+        return Vec4 {
+            x: f32::sqrt(self.x),
+            y: f32::sqrt(self.y),
+            z: f32::sqrt(self.z),
+            w: f32::sqrt(self.w),
         };
     }
 
-    pub fn equal_epsilon(lhs: &Vec4, rhs: &Vec4, epsilon: f32) -> bool {
-        return math::equal_epsilon_f32(lhs.x, rhs.x, epsilon)
-            && math::equal_epsilon_f32(lhs.y, rhs.y, epsilon)
-            && math::equal_epsilon_f32(lhs.z, rhs.z, epsilon)
-            && math::equal_epsilon_f32(lhs.w, rhs.w, epsilon);
+    pub fn equal_epsilon(&self, rhs: &Vec4, epsilon: f32) -> bool {
+        return math::equal_epsilon_f32(self.x, rhs.x, epsilon)
+            && math::equal_epsilon_f32(self.y, rhs.y, epsilon)
+            && math::equal_epsilon_f32(self.z, rhs.z, epsilon)
+            && math::equal_epsilon_f32(self.w, rhs.w, epsilon);
     }
 }
 
@@ -388,6 +406,28 @@ mod test {
         assert!(Vec4::equal_epsilon(
             &result,
             &Vec4::new(12.0, 1.0, 2.0, 0.5),
+            math::EPSILON_F32_5
+        ));
+    }
+
+    #[test]
+    fn test_powf() {
+        let v = Vec4::new(4.0, 9.0, 16.0, 9.0);
+        let result = Vec4::powf(&v, 2.0);
+        assert!(Vec4::equal_epsilon(
+            &result,
+            &Vec4::new(16.0, 81.0, 256.0, 81.0),
+            math::EPSILON_F32_5
+        ));
+    }
+
+    #[test]
+    fn test_powi() {
+        let v = Vec4::new(4.0, 9.0, 16.0, 9.0);
+        let result = Vec4::powi(&v, 2);
+        assert!(Vec4::equal_epsilon(
+            &result,
+            &Vec4::new(16.0, 81.0, 256.0, 81.0),
             math::EPSILON_F32_5
         ));
     }

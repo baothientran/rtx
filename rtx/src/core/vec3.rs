@@ -14,59 +14,75 @@ impl Vec3 {
         return Vec3 { x, y, z };
     }
 
-    pub fn dot(lhs: &Vec3, rhs: &Vec3) -> f32 {
-        return lhs.x * rhs.x + lhs.y * rhs.y + lhs.z * rhs.z;
+    pub fn dot(&self, rhs: &Vec3) -> f32 {
+        return self.x * rhs.x + self.y * rhs.y + self.z * rhs.z;
     }
 
-    pub fn cross(lhs: &Vec3, rhs: &Vec3) -> Vec3 {
+    pub fn cross(&self, rhs: &Vec3) -> Vec3 {
         return Vec3::new(
-            lhs.y * rhs.z - lhs.z * rhs.y,
-            lhs.z * rhs.x - lhs.x * rhs.z,
-            lhs.x * rhs.y - lhs.y * rhs.x,
+            self.y * rhs.z - self.z * rhs.y,
+            self.z * rhs.x - self.x * rhs.z,
+            self.x * rhs.y - self.y * rhs.x,
         );
     }
 
-    pub fn distance(from: &Vec3, to: &Vec3) -> f32 {
-        let direction = to - from;
+    pub fn distance(&self, to: &Vec3) -> f32 {
+        let direction = to - self;
         return Vec3::length(&direction);
     }
 
-    pub fn length_sq(v: &Vec3) -> f32 {
-        return Vec3::dot(v, v);
+    pub fn length_sq(&self) -> f32 {
+        return Vec3::dot(self, self);
     }
 
-    pub fn length(v: &Vec3) -> f32 {
-        return f32::sqrt(Vec3::length_sq(v));
+    pub fn length(&self) -> f32 {
+        return f32::sqrt(Vec3::length_sq(self));
     }
 
-    pub fn normalize(v: &Vec3) -> Option<Vec3> {
-        let len = Vec3::length(v);
+    pub fn normalize(&self) -> Option<Vec3> {
+        let len = Vec3::length(self);
         if len == 0.0 {
             return None;
         }
 
         let inv_len = 1.0 / len;
-        return Some(v * inv_len);
+        return Some(self * inv_len);
     }
 
-    pub fn abs(v: &Vec3) -> Vec3 {
+    pub fn abs(&self) -> Vec3 {
         return Vec3 {
-            x: f32::abs(v.x),
-            y: f32::abs(v.y),
-            z: f32::abs(v.z),
+            x: f32::abs(self.x),
+            y: f32::abs(self.y),
+            z: f32::abs(self.z),
         };
     }
 
-    pub fn sqrt(v: &Vec3) -> Vec3 {
+    pub fn powf(&self, num: f32) -> Vec3 {
         return Vec3 {
-            x: f32::sqrt(v.x),
-            y: f32::sqrt(v.y),
-            z: f32::sqrt(v.z),
+            x: f32::powf(self.x, num),
+            y: f32::powf(self.y, num),
+            z: f32::powf(self.z, num),
+        }
+    }
+
+    pub fn powi(&self, num: i32) -> Vec3 {
+        return Vec3 {
+            x: f32::powi(self.x, num),
+            y: f32::powi(self.y, num),
+            z: f32::powi(self.z, num),
+        }
+    }
+
+    pub fn sqrt(&self) -> Vec3 {
+        return Vec3 {
+            x: f32::sqrt(self.x),
+            y: f32::sqrt(self.y),
+            z: f32::sqrt(self.z),
         };
     }
 
-    pub fn reflect(v: &Vec3, normal: &Vec3) -> Vec3 {
-        return -v + 2.0 * Vec3::dot(normal, v) * normal;
+    pub fn reflect(&self, normal: &Vec3) -> Vec3 {
+        return -self + 2.0 * Vec3::dot(normal, self) * normal;
     }
 
     pub fn coordinate_system(v1: &Vec3, v2: &mut Vec3, v3: &mut Vec3) {
@@ -79,10 +95,10 @@ impl Vec3 {
         *v3 = Vec3::cross(v1, v2);
     }
 
-    pub fn equal_epsilon(lhs: &Vec3, rhs: &Vec3, epsilon: f32) -> bool {
-        return math::equal_epsilon_f32(lhs.x, rhs.x, epsilon)
-            && math::equal_epsilon_f32(lhs.y, rhs.y, epsilon)
-            && math::equal_epsilon_f32(lhs.z, rhs.z, epsilon);
+    pub fn equal_epsilon(&self, rhs: &Vec3, epsilon: f32) -> bool {
+        return math::equal_epsilon_f32(self.x, rhs.x, epsilon)
+            && math::equal_epsilon_f32(self.y, rhs.y, epsilon)
+            && math::equal_epsilon_f32(self.z, rhs.z, epsilon);
     }
 }
 
@@ -465,6 +481,28 @@ mod test {
         assert!(math::equal_epsilon_f32(result.x, 12.0, math::EPSILON_F32_5));
         assert!(math::equal_epsilon_f32(result.y, 1.0, math::EPSILON_F32_5));
         assert!(math::equal_epsilon_f32(result.z, 2.0, math::EPSILON_F32_5));
+    }
+
+    #[test]
+    fn test_powf() {
+        let v = Vec3::new(4.0, 9.0, 16.0);
+        let result = Vec3::powf(&v, 2.0);
+        assert!(Vec3::equal_epsilon(
+            &result,
+            &Vec3::new(16.0, 81.0, 256.0),
+            math::EPSILON_F32_5
+        ));
+    }
+
+    #[test]
+    fn test_powi() {
+        let v = Vec3::new(4.0, 9.0, 16.0);
+        let result = Vec3::powi(&v, 2);
+        assert!(Vec3::equal_epsilon(
+            &result,
+            &Vec3::new(16.0, 81.0, 256.0),
+            math::EPSILON_F32_5
+        ));
     }
 
     #[test]
