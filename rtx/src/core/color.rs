@@ -14,9 +14,10 @@ impl Color {
     }
 
     pub fn from_vec3(v: &vec3::Vec3) -> Color {
-        let red = (math::clamp(v.x, 0.0, 1.0) * 255.999) as u8;
-        let blue = (math::clamp(v.y, 0.0, 1.0) * 255.999) as u8;
-        let green = (math::clamp(v.z, 0.0, 1.0) * 255.999) as u8;
+        let gamma_correct = v.powf(1.0 / 2.2);
+        let red = (math::clamp(gamma_correct.x, 0.0, 1.0) * 255.999) as u8;
+        let blue = (math::clamp(gamma_correct.y, 0.0, 1.0) * 255.999) as u8;
+        let green = (math::clamp(gamma_correct.z, 0.0, 1.0) * 255.999) as u8;
         return Color { red, blue, green };
     }
 }
