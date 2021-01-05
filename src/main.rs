@@ -30,9 +30,9 @@ fn main() {
         mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.4, 0.0, 0.0)),
         0.2,
     ));
-    let green_matte = rc::Rc::new(matte::Matte::new(vec3::Vec3::new(0.5, 0.8, 0.7), 0.0));
+    let green_matte = rc::Rc::new(matte::Matte::new(vec3::Vec3::new(0.5, 0.8, 0.7), 0.3));
     let purple_matte = rc::Rc::new(matte::Matte::new(vec3::Vec3::new(0.8, 0.6, 0.7), 0.3));
-    let blue_matte = rc::Rc::new(matte::Matte::new(vec3::Vec3::new(0.3, 0.6, 0.7), 60.0));
+    let blue_matte = rc::Rc::new(matte::Matte::new(vec3::Vec3::new(0.3, 0.6, 0.7), 0.3));
     let glass = rc::Rc::new(glass::Glass::new(
         vec3::Vec3::from(1.0),
         vec3::Vec3::from(1.0),
@@ -42,17 +42,17 @@ fn main() {
 
     let point_light_front = Box::new(light::point_light::PointLight::new(
         vec3::Vec3::new(0.0, 2.0, 2.0),
-        vec3::Vec3::from(1.5),
+        vec3::Vec3::from(1.0),
         10.0,
     ));
     let point_light_center = Box::new(light::point_light::PointLight::new(
         vec3::Vec3::new(0.0, 0.5, 0.0),
-        vec3::Vec3::from(1.5),
+        vec3::Vec3::from(1.0),
         10.0,
     ));
     let point_light_back = Box::new(light::point_light::PointLight::new(
         vec3::Vec3::new(0.0, 2.0, -2.0),
-        vec3::Vec3::from(1.5),
+        vec3::Vec3::from(1.0),
         10.0,
     ));
 
