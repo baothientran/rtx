@@ -34,7 +34,7 @@ fn main() {
     let purple_matte = rc::Rc::new(matte::Matte::new(vec3::Vec3::new(0.8, 0.6, 0.7)));
     let blue_matte = rc::Rc::new(matte::Matte::new(vec3::Vec3::new(0.3, 0.6, 0.7)));
     let glass = rc::Rc::new(glass::Glass::new(
-        vec3::Vec3::from(0.0),
+        vec3::Vec3::from(1.0),
         vec3::Vec3::from(1.0),
         1.0,
         1.5,
