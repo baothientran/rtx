@@ -30,9 +30,9 @@ fn main() {
         mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.4, 0.0, 0.0)),
         0.2,
     ));
-    let green_matte = rc::Rc::new(matte::Matte::new(vec3::Vec3::new(0.5, 0.8, 0.7)));
-    let purple_matte = rc::Rc::new(matte::Matte::new(vec3::Vec3::new(0.8, 0.6, 0.7)));
-    let blue_matte = rc::Rc::new(matte::Matte::new(vec3::Vec3::new(0.3, 0.6, 0.7)));
+    let green_matte = rc::Rc::new(matte::Matte::new(vec3::Vec3::new(0.5, 0.8, 0.7), 0.0));
+    let purple_matte = rc::Rc::new(matte::Matte::new(vec3::Vec3::new(0.8, 0.6, 0.7), 0.3));
+    let blue_matte = rc::Rc::new(matte::Matte::new(vec3::Vec3::new(0.3, 0.6, 0.7), 60.0));
     let glass = rc::Rc::new(glass::Glass::new(
         vec3::Vec3::from(1.0),
         vec3::Vec3::from(1.0),
@@ -42,17 +42,17 @@ fn main() {
 
     let point_light_front = Box::new(light::point_light::PointLight::new(
         vec3::Vec3::new(0.0, 2.0, 2.0),
-        vec3::Vec3::from(1.0),
+        vec3::Vec3::from(1.5),
         10.0,
     ));
     let point_light_center = Box::new(light::point_light::PointLight::new(
         vec3::Vec3::new(0.0, 0.5, 0.0),
-        vec3::Vec3::from(1.0),
+        vec3::Vec3::from(1.5),
         10.0,
     ));
     let point_light_back = Box::new(light::point_light::PointLight::new(
         vec3::Vec3::new(0.0, 2.0, -2.0),
-        vec3::Vec3::from(1.0),
+        vec3::Vec3::from(1.5),
         10.0,
     ));
 
@@ -66,7 +66,7 @@ fn main() {
     world.add_light(point_light_back);
 
     // setup camera
-    let view_location = vec3::Vec3::new(0.6, 0.3, 1.5);
+    let view_location = vec3::Vec3::new(0.6, 0.5, 1.5);
     let mut view_out = vec3::Vec3::from(0.0) - view_location;
     view_out = vec3::Vec3::normalize(&view_out).unwrap();
     let view_up = vec3::Vec3::new(0.0, 1.0, 0.0);

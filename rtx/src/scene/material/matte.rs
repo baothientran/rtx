@@ -1,16 +1,24 @@
 use crate::core::vec3;
+use crate::core::math;
 use crate::scene::material;
 use crate::scene::reflectance;
-use crate::scene::reflectance::lambertian;
+use crate::scene::reflectance::{lambertian, oren_nayar};
 
 pub struct Matte {
     reflectances: reflectance::ReflectanceCollection,
 }
 
 impl Matte {
-    pub fn new(kd: vec3::Vec3) -> Matte {
+    pub fn new(kd: vec3::Vec3, sigma: f32) -> Matte {
         let mut reflectances = reflectance::ReflectanceCollection::new();
-        reflectances.add(Box::new(lambertian::Lambertian::new(kd)));
+
+        if math::equal_epsilon_f32(sigma, 0.0, math::EPSILON_F32_6) {
+            reflectances.add(Box::new(lambertian::Lambertian::new(kd)));
+        }
+        else {
+            reflectances.add(Box::new(oren_nayar::OrenNayar::new(kd, sigma)));
+        }
+
         return Matte { reflectances };
     }
 }

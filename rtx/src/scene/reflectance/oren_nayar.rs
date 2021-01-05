@@ -41,8 +41,15 @@ impl reflectance::Reflectance for OrenNayar {
             tan_beta = sin_beta / cos_wi_normal;
         }
 
-        // TODO: calculate cos(phi_o - phi_i)
-        let cos_phi_diff = 0.0;
+        let wo_xy_dist = f32::sqrt(shading_wo.x * shading_wo.x + shading_wo.y * shading_wo.y);
+        let sin_phi_o = shading_wo.y / wo_xy_dist;
+        let cos_phi_o = shading_wo.x / wo_xy_dist;
+
+        let wi_xy_dist = f32::sqrt(shading_wi.x * shading_wi.x + shading_wi.y * shading_wi.y);
+        let sin_phi_i = shading_wi.y / wi_xy_dist;
+        let cos_phi_i = shading_wi.x / wi_xy_dist;
+
+        let cos_phi_diff = cos_phi_o * cos_phi_i + sin_phi_o * sin_phi_i;
 
         return self.kd / math::PI_F32
             * (self.a + self.b * f32::max(0.0, cos_phi_diff) * sin_alpha * tan_beta);

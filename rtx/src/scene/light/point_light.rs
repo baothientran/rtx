@@ -28,7 +28,7 @@ impl light::Light for PointLight {
     }
 
     fn li(&self, surface_point: &vec3::Vec3, wi: &mut vec3::Vec3) -> vec3::Vec3 {
-        let direction = self.position - *surface_point;
+        let direction = self.position - surface_point;
         let distance_sq = vec3::Vec3::length_sq(&direction);
         let attenuation = f32::max(1.0 - distance_sq / (self.radius * self.radius), 0.0);
 
