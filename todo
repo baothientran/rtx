@@ -30,13 +30,13 @@
         * path tracing
 
 - on going:
+    + microfacet distribution functions
     + material:
-        * microfacet: oren nayar
+        * microfacet: torrance sparrow
 
 - done:
-    + background image
-
     + material:
+        * microfacet: oren nayar
         * gamma correction
         * lambertian 
         * reflection

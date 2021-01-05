@@ -1,7 +1,8 @@
 pub mod lambertian;
-pub mod oren_nayar;
 pub mod reflection;
 pub mod refraction;
+pub mod oren_nayar;
+pub mod torrance_sparrow;
 
 use crate::core::vec3;
 
