@@ -14,15 +14,15 @@ impl TrowbridgeReitz {
 }
 
 impl microfacet_distribution::MicrofacetDistribution for TrowbridgeReitz {
-    fn d(&self, wh: &vec3::Vec3) -> f32 {
-        let cos_theta_sq = wh.z * wh.z;
+    fn d(&self, shading_wh: &vec3::Vec3) -> f32 {
+        let cos_theta_sq = shading_wh.z * shading_wh.z;
         let tan_theta_sq = (1.0 - cos_theta_sq) / cos_theta_sq;
         if f32::is_infinite(tan_theta_sq) {
             return 0.0;
         }
 
-        let x_sq = wh.x * wh.x;
-        let y_sq = wh.y * wh.y;
+        let x_sq = shading_wh.x * shading_wh.x;
+        let y_sq = shading_wh.y * shading_wh.y;
         let cos_phi_sq = x_sq / (x_sq + y_sq);
         let sin_phi_sq = 1.0 - cos_phi_sq;
         let a = cos_phi_sq / (self.alpha_x * self.alpha_x) + sin_phi_sq / (self.alpha_y * self.alpha_y); 
@@ -31,15 +31,15 @@ impl microfacet_distribution::MicrofacetDistribution for TrowbridgeReitz {
         return 1.0 / (math::PI_F32 * self.alpha_x * self.alpha_y * cos_theta_sq * cos_theta_sq * t * t);
     }
 
-    fn lambda(&self, w: &vec3::Vec3) -> f32 {
-        let cos_theta_sq = w.z * w.z;
+    fn lambda(&self, shading_w: &vec3::Vec3) -> f32 {
+        let cos_theta_sq = shading_w.z * shading_w.z;
         let tan_theta_sq = (1.0 - cos_theta_sq) / cos_theta_sq; 
         if f32::is_infinite(tan_theta_sq) {
             return 0.0;
         }
 
-        let x_sq = w.x * w.x;
-        let y_sq = w.y * w.y;
+        let x_sq = shading_w.x * shading_w.x;
+        let y_sq = shading_w.y * shading_w.y;
         let cos_phi_sq = x_sq / (x_sq + y_sq);
         let sin_phi_sq = 1.0 - cos_phi_sq;
         let a = (cos_phi_sq * self.alpha_x * self.alpha_x + sin_phi_sq * self.alpha_y * self.alpha_y) * tan_theta_sq; 
