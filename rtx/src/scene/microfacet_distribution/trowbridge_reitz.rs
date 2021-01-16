@@ -30,4 +30,20 @@ impl microfacet_distribution::MicrofacetDistribution for TrowbridgeReitz {
         let t = 1.0 + tan_theta_sq * a;
         return 1.0 / (math::PI_F32 * self.alpha_x * self.alpha_y * cos_theta_sq * cos_theta_sq * t * t);
     }
+
+    fn lambda(&self, w: &vec3::Vec3) -> f32 {
+        let cos_theta_sq = w.z * w.z;
+        let tan_theta_sq = (1.0 - cos_theta_sq) / cos_theta_sq; 
+        if f32::is_infinite(tan_theta_sq) {
+            return 0.0;
+        }
+
+        let x_sq = w.x * w.x;
+        let y_sq = w.y * w.y;
+        let cos_phi_sq = x_sq / (x_sq + y_sq);
+        let sin_phi_sq = 1.0 - cos_phi_sq;
+        let a = (cos_phi_sq * self.alpha_x * self.alpha_x + sin_phi_sq * self.alpha_y * self.alpha_y) * tan_theta_sq; 
+
+        return (-1.0 + f32::sqrt(1.0 + a)) * 0.5; 
+    }
 }

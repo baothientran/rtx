@@ -5,4 +5,6 @@ use crate::core::vec3;
 
 pub trait MicrofacetDistribution {
     fn d(&self, wh: &vec3::Vec3) -> f32;
+
+    fn lambda(&self, w: &vec3::Vec3) -> f32;
 }
