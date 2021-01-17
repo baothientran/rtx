@@ -30,9 +30,8 @@
         * path tracing
 
 - on going:
-    + microfacet distribution functions
     + material:
-        * microfacet: torrance sparrow
+        * microfacet: refraction
 
 - done:
     + material:
