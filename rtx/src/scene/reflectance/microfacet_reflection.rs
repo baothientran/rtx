@@ -49,7 +49,7 @@ impl reflectance::Reflectance for MicrofacetReflection {
         return self.ks * d * g * f / (4.0 * cos_theta_o * cos_theta_i);
     }
 
-    fn sample_brdf(&self, shading_wo: &vec3::Vec3, shading_wi: &mut vec3::Vec3) -> vec3::Vec3 {
-        return self.brdf(shading_wo, shading_wi);
+    fn sample_brdf(&self, _shading_wo: &vec3::Vec3, _shading_wi: &mut vec3::Vec3) -> vec3::Vec3 {
+        todo!();
     }
 }
