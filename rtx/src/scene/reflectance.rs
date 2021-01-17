@@ -1,8 +1,9 @@
 pub mod lambertian;
+pub mod microfacet_reflection;
+pub mod microfacet_refraction;
 pub mod oren_nayar;
 pub mod reflection;
 pub mod refraction;
-pub mod microfacet_reflection;
 
 use crate::core::vec3;
 
@@ -15,7 +16,7 @@ pub enum ReflectanceType {
 
 impl ReflectanceType {
     pub fn contain(flags: u32, flag_to_check: u32) -> bool {
-        return (flags & flag_to_check) != 0;
+        return (flags & flag_to_check) == flag_to_check;
     }
 }
 
