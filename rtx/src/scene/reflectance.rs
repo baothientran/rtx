@@ -1,8 +1,8 @@
 pub mod lambertian;
+pub mod oren_nayar;
 pub mod reflection;
 pub mod refraction;
-pub mod oren_nayar;
-pub mod torrance_sparrow;
+pub mod microfacet_reflection;
 
 use crate::core::vec3;
 
@@ -56,6 +56,10 @@ impl ReflectanceCollection {
         let shading_x = vec3::Vec3::normalize(&dpdu).unwrap();
         let shading_y = vec3::Vec3::cross(&normal, &shading_x);
         let shading_wo = self.world_to_shading(&shading_x, &shading_y, normal, wo);
+        if shading_wo.z == 0.0 {
+            return vec3::Vec3::from(0.0);
+        }
+
         let shading_wi = self.world_to_shading(&shading_x, &shading_y, normal, wi);
         let mut total_brdf = vec3::Vec3::from(0.0);
         for reflectance in self.reflectances.iter() {
@@ -88,6 +92,10 @@ impl ReflectanceCollection {
         let shading_x = vec3::Vec3::normalize(&dpdu).unwrap();
         let shading_y = vec3::Vec3::cross(&normal, &shading_x);
         let shading_wo = self.world_to_shading(&shading_x, &shading_y, normal, wo);
+        if shading_wo.z == 0.0 {
+            return vec3::Vec3::from(0.0);
+        }
+
         let mut shading_wi = vec3::Vec3::from(0.0);
         let mut brdf =
             self.reflectances[brdf_id as usize].sample_brdf(&shading_wo, &mut shading_wi);

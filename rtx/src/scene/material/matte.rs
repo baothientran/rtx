@@ -1,5 +1,5 @@
-use crate::core::vec3;
 use crate::core::math;
+use crate::core::vec3;
 use crate::scene::material;
 use crate::scene::reflectance;
 use crate::scene::reflectance::{lambertian, oren_nayar};
@@ -14,8 +14,7 @@ impl Matte {
 
         if math::equal_epsilon_f32(sigma, 0.0, math::EPSILON_F32_6) {
             reflectances.add(Box::new(lambertian::Lambertian::new(kd)));
-        }
-        else {
+        } else {
             reflectances.add(Box::new(oren_nayar::OrenNayar::new(kd, sigma)));
         }
 
