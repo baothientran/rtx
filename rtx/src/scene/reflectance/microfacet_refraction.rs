@@ -40,7 +40,42 @@ impl reflectance::Reflectance for MicrofacetRefraction {
     }
 
     fn brdf(&self, shading_wo: &vec3::Vec3, shading_wi: &vec3::Vec3) -> vec3::Vec3 {
-        todo!()
+        if shading_wi.z == 0.0 || shading_wo.z == 0.0 {
+            return vec3::Vec3::from(0.0);
+        }
+
+        if shading_wi.z * shading_wo.z > 0.0 {
+            return vec3::Vec3::from(0.0);
+        }
+
+        let eta_i;
+        let eta_t;
+        if shading_wo.z > 0.0 {
+            eta_i = self.eta_i;
+            eta_t = self.eta_t;
+        } else {
+            eta_i = self.eta_t;
+            eta_t = self.eta_i;
+        }
+
+        let mut shading_wh = -eta_i * shading_wi - eta_t * shading_wo;
+        if shading_wh.length_sq() == 0.0 {
+            return vec3::Vec3::from(0.0);
+        }
+
+        shading_wh = shading_wh.normalize().unwrap();
+        if shading_wh.z < 0.0 {
+            shading_wh = -shading_wh;
+        }
+
+        let f = vec3::Vec3::from(1.0) - self.fresnel.evaluate(shading_wh.dot(shading_wi));
+        let d = self.distribution.d(&shading_wh);
+        let g = self.distribution.g(shading_wo, shading_wi);
+        let wh_dot_wi = shading_wh.dot(shading_wi);
+        let wh_dot_wo = shading_wh.dot(shading_wo);
+        let s = eta_i * wh_dot_wi + eta_t *wh_dot_wo;
+        return self.kt * self.eta_t * self.eta_t * f * d * g * f32::abs(wh_dot_wi) * f32::abs(wh_dot_wo)
+            / (f32::abs(shading_wi.z) * f32::abs(shading_wo.z) *  s * s);
     }
 
     fn sample_brdf(&self, _shading_wo: &vec3::Vec3, _shading_wi: &mut vec3::Vec3) -> vec3::Vec3 {
