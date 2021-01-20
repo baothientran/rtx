@@ -30,15 +30,21 @@
         * path tracing
 
 - on going:
+    + monte-carlo integration
+    + light transport
     + material:
-        * microfacet: refraction
+        * lambertian (sample_bxdf)
+        * microfacet: oren nayar (sample_bxdf)
+        * microfacet: reflection and refraction (sample_bxdf) 
 
 - done:
     + material:
-        * microfacet: oren nayar
-        * gamma correction
-        * lambertian 
+        * microfacet: oren nayar (bxdf only)
+        * microfacet: reflection and refraction (bxdf only) 
+        * lambertian (bxdf only)
         * reflection
+        * refraction
+        * gamma correction
 
     + tests:
         * sphere

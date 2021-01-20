@@ -4,7 +4,7 @@ pub mod matte;
 use crate::core::vec3;
 
 pub trait Material {
-    fn brdf(
+    fn bxdf(
         &self,
         normal: &vec3::Vec3,
         dpdu: &vec3::Vec3,
@@ -12,7 +12,7 @@ pub trait Material {
         wi: &vec3::Vec3,
     ) -> vec3::Vec3;
 
-    fn sample_brdf(
+    fn sample_bxdf(
         &self,
         normal: &vec3::Vec3,
         dpdu: &vec3::Vec3,

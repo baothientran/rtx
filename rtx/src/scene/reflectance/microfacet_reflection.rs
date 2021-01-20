@@ -35,7 +35,7 @@ impl reflectance::Reflectance for MicrofacetReflection {
         );
     }
 
-    fn brdf(&self, shading_wo: &vec3::Vec3, shading_wi: &vec3::Vec3) -> vec3::Vec3 {
+    fn bxdf(&self, shading_wo: &vec3::Vec3, shading_wi: &vec3::Vec3) -> vec3::Vec3 {
         let cos_theta_o = f32::abs(shading_wo.z);
         let cos_theta_i = f32::abs(shading_wi.z);
         if cos_theta_o == 0.0 || cos_theta_i == 0.0 {
@@ -54,7 +54,7 @@ impl reflectance::Reflectance for MicrofacetReflection {
         return self.ks * d * g * f / (4.0 * cos_theta_o * cos_theta_i);
     }
 
-    fn sample_brdf(&self, _shading_wo: &vec3::Vec3, _shading_wi: &mut vec3::Vec3) -> vec3::Vec3 {
+    fn sample_bxdf(&self, _shading_wo: &vec3::Vec3, _shading_wi: &mut vec3::Vec3) -> vec3::Vec3 {
         todo!();
     }
 }

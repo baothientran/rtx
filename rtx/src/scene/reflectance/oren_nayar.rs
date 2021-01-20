@@ -25,7 +25,7 @@ impl reflectance::Reflectance for OrenNayar {
         );
     }
 
-    fn brdf(&self, shading_wo: &vec3::Vec3, shading_wi: &vec3::Vec3) -> vec3::Vec3 {
+    fn bxdf(&self, shading_wo: &vec3::Vec3, shading_wi: &vec3::Vec3) -> vec3::Vec3 {
         // calc sin(alpha) and tan(beta)
         let cos_wo_normal = f32::abs(shading_wo.z);
         let cos_wi_normal = f32::abs(shading_wi.z);
@@ -55,7 +55,7 @@ impl reflectance::Reflectance for OrenNayar {
             * (self.a + self.b * f32::max(0.0, cos_phi_diff) * sin_alpha * tan_beta);
     }
 
-    fn sample_brdf(&self, _shading_wo: &vec3::Vec3, _shading_wi: &mut vec3::Vec3) -> vec3::Vec3 {
+    fn sample_bxdf(&self, _shading_wo: &vec3::Vec3, _shading_wi: &mut vec3::Vec3) -> vec3::Vec3 {
         todo!();
     }
 }

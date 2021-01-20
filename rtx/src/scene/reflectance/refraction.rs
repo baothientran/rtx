@@ -29,7 +29,7 @@ impl reflectance::Reflectance for Refraction {
         );
     }
 
-    fn brdf(
+    fn bxdf(
         &self,
         _shading_wo: &crate::core::vec3::Vec3,
         _shading_wi: &crate::core::vec3::Vec3,
@@ -37,7 +37,7 @@ impl reflectance::Reflectance for Refraction {
         return vec3::Vec3::from(0.0);
     }
 
-    fn sample_brdf(&self, shading_wo: &vec3::Vec3, shading_wi: &mut vec3::Vec3) -> vec3::Vec3 {
+    fn sample_bxdf(&self, shading_wo: &vec3::Vec3, shading_wi: &mut vec3::Vec3) -> vec3::Vec3 {
         let mut cos_normal_wo = shading_wo.z;
         let eta_i;
         let eta_t;
@@ -63,7 +63,7 @@ impl reflectance::Reflectance for Refraction {
 
         *shading_wi = r * (-shading_wo) + (r * cos_normal_wo - f32::sqrt(cos_normal_wi_sq)) * n;
 
-        // calculate brdf of refraction
+        // calculate bxdf of refraction
         let cos_normal_wi = shading_wi.z;
         r *= r;
         return r * (vec3::Vec3::from(1.0) - self.fresnel.evaluate(cos_normal_wi)) * self.kt

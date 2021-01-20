@@ -20,11 +20,11 @@ impl reflectance::Reflectance for Lambertian {
         );
     }
 
-    fn brdf(&self, _wo: &vec3::Vec3, _wi: &vec3::Vec3) -> vec3::Vec3 {
+    fn bxdf(&self, _wo: &vec3::Vec3, _wi: &vec3::Vec3) -> vec3::Vec3 {
         return self.kd / math::PI_F32;
     }
 
-    fn sample_brdf(&self, _wo: &vec3::Vec3, _wi: &mut vec3::Vec3) -> vec3::Vec3 {
+    fn sample_bxdf(&self, _wo: &vec3::Vec3, _wi: &mut vec3::Vec3) -> vec3::Vec3 {
         todo!();
     }
 }

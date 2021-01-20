@@ -39,7 +39,7 @@ impl reflectance::Reflectance for MicrofacetRefraction {
         );
     }
 
-    fn brdf(&self, shading_wo: &vec3::Vec3, shading_wi: &vec3::Vec3) -> vec3::Vec3 {
+    fn bxdf(&self, shading_wo: &vec3::Vec3, shading_wi: &vec3::Vec3) -> vec3::Vec3 {
         if shading_wi.z == 0.0 || shading_wo.z == 0.0 {
             return vec3::Vec3::from(0.0);
         }
@@ -73,12 +73,19 @@ impl reflectance::Reflectance for MicrofacetRefraction {
         let g = self.distribution.g(shading_wo, shading_wi);
         let wh_dot_wi = shading_wh.dot(shading_wi);
         let wh_dot_wo = shading_wh.dot(shading_wo);
-        let s = eta_i * wh_dot_wi + eta_t *wh_dot_wo;
-        return self.kt * self.eta_t * self.eta_t * f * d * g * f32::abs(wh_dot_wi) * f32::abs(wh_dot_wo)
-            / (f32::abs(shading_wi.z) * f32::abs(shading_wo.z) *  s * s);
+        let s = eta_i * wh_dot_wi + eta_t * wh_dot_wo;
+        return self.kt
+            * self.eta_t
+            * self.eta_t
+            * f
+            * d
+            * g
+            * f32::abs(wh_dot_wi)
+            * f32::abs(wh_dot_wo)
+            / (f32::abs(shading_wi.z) * f32::abs(shading_wo.z) * s * s);
     }
 
-    fn sample_brdf(&self, _shading_wo: &vec3::Vec3, _shading_wi: &mut vec3::Vec3) -> vec3::Vec3 {
+    fn sample_bxdf(&self, _shading_wo: &vec3::Vec3, _shading_wi: &mut vec3::Vec3) -> vec3::Vec3 {
         todo!()
     }
 }

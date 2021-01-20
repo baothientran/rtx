@@ -22,11 +22,11 @@ impl reflectance::Reflectance for Reflection {
         );
     }
 
-    fn brdf(&self, _shading_wo: &vec3::Vec3, _shading_wi: &vec3::Vec3) -> vec3::Vec3 {
+    fn bxdf(&self, _shading_wo: &vec3::Vec3, _shading_wi: &vec3::Vec3) -> vec3::Vec3 {
         return vec3::Vec3::from(0.0);
     }
 
-    fn sample_brdf(&self, shading_wo: &vec3::Vec3, shading_wi: &mut vec3::Vec3) -> vec3::Vec3 {
+    fn sample_bxdf(&self, shading_wo: &vec3::Vec3, shading_wi: &mut vec3::Vec3) -> vec3::Vec3 {
         *shading_wi = vec3::Vec3::new(-shading_wo.x, -shading_wo.y, shading_wo.z); // reflect against z-axis
         let cos_theta_wi = shading_wi.z;
         return self.fresnel.evaluate(cos_theta_wi) * self.kr / f32::abs(cos_theta_wi);

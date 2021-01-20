@@ -23,9 +23,9 @@ impl ReflectanceType {
 pub trait Reflectance {
     fn has_types(&self, flags: u32) -> bool;
 
-    fn brdf(&self, shading_wo: &vec3::Vec3, shading_wi: &vec3::Vec3) -> vec3::Vec3;
+    fn bxdf(&self, shading_wo: &vec3::Vec3, shading_wi: &vec3::Vec3) -> vec3::Vec3;
 
-    fn sample_brdf(&self, shading_wo: &vec3::Vec3, shading_wi: &mut vec3::Vec3) -> vec3::Vec3;
+    fn sample_bxdf(&self, shading_wo: &vec3::Vec3, shading_wi: &mut vec3::Vec3) -> vec3::Vec3;
 }
 
 pub struct ReflectanceCollection {
@@ -47,7 +47,7 @@ impl ReflectanceCollection {
         self.reflectances.clear();
     }
 
-    pub fn brdf(
+    pub fn bxdf(
         &self,
         normal: &vec3::Vec3,
         dpdu: &vec3::Vec3,
@@ -62,15 +62,15 @@ impl ReflectanceCollection {
         }
 
         let shading_wi = self.world_to_shading(&shading_x, &shading_y, normal, wi);
-        let mut total_brdf = vec3::Vec3::from(0.0);
+        let mut total_bxdf = vec3::Vec3::from(0.0);
         for reflectance in self.reflectances.iter() {
-            total_brdf += reflectance.brdf(&shading_wo, &shading_wi);
+            total_bxdf += reflectance.bxdf(&shading_wo, &shading_wi);
         }
 
-        return total_brdf;
+        return total_bxdf;
     }
 
-    pub fn sample_brdf(
+    pub fn sample_bxdf(
         &self,
         normal: &vec3::Vec3,
         dpdu: &vec3::Vec3,
@@ -78,15 +78,15 @@ impl ReflectanceCollection {
         wi: &mut vec3::Vec3,
         flags: u32,
     ) -> vec3::Vec3 {
-        let mut brdf_id = -1;
+        let mut bxdf_id = -1;
         for i in 0..self.reflectances.len() {
             if self.reflectances[i].has_types(flags) {
-                brdf_id = i as i32;
+                bxdf_id = i as i32;
                 break;
             }
         }
 
-        if brdf_id == -1 {
+        if bxdf_id == -1 {
             return vec3::Vec3::from(0.0);
         }
 
@@ -98,17 +98,17 @@ impl ReflectanceCollection {
         }
 
         let mut shading_wi = vec3::Vec3::from(0.0);
-        let mut brdf =
-            self.reflectances[brdf_id as usize].sample_brdf(&shading_wo, &mut shading_wi);
+        let mut bxdf =
+            self.reflectances[bxdf_id as usize].sample_bxdf(&shading_wo, &mut shading_wi);
 
         for i in 0..self.reflectances.len() {
-            if (i != brdf_id as usize) && (self.reflectances[i].has_types(flags)) {
-                brdf += self.reflectances[i].brdf(&shading_wo, &shading_wi);
+            if (i != bxdf_id as usize) && (self.reflectances[i].has_types(flags)) {
+                bxdf += self.reflectances[i].bxdf(&shading_wo, &shading_wi);
             }
         }
 
         *wi = self.shading_to_world(&shading_x, &shading_y, normal, &shading_wi);
-        return brdf;
+        return bxdf;
     }
 
     fn world_to_shading(

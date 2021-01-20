@@ -29,17 +29,17 @@ impl Glass {
 }
 
 impl material::Material for Glass {
-    fn brdf(
+    fn bxdf(
         &self,
         normal: &vec3::Vec3,
         dpdu: &vec3::Vec3,
         wo: &vec3::Vec3,
         wi: &vec3::Vec3,
     ) -> vec3::Vec3 {
-        return self.reflectances.brdf(normal, dpdu, wo, wi);
+        return self.reflectances.bxdf(normal, dpdu, wo, wi);
     }
 
-    fn sample_brdf(
+    fn sample_bxdf(
         &self,
         normal: &vec3::Vec3,
         dpdu: &vec3::Vec3,
@@ -47,6 +47,6 @@ impl material::Material for Glass {
         wi: &mut vec3::Vec3,
         flags: u32,
     ) -> vec3::Vec3 {
-        return self.reflectances.sample_brdf(normal, dpdu, wo, wi, flags);
+        return self.reflectances.sample_bxdf(normal, dpdu, wo, wi, flags);
     }
 }

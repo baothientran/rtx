@@ -37,40 +37,40 @@ fn ray_trace(
             if light.is_visible(&surface_point_above, world) {
                 let mut wi = vec3::Vec3::from(0.0);
                 let li = light.li(&surface_point_above, &mut wi);
-                let brdf = surface_material.brdf(&normal, &dpdu, &wo, &wi);
-                lo += brdf * li * f32::abs(vec3::Vec3::dot(&normal, &wi));
+                let bxdf = surface_material.bxdf(&normal, &dpdu, &wo, &wi);
+                lo += bxdf * li * f32::abs(vec3::Vec3::dot(&normal, &wi));
             }
         }
 
         // add reflection or refraction
         if depth <= max_depth {
             let mut wi = vec3::Vec3::from(0.0);
-            let brdf = surface_material.sample_brdf(
+            let bxdf = surface_material.sample_bxdf(
                 &normal,
                 &dpdu,
                 &wo,
                 &mut wi,
                 reflectance::ReflectanceType::Reflection as u32,
             );
-            if !vec3::Vec3::equal_epsilon(&brdf, &vec3::Vec3::from(0.0), math::EPSILON_F32_6) {
+            if !vec3::Vec3::equal_epsilon(&bxdf, &vec3::Vec3::from(0.0), math::EPSILON_F32_6) {
                 let ray = ray::Ray::new(surface_point_above, wi);
                 if let Some(li) = ray_trace(&ray, world, depth + 1, max_depth) {
-                    lo += brdf * li * f32::abs(vec3::Vec3::dot(&normal, &wi));
+                    lo += bxdf * li * f32::abs(vec3::Vec3::dot(&normal, &wi));
                 }
             }
 
             let mut wi = vec3::Vec3::from(0.0);
-            let brdf = surface_material.sample_brdf(
+            let bxdf = surface_material.sample_bxdf(
                 &normal,
                 &dpdu,
                 &wo,
                 &mut wi,
                 reflectance::ReflectanceType::Refraction as u32,
             );
-            if !vec3::Vec3::equal_epsilon(&brdf, &vec3::Vec3::from(0.0), math::EPSILON_F32_6) {
+            if !vec3::Vec3::equal_epsilon(&bxdf, &vec3::Vec3::from(0.0), math::EPSILON_F32_6) {
                 let ray = ray::Ray::new(surface_point_below, wi);
                 if let Some(li) = ray_trace(&ray, world, depth + 1, max_depth) {
-                    lo += brdf * li * f32::abs(vec3::Vec3::dot(&normal, &wi));
+                    lo += bxdf * li * f32::abs(vec3::Vec3::dot(&normal, &wi));
                 }
             }
         }
