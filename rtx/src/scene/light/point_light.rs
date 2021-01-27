@@ -24,7 +24,7 @@ impl light::Light for PointLight {
         let direction = self.position - *surface_point;
         let max_distance = vec3::Vec3::length(&direction);
         let ray = ray::Ray::new(*surface_point, direction);
-        return world.is_intersect(&ray, max_distance);
+        return !world.is_intersect(&ray, max_distance);
     }
 
     fn li(&self, surface_point: &vec3::Vec3, wi: &mut vec3::Vec3) -> vec3::Vec3 {
