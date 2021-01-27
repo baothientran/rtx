@@ -83,7 +83,7 @@ fn main() {
     );
 
     // render objects
-    tracer::whitted::render(&camera, &world, 10, &mut img);
+    tracer::monte_carlo::render(&camera, &world, 10, &mut img);
 
     // export to file
     ppm::write_to_file("test.ppm", &img).unwrap();

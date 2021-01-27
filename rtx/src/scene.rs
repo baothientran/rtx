@@ -8,4 +8,5 @@ pub mod ray;
 pub mod reflectance;
 pub mod renderable;
 pub mod shape;
+pub mod sampler;
 pub mod world;

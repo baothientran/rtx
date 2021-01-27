@@ -1,4 +1,5 @@
 use crate::core::math;
+use crate::core::vec2;
 use auto_ops::{impl_op_ex, impl_op_ex_commutative};
 use std::convert;
 
@@ -12,6 +13,14 @@ pub struct Vec3 {
 impl Vec3 {
     pub fn new(x: f32, y: f32, z: f32) -> Vec3 {
         return Vec3 { x, y, z };
+    }
+
+    pub fn from_vec2(v: &vec2::Vec2, z: f32) -> Vec3 {
+        return Vec3::new(v.x, v.y, z);
+    }
+
+    pub fn to_vec2(&self) -> vec2::Vec2 {
+        return vec2::Vec2::new(self.x, self.y);
     }
 
     pub fn dot(&self, rhs: &Vec3) -> f32 {
