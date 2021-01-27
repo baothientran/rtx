@@ -3,7 +3,7 @@ use rtx::exporter::ppm;
 use rtx::scene::camera::perspective_camera;
 use rtx::scene::light;
 use rtx::scene::material::{glass, matte};
-use rtx::scene::sampler::naive;
+use rtx::scene::sampler::naive_sampler;
 use rtx::scene::shape;
 use rtx::scene::world;
 use rtx::tracer;
@@ -84,7 +84,7 @@ fn main() {
     );
 
     // setup sampler
-    let mut sampler = naive::Naive::new();
+    let mut sampler = naive_sampler::NaiveSampler::new();
 
     // render objects
     tracer::whitted::render(&camera, &world, &mut sampler, 10, &mut img);

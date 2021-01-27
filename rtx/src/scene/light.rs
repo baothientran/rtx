@@ -1,4 +1,5 @@
 pub mod point_light;
+pub mod rectangle_light;
 
 use crate::core::vec3;
 use crate::scene::sampler;
