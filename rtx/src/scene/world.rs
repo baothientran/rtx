@@ -39,11 +39,11 @@ impl World {
     pub fn is_intersect(&self, ray: &ray::Ray, max_distance: f32) -> bool {
         for renderable in self.renderables.iter() {
             if renderable.is_intersect(ray, max_distance) {
-                return false;
+                return true;
             }
         }
 
-        return true;
+        return false;
     }
 
     pub fn intersect_ray(&self, ray: &ray::Ray) -> Option<renderable::RenderableSurface> {

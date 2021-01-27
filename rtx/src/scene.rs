@@ -7,6 +7,6 @@ pub mod microfacet_distribution;
 pub mod ray;
 pub mod reflectance;
 pub mod renderable;
-pub mod shape;
 pub mod sampler;
+pub mod shape;
 pub mod world;

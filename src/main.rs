@@ -3,6 +3,7 @@ use rtx::exporter::ppm;
 use rtx::scene::camera::perspective_camera;
 use rtx::scene::light;
 use rtx::scene::material::{glass, matte};
+use rtx::scene::sampler::naive;
 use rtx::scene::shape;
 use rtx::scene::world;
 use rtx::tracer;
@@ -82,8 +83,11 @@ fn main() {
         img.height(),
     );
 
+    // setup sampler
+    let mut sampler = naive::Naive::new();
+
     // render objects
-    tracer::monte_carlo::render(&camera, &world, 10, &mut img);
+    tracer::whitted::render(&camera, &world, &mut sampler, 10, &mut img);
 
     // export to file
     ppm::write_to_file("test.ppm", &img).unwrap();

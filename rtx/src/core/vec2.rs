@@ -10,7 +10,7 @@ pub struct Vec2 {
 
 impl Vec2 {
     pub fn new(x: f32, y: f32) -> Vec2 {
-        return Vec2 {x, y};
+        return Vec2 { x, y };
     }
 
     pub fn dot(&self, v: &Vec2) -> f32 {
@@ -85,10 +85,7 @@ impl convert::From<f32> for Vec2 {
 }
 
 impl_op_ex!(-|a: &Vec2| -> Vec2 {
-    return Vec2 {
-        x: -a.x,
-        y: -a.y,
-    };
+    return Vec2 { x: -a.x, y: -a.y };
 });
 
 impl_op_ex!(+ |lhs: &Vec2, rhs: &Vec2| -> Vec2 {
@@ -143,7 +140,7 @@ impl_op_ex!(/= |lhs: &mut Vec2, rhs: &f32| {
     *lhs = lhs as &Vec2 / rhs;
 });
 
-#[cfg(test)] 
+#[cfg(test)]
 mod test {
     use super::*;
     use crate::core::math;
@@ -467,5 +464,4 @@ mod test {
         let rhs = Vec2::new(2.00002, 3.00003);
         assert!(!Vec2::equal_epsilon(&lhs, &rhs, math::EPSILON_F32_5));
     }
-
 }

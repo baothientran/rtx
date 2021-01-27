@@ -4,11 +4,13 @@ use crate::core::vec3;
 use crate::scene::camera;
 use crate::scene::ray;
 use crate::scene::reflectance;
+use crate::scene::sampler;
 use crate::scene::world;
 
 fn ray_trace(
     ray: &ray::Ray,
     world: &world::World,
+    sampler: &mut dyn sampler::Sampler,
     depth: u32,
     max_depth: u32,
 ) -> Option<vec3::Vec3> {
@@ -34,9 +36,9 @@ fn ray_trace(
 
         // add color from lights around the world
         for light in world.lights() {
-            if light.is_visible(&surface_point_above, world) {
-                let mut wi = vec3::Vec3::from(0.0);
-                let li = light.li(&surface_point_above, &mut wi);
+            let mut wi = vec3::Vec3::from(0.0);
+            let li = light.sample_li(sampler, world, &surface_point_above, &mut wi);
+            if !vec3::Vec3::equal_epsilon(&li, &vec3::Vec3::from(0.0), math::EPSILON_F32_6) {
                 let bxdf = surface_material.bxdf(&normal, &dpdu, &wo, &wi);
                 lo += bxdf * li * f32::abs(vec3::Vec3::dot(&normal, &wi));
             }
@@ -54,7 +56,7 @@ fn ray_trace(
             );
             if !vec3::Vec3::equal_epsilon(&bxdf, &vec3::Vec3::from(0.0), math::EPSILON_F32_6) {
                 let ray = ray::Ray::new(surface_point_above, wi);
-                if let Some(li) = ray_trace(&ray, world, depth + 1, max_depth) {
+                if let Some(li) = ray_trace(&ray, world, sampler, depth + 1, max_depth) {
                     lo += bxdf * li * f32::abs(vec3::Vec3::dot(&normal, &wi));
                 }
             }
@@ -69,7 +71,7 @@ fn ray_trace(
             );
             if !vec3::Vec3::equal_epsilon(&bxdf, &vec3::Vec3::from(0.0), math::EPSILON_F32_6) {
                 let ray = ray::Ray::new(surface_point_below, wi);
-                if let Some(li) = ray_trace(&ray, world, depth + 1, max_depth) {
+                if let Some(li) = ray_trace(&ray, world, sampler, depth + 1, max_depth) {
                     lo += bxdf * li * f32::abs(vec3::Vec3::dot(&normal, &wi));
                 }
             }
@@ -84,6 +86,7 @@ fn ray_trace(
 pub fn render(
     camera: &impl camera::Camera,
     world: &world::World,
+    sampler: &mut dyn sampler::Sampler,
     max_depth: u32,
     image: &mut image::Image,
 ) {
@@ -93,7 +96,7 @@ pub fn render(
     for y in 0..image_height {
         for x in 0..image_width {
             let ray = camera.create_ray(x as f32, y as f32);
-            if let Some(color) = ray_trace(&ray, world, 0, max_depth) {
+            if let Some(color) = ray_trace(&ray, world, sampler, 0, max_depth) {
                 image[y][x] = color;
             }
         }
