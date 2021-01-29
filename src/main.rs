@@ -41,20 +41,26 @@ fn main() {
         1.5,
     ));
 
-    let point_light_front = Box::new(light::point_light::PointLight::new(
+    let _point_light_front = Box::new(light::point_light::PointLight::new(
         vec3::Vec3::new(0.0, 2.0, 2.0),
         vec3::Vec3::from(1.0),
         10.0,
     ));
-    let point_light_center = Box::new(light::point_light::PointLight::new(
+    let _point_light_center = Box::new(light::point_light::PointLight::new(
         vec3::Vec3::new(0.0, 0.5, 0.0),
         vec3::Vec3::from(1.0),
         10.0,
     ));
-    let point_light_back = Box::new(light::point_light::PointLight::new(
+    let _point_light_back = Box::new(light::point_light::PointLight::new(
         vec3::Vec3::new(0.0, 2.0, -2.0),
         vec3::Vec3::from(1.0),
         10.0,
+    ));
+    let rectangle_light = Box::new(light::rectangle_light::RectangleLight::new(
+        mat4::Mat4::new().translate(&vec3::Vec3::new(0.0, 0.7, -0.5)),
+        0.2,
+        0.2,
+        vec3::Vec3::from(200.0),
     ));
 
     let mut world = world::World::new();
@@ -62,12 +68,13 @@ fn main() {
     world.add_shape(sphere_left, blue_matte);
     world.add_shape(sphere_center, glass);
     world.add_shape(sphere_right, purple_matte);
-    world.add_light(point_light_front);
-    world.add_light(point_light_center);
-    world.add_light(point_light_back);
+    // world.add_light(point_light_front);
+    // world.add_light(point_light_center);
+    // world.add_light(point_light_back);
+    world.add_light(rectangle_light);
 
     // setup camera
-    let view_location = vec3::Vec3::new(0.6, 0.5, 1.5);
+    let view_location = vec3::Vec3::new(0.0, 1.4, 2.5);
     let mut view_out = vec3::Vec3::from(0.0) - view_location;
     view_out = vec3::Vec3::normalize(&view_out).unwrap();
     let view_up = vec3::Vec3::new(0.0, 1.0, 0.0);
