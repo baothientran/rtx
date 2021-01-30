@@ -25,7 +25,7 @@ impl RectangleLight {
     ) -> RectangleLight {
         let normal_transform =
             mat4::Mat4::inverse(&mat4::Mat4::transpose(&object_to_world)).unwrap();
-        let vec4_normal = vec4::Vec4::new(0.0, 0.0, 1.0, 0.0) * normal_transform;
+        let vec4_normal = normal_transform * vec4::Vec4::new(0.0, 0.0, 1.0, 0.0);
         let normal = vec4_normal.to_vec3().normalize().unwrap();
 
         return RectangleLight {

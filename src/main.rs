@@ -2,7 +2,7 @@ use rtx::core::{image, mat4, math, vec3};
 use rtx::exporter::ppm;
 use rtx::scene::camera::perspective_camera;
 use rtx::scene::light;
-use rtx::scene::material::{glass, matte};
+use rtx::scene::material::{matte};
 use rtx::scene::sampler::naive_sampler;
 use rtx::scene::shape;
 use rtx::scene::world;
@@ -19,27 +19,11 @@ fn main() {
         vec3::Vec3::new(0.0, 1.0, 0.0),
         0.2,
     ));
-    let sphere_left = rc::Rc::new(shape::sphere::Sphere::new(
-        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(-0.4, 0.0, 0.0)),
-        0.2,
-    ));
     let sphere_center = rc::Rc::new(shape::sphere::Sphere::new(
         mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 0.0, 0.0)),
         0.2,
     ));
-    let sphere_right = rc::Rc::new(shape::sphere::Sphere::new(
-        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.4, 0.0, 0.0)),
-        0.2,
-    ));
-    let green_matte = rc::Rc::new(matte::Matte::new(vec3::Vec3::new(0.5, 0.8, 0.7), 0.3));
-    let purple_matte = rc::Rc::new(matte::Matte::new(vec3::Vec3::new(0.8, 0.6, 0.7), 0.3));
-    let blue_matte = rc::Rc::new(matte::Matte::new(vec3::Vec3::new(0.3, 0.6, 0.7), 0.3));
-    let glass = rc::Rc::new(glass::Glass::new(
-        vec3::Vec3::from(1.0),
-        vec3::Vec3::from(1.0),
-        1.0,
-        1.5,
-    ));
+    let white_matte = rc::Rc::new(matte::Matte::new(vec3::Vec3::from(1.0), 0.3));
 
     let _point_light_front = Box::new(light::point_light::PointLight::new(
         vec3::Vec3::new(0.0, 2.0, 2.0),
@@ -57,17 +41,15 @@ fn main() {
         10.0,
     ));
     let rectangle_light = Box::new(light::rectangle_light::RectangleLight::new(
-        mat4::Mat4::new().translate(&vec3::Vec3::new(0.0, 0.7, -0.5)),
+        mat4::Mat4::new().translate(&vec3::Vec3::new(0.0, 0.01, 0.5)).rotate(math::degree_to_radian(90.0), &vec3::Vec3::new(1.0, 0.0, 0.0)),
         0.2,
         0.2,
-        vec3::Vec3::from(200.0),
+        vec3::Vec3::from(40.0),
     ));
 
     let mut world = world::World::new();
-    world.add_shape(plane, green_matte);
-    world.add_shape(sphere_left, blue_matte);
-    world.add_shape(sphere_center, glass);
-    world.add_shape(sphere_right, purple_matte);
+    world.add_shape(plane, white_matte.clone());
+    world.add_shape(sphere_center, white_matte.clone());
     // world.add_light(point_light_front);
     // world.add_light(point_light_center);
     // world.add_light(point_light_back);
@@ -79,7 +61,7 @@ fn main() {
     view_out = vec3::Vec3::normalize(&view_out).unwrap();
     let view_up = vec3::Vec3::new(0.0, 1.0, 0.0);
     let view_angle = math::degree_to_radian(60.0);
-    let distance_to_image = 10.0;
+    let distance_to_image = 1.0;
     let camera = perspective_camera::PerspectiveCamera::new(
         view_location,
         view_out,
