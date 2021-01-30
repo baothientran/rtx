@@ -1,4 +1,4 @@
-pub mod naive_sampler;
+pub mod random_sampler;
 
 use crate::core::vec2;
 

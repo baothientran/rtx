@@ -3,19 +3,19 @@ use crate::scene::sampler;
 use rand::prelude::*;
 use rand::rngs;
 
-pub struct NaiveSampler {
+pub struct RandomSampler {
     rng: rngs::ThreadRng,
 }
 
-impl NaiveSampler {
-    pub fn new() -> NaiveSampler {
-        return NaiveSampler {
+impl RandomSampler {
+    pub fn new() -> RandomSampler {
+        return RandomSampler {
             rng: rand::thread_rng(),
         };
     }
 }
 
-impl sampler::Sampler for NaiveSampler {
+impl sampler::Sampler for RandomSampler {
     fn get_1d(&mut self) -> f32 {
         return self.rng.gen_range(0.0, 1.0);
     }
