@@ -11,22 +11,22 @@ use std::rc;
 
 fn main() {
     // setup image
-    let mut img = image::Image::new(1000, 500);
+    let mut img = image::Image::new(1920, 1080);
 
     // setup scene
     let rectangle_light = Box::new(light::rectangle_light::RectangleLight::new(
         mat4::Mat4::new().translate(&vec3::Vec3::new(0.0, 0.01, 0.5)).rotate(math::degree_to_radian(90.0), &vec3::Vec3::new(1.0, 0.0, 0.0)),
         0.2,
         0.2,
-        vec3::Vec3::from(40.0),
+        vec3::Vec3::from(255.0),
     ));
     let plane = rc::Rc::new(shape::plane::Plane::new(
         mat4::Mat4::new(),
         vec3::Vec3::new(0.0, 1.0, 0.0),
-        0.2,
+        0.0,
     ));
     let sphere_center = rc::Rc::new(shape::sphere::Sphere::new(
-        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 0.0, 0.0)),
+        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 0.2, 0.0)),
         0.2,
     ));
     let white_matte = rc::Rc::new(matte::Matte::new(vec3::Vec3::from(1.0), 0.3));
