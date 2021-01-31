@@ -1,5 +1,5 @@
-use crate::core::math;
 use crate::core::mat4;
+use crate::core::math;
 use crate::core::vec2;
 use crate::core::vec3;
 use crate::core::vec4;

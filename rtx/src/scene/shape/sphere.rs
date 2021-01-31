@@ -113,6 +113,10 @@ impl shape::Shape for Sphere {
             &self.normal_transform,
         ));
     }
+
+    fn pdf(&self, _w: &vec3::Vec3) -> f32 {
+        todo!()
+    }
 }
 
 #[cfg(test)]

@@ -4,22 +4,30 @@ use crate::core::vec3;
 use crate::scene::ray;
 use crate::scene::shape;
 
-pub struct Plane {
+pub struct Rectangle {
     normal: vec3::Vec3,
     distance: f32,
+    width: f32,
+    height: f32,
     object_to_world: mat4::Mat4,
     world_to_object: mat4::Mat4,
     normal_transform: mat4::Mat4,
 }
 
-impl Plane {
-    pub fn new(object_to_world: mat4::Mat4, normal: vec3::Vec3, distance: f32) -> Plane {
+impl Rectangle {
+    pub fn new(object_to_world: mat4::Mat4, width: f32, height: f32) -> Rectangle {
         let world_to_object = mat4::Mat4::inverse(&object_to_world).unwrap();
         let normal_transform =
             mat4::Mat4::inverse(&mat4::Mat4::transpose(&object_to_world)).unwrap();
-        return Plane {
-            normal: vec3::Vec3::normalize(&normal).unwrap(),
+
+        let normal = vec3::Vec3::new(0.0, 0.0, 1.0);
+        let distance = 0.0;
+
+        return Rectangle {
+            normal,
             distance,
+            width,
+            height,
             object_to_world,
             world_to_object,
             normal_transform,
@@ -27,7 +35,7 @@ impl Plane {
     }
 }
 
-impl shape::Shape for Plane {
+impl shape::Shape for Rectangle {
     fn is_intersect(&self, ray: &ray::Ray, max_distance: f32) -> bool {
         let local_ray = ray::Ray::transform(ray, &self.world_to_object);
         let vd = vec3::Vec3::dot(&self.normal, local_ray.direction());
@@ -37,7 +45,22 @@ impl shape::Shape for Plane {
 
         let vo = -vec3::Vec3::dot(&self.normal, local_ray.origin()) - self.distance;
         let t = vo / vd;
-        return t > 0.0 && t < max_distance;
+        // return t > 0.0 && t < max_distance;
+        if t <= 0.0 {
+            return false;
+        }
+
+        // calculate intersection point
+        let local_position = local_ray.calc_position(t);
+        if local_position.x < -self.width * 0.5 || local_position.x > self.width * 0.5 {
+            return false;
+        }
+
+        if local_position.y < -self.height * 0.5 || local_position.y > self.height * 0.5 {
+            return false;
+        }
+
+        return t < max_distance;
     }
 
     fn intersect_ray(&self, ray: &ray::Ray) -> Option<shape::ShapeSurface> {
@@ -55,6 +78,13 @@ impl shape::Shape for Plane {
 
         // calculate intersection point
         let local_position = local_ray.calc_position(t);
+        if local_position.x < -self.width * 0.5 || local_position.x > self.width * 0.5 {
+            return None;
+        }
+
+        if local_position.y < -self.height * 0.5 || local_position.y > self.height * 0.5 {
+            return None;
+        }
 
         // calculate dpdu and dpdv
         let mut local_dpdu = vec3::Vec3::from(0.0);
@@ -71,6 +101,10 @@ impl shape::Shape for Plane {
             &self.normal_transform,
         ));
     }
+
+    fn pdf(&self, _w: &vec3::Vec3) -> f32 {
+        todo!()
+    }
 }
 
 #[cfg(test)]
@@ -85,7 +119,17 @@ mod test {
             mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 1.0, 1.0));
         let normal = vec3::Vec3::new(0.0, 1.0, 0.0);
         let distance = 0.2;
-        let plane = Plane::new(object_to_world, normal, distance);
+        let plane = Rectangle::new(
+            mat4::Mat4::new()
+                .translate(&vec3::Vec3::new(0.0, 1.0, 1.0))
+                .translate(&vec3::Vec3::new(0.0, -0.2, 0.0))
+                .rotate(
+                    math::degree_to_radian(-90.0),
+                    &vec3::Vec3::new(1.0, 0.0, 0.0),
+                ),
+            100.0,
+            100.0,
+        );
 
         let ray_origin = vec3::Vec3::new(0.0, -4.0, 1.0);
         let mut ray_direction = vec3::Vec3::new(0.0, 1.0, 1.0);
@@ -137,7 +181,17 @@ mod test {
             mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 1.0, 1.0));
         let normal = vec3::Vec3::new(0.0, 1.0, 0.0);
         let distance = 0.2;
-        let plane = Plane::new(object_to_world, normal, distance);
+        let plane = Rectangle::new(
+            mat4::Mat4::new()
+                .translate(&vec3::Vec3::new(0.0, 1.0, 1.0))
+                .translate(&vec3::Vec3::new(0.0, -0.2, 0.0))
+                .rotate(
+                    math::degree_to_radian(-90.0),
+                    &vec3::Vec3::new(1.0, 0.0, 0.0),
+                ),
+            100.0,
+            100.0,
+        );
 
         let ray_origin = vec3::Vec3::new(1.0, 1.0, 1.0);
         let mut ray_direction = vec3::Vec3::from(0.0) - ray_origin;
@@ -185,9 +239,17 @@ mod test {
 
     #[test]
     fn test_intersect_ray_parallel() {
-        let plane = Plane::new(mat4::Mat4::new(), vec3::Vec3::new(0.0, 1.0, 0.0), 0.2);
+        let plane = Rectangle::new(
+            mat4::Mat4::new()
+                .rotate(
+                    math::degree_to_radian(-90.0),
+                    &vec3::Vec3::new(1.0, 0.0, 0.0),
+                ),
+            1.0,
+            1.0,
+        );
 
-        let ray_origin = vec3::Vec3::new(0.0, 0.2, 1.0);
+        let ray_origin = vec3::Vec3::new(0.0, 0.0, 1.0);
         let ray_direction = vec3::Vec3::new(0.0, 0.0, -1.0);
         let ray = ray::Ray::new(ray_origin, ray_direction);
 
@@ -197,7 +259,16 @@ mod test {
 
     #[test]
     fn test_intersect_ray_no_intersect() {
-        let plane = Plane::new(mat4::Mat4::new(), vec3::Vec3::new(0.0, 1.0, 0.0), 0.2);
+        let plane = Rectangle::new(
+            mat4::Mat4::new()
+                .translate(&vec3::Vec3::new(0.0, -0.2, 0.0))
+                .rotate(
+                    math::degree_to_radian(-90.0),
+                    &vec3::Vec3::new(1.0, 0.0, 0.0),
+                ),
+            1.0,
+            1.0,
+        );
 
         let ray_origin = vec3::Vec3::new(0.0, 0.6, 1.0);
         let mut ray_direction = vec3::Vec3::new(0.0, 1.0, 1.0);

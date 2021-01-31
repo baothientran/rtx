@@ -1,4 +1,4 @@
-pub mod plane;
+pub mod rectangle;
 pub mod sphere;
 
 use crate::core::mat4;
@@ -72,4 +72,6 @@ pub trait Shape {
     fn is_intersect(&self, ray: &ray::Ray, max_distance: f32) -> bool;
 
     fn intersect_ray(&self, ray: &ray::Ray) -> Option<ShapeSurface>;
+
+    fn pdf(&self, wi: &vec3::Vec3) -> f32;
 }
