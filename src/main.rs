@@ -21,9 +21,9 @@ fn main() {
                 math::degree_to_radian(90.0),
                 &vec3::Vec3::new(1.0, 0.0, 0.0),
             ),
-        0.2,
-        0.2,
-        vec3::Vec3::from(255.0),
+        1.0,
+        1.0,
+        vec3::Vec3::from(10.0),
     ));
     let plane = rc::Rc::new(shape::rectangle::Rectangle::new(
         mat4::Mat4::new()
@@ -32,7 +32,7 @@ fn main() {
                 math::degree_to_radian(-90.0),
                 &vec3::Vec3::new(1.0, 0.0, 0.0).normalize().unwrap(),
             ),
-        4.0,
+        6.0,
         3.0,
     ));
     let sphere_center = rc::Rc::new(shape::sphere::Sphere::new(

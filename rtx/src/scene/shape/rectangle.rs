@@ -45,7 +45,6 @@ impl shape::Shape for Rectangle {
 
         let vo = -vec3::Vec3::dot(&self.normal, local_ray.origin()) - self.distance;
         let t = vo / vd;
-        // return t > 0.0 && t < max_distance;
         if t <= 0.0 {
             return false;
         }
