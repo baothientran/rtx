@@ -2,6 +2,7 @@ pub mod rectangle;
 pub mod sphere;
 
 use crate::core::mat4;
+use crate::core::vec2;
 use crate::core::vec3;
 use crate::core::vec4;
 use crate::scene::ray;
@@ -73,5 +74,10 @@ pub trait Shape {
 
     fn intersect_ray(&self, ray: &ray::Ray) -> Option<ShapeSurface>;
 
-    fn pdf(&self, wi: &vec3::Vec3) -> f32;
+    fn pdf(
+        &self,
+        sample: &vec2::Vec2,
+        surface_point_ref: &vec3::Vec3,
+        surface_point: &mut vec3::Vec3,
+    ) -> f32;
 }

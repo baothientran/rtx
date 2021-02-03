@@ -14,17 +14,18 @@ fn main() {
     let mut img = image::Image::new(1000, 500);
 
     // setup scene
-    let rectangle_light = Box::new(light::rectangle_light::RectangleLight::new(
+    let rectangle_light_shape = Box::new(shape::rectangle::Rectangle::new(
         mat4::Mat4::new()
-            .translate(&vec3::Vec3::new(0.0, 1.01, 0.0))
+            .translate(&vec3::Vec3::new(0.0, 1.0, -0.5))
             .rotate(
                 math::degree_to_radian(90.0),
                 &vec3::Vec3::new(1.0, 0.0, 0.0),
             ),
-        1.0,
-        1.0,
-        vec3::Vec3::from(10.0),
+        0.2,
+        0.2,
     ));
+    let area_light = Box::new(light::area_light::AreaLight::new(vec3::Vec3::from(10.0), rectangle_light_shape));
+
     let plane = rc::Rc::new(shape::rectangle::Rectangle::new(
         mat4::Mat4::new()
             .translate(&vec3::Vec3::new(0.0, 0.0, 0.0))
@@ -44,7 +45,7 @@ fn main() {
     let mut world = world::World::new();
     world.add_shape(plane, white_matte.clone());
     world.add_shape(sphere_center, white_matte.clone());
-    world.add_light(rectangle_light);
+    world.add_light(area_light);
 
     // setup camera
     let view_location = vec3::Vec3::new(0.0, 2.4, 2.5);

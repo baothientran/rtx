@@ -1,5 +1,6 @@
 use crate::core::mat4;
 use crate::core::math;
+use crate::core::vec2;
 use crate::core::vec3;
 use crate::scene::ray;
 use crate::scene::shape;
@@ -114,7 +115,12 @@ impl shape::Shape for Sphere {
         ));
     }
 
-    fn pdf(&self, _w: &vec3::Vec3) -> f32 {
+    fn pdf(
+        &self,
+        _sample: &vec2::Vec2,
+        _surface_point_ref: &vec3::Vec3,
+        _surface_point: &mut vec3::Vec3,
+    ) -> f32 {
         todo!()
     }
 }

@@ -1,6 +1,8 @@
 use crate::core::mat4;
 use crate::core::math;
+use crate::core::vec2;
 use crate::core::vec3;
+use crate::core::vec4;
 use crate::scene::ray;
 use crate::scene::shape;
 
@@ -101,8 +103,29 @@ impl shape::Shape for Rectangle {
         ));
     }
 
-    fn pdf(&self, _w: &vec3::Vec3) -> f32 {
-        todo!()
+    fn pdf(
+        &self,
+        sample: &vec2::Vec2,
+        surface_point_ref: &vec3::Vec3,
+        surface_point: &mut vec3::Vec3,
+    ) -> f32 {
+
+        let world_normal = (self.normal_transform * vec4::Vec4::from_vec3(&self.normal, 0.0))
+            .to_vec3()
+            .normalize()
+            .unwrap();
+
+        let local_point = vec3::Vec3::new(sample.x * self.width, sample.y * self.height, 0.0)
+            - vec3::Vec3::new(self.width * 0.5, self.height * 0.5, 0.0);
+        let world_surface_point =
+            (self.object_to_world * vec4::Vec4::from_vec3(&local_point, 1.0)).to_vec3();
+        let direction = surface_point_ref - world_surface_point;
+        let normalize_direction = direction.normalize().unwrap();
+
+        let area = self.width * self.height;
+
+        *surface_point = world_surface_point;
+        return direction.length_sq() / (area * f32::max(world_normal.dot(&normalize_direction), 0.0));
     }
 }
 
@@ -239,11 +262,10 @@ mod test {
     #[test]
     fn test_intersect_ray_parallel() {
         let plane = Rectangle::new(
-            mat4::Mat4::new()
-                .rotate(
-                    math::degree_to_radian(-90.0),
-                    &vec3::Vec3::new(1.0, 0.0, 0.0),
-                ),
+            mat4::Mat4::new().rotate(
+                math::degree_to_radian(-90.0),
+                &vec3::Vec3::new(1.0, 0.0, 0.0),
+            ),
             1.0,
             1.0,
         );
