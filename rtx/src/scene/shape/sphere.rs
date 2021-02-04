@@ -148,7 +148,7 @@ impl shape::Shape for Sphere {
         let ray = ray::Ray::new(*surface_point_ref, direction);
         if let Some(shape_surface) = self.intersect_ray(&ray) {
             let surface_normal = shape_surface.calc_world_normal();
-            let cos_theta = surface_normal.dot(&direction);
+            let cos_theta = surface_normal.dot(&-direction);
             let n = 1.0
                 - f32::sqrt(
                     1.0 - (self.radius * self.radius) / (surface_point_ref - center).length_sq(),

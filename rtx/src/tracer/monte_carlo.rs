@@ -35,7 +35,7 @@ fn ray_trace(
 
         // add color from lights around the world
         for light in world.lights() {
-            let n_samples = 16;
+            let n_samples = 100;
             let mut light_lo = vec3::Vec3::from(0.0);
             for _ in 0..n_samples {
                 let mut wi = vec3::Vec3::from(0.0);
