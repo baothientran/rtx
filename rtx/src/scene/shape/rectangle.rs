@@ -107,9 +107,9 @@ impl shape::Shape for Rectangle {
         &self,
         sample: &vec2::Vec2,
         surface_point_ref: &vec3::Vec3,
+        _surface_normal_ref: &vec3::Vec3,
         surface_point: &mut vec3::Vec3,
     ) -> f32 {
-
         let world_normal = (self.normal_transform * vec4::Vec4::from_vec3(&self.normal, 0.0))
             .to_vec3()
             .normalize()
@@ -125,7 +125,8 @@ impl shape::Shape for Rectangle {
         let area = self.width * self.height;
 
         *surface_point = world_surface_point;
-        return direction.length_sq() / (area * f32::max(world_normal.dot(&normalize_direction), 0.0));
+        return direction.length_sq()
+            / (area * f32::max(world_normal.dot(&normalize_direction), 0.0));
     }
 }
 

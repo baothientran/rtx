@@ -2,6 +2,7 @@ use crate::core::mat4;
 use crate::core::math;
 use crate::core::vec2;
 use crate::core::vec3;
+use crate::core::vec4;
 use crate::scene::ray;
 use crate::scene::shape;
 
@@ -117,11 +118,48 @@ impl shape::Shape for Sphere {
 
     fn pdf(
         &self,
-        _sample: &vec2::Vec2,
-        _surface_point_ref: &vec3::Vec3,
-        _surface_point: &mut vec3::Vec3,
+        sample: &vec2::Vec2,
+        surface_point_ref: &vec3::Vec3,
+        surface_normal_ref: &vec3::Vec3,
+        surface_point: &mut vec3::Vec3,
     ) -> f32 {
-        todo!()
+        let center = (self.object_to_world * vec4::Vec4::new(0.0, 0.0, 0.0, 1.0)).to_vec3();
+        let cos_alpha = 1.0 - sample.x
+            + sample.x
+                * f32::sqrt(
+                    1.0 - (self.radius * self.radius) / (surface_point_ref - center).length_sq(),
+                );
+        let sin_alpha = f32::sqrt(1.0 - cos_alpha * cos_alpha);
+
+        let phi = 2.0 * math::PI_F32 * sample.y;
+        let cos_phi = f32::cos(phi);
+        let sin_phi = f32::sin(phi);
+
+        let w = (center - surface_point_ref).normalize().unwrap();
+        let v = w.cross(surface_normal_ref).normalize().unwrap();
+        let u = v.cross(&w).normalize().unwrap();
+        let sample_transform = mat4::Mat4::from_scalars(
+            u.x, u.y, u.z, 0.0, v.x, v.y, v.z, 0.0, w.x, w.y, w.z, 0.0, 0.0, 0.0, 0.0, 1.0,
+        );
+        let direction_vec4 = sample_transform
+            * vec4::Vec4::new(cos_phi * sin_alpha, sin_phi * sin_alpha, cos_alpha, 0.0);
+
+        let direction = direction_vec4.to_vec3().normalize().unwrap();
+        let ray = ray::Ray::new(*surface_point_ref, direction);
+        if let Some(shape_surface) = self.intersect_ray(&ray) {
+            let surface_normal = shape_surface.calc_world_normal();
+            let cos_theta = surface_normal.dot(&direction);
+            let n = 1.0
+                - f32::sqrt(
+                    1.0 - (self.radius * self.radius) / (surface_point_ref - center).length_sq(),
+                );
+
+            *surface_point = shape_surface.calc_world_position();
+            return cos_theta
+                / (2.0 * math::PI_F32 * (*surface_point - surface_normal_ref).length_sq() * (n));
+        }
+
+        return 0.0;
     }
 }
 

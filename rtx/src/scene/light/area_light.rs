@@ -2,12 +2,12 @@ use crate::core::vec3;
 use crate::scene::light;
 use crate::scene::ray;
 use crate::scene::sampler;
-use crate::scene::world;
 use crate::scene::shape;
+use crate::scene::world;
 
 pub struct AreaLight {
     color: vec3::Vec3,
-    shape: Box<dyn shape::Shape>
+    shape: Box<dyn shape::Shape>,
 }
 
 impl AreaLight {
@@ -22,11 +22,17 @@ impl light::Light for AreaLight {
         sampler: &mut dyn sampler::Sampler,
         world: &world::World,
         surface_point: &vec3::Vec3,
+        surface_normal: &vec3::Vec3,
         wi: &mut vec3::Vec3,
     ) -> vec3::Vec3 {
         let uniform_sample = sampler.get_2d();
         let mut sample_surface = vec3::Vec3::from(0.0);
-        let pdf = self.shape.pdf(&uniform_sample, &surface_point, &mut sample_surface);
+        let pdf = self.shape.pdf(
+            &uniform_sample,
+            &surface_point,
+            &surface_normal,
+            &mut sample_surface,
+        );
 
         let direction = sample_surface - surface_point;
         let normalize_direction = direction.normalize().unwrap();

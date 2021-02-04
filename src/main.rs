@@ -24,7 +24,10 @@ fn main() {
         0.2,
         0.2,
     ));
-    let area_light = Box::new(light::area_light::AreaLight::new(vec3::Vec3::from(10.0), rectangle_light_shape));
+    let area_light = Box::new(light::area_light::AreaLight::new(
+        vec3::Vec3::from(10.0),
+        rectangle_light_shape,
+    ));
 
     let plane = rc::Rc::new(shape::rectangle::Rectangle::new(
         mat4::Mat4::new()

@@ -39,7 +39,7 @@ fn ray_trace(
             let mut light_lo = vec3::Vec3::from(0.0);
             for _ in 0..n_samples {
                 let mut wi = vec3::Vec3::from(0.0);
-                let li = light.sample_li(sampler, world, &surface_point_above, &mut wi);
+                let li = light.sample_li(sampler, world, &surface_point_above, &normal, &mut wi);
                 if !vec3::Vec3::equal_epsilon(&li, &vec3::Vec3::from(0.0), math::EPSILON_F32_6) {
                     let bxdf = surface_material.bxdf(&normal, &dpdu, &wo, &wi);
                     light_lo += bxdf * li * f32::abs(vec3::Vec3::dot(&normal, &wi));

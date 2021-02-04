@@ -26,6 +26,7 @@ impl light::Light for PointLight {
         _sampler: &mut dyn sampler::Sampler,
         world: &world::World,
         surface_point: &vec3::Vec3,
+        _surface_normal: &vec3::Vec3,
         wi: &mut vec3::Vec3,
     ) -> vec3::Vec3 {
         let direction = self.position - surface_point;
