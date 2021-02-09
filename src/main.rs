@@ -25,7 +25,7 @@ fn main() {
         0.2,
     ));
     let sphere_light_shape = Box::new(shape::sphere::Sphere::new(
-        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.4, 0.0, 0.0)),
+        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.4, 0.2, 0.0)),
         0.2,
     ));
     let area_light = Box::new(light::area_light::AreaLight::new(
