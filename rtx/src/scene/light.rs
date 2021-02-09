@@ -6,6 +6,8 @@ use crate::scene::sampler;
 use crate::scene::world;
 
 pub trait Light {
+    fn num_samples(&self) -> u32;
+
     fn sample_li(
         &self,
         sampler: &mut dyn sampler::Sampler,

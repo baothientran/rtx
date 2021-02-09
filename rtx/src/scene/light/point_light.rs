@@ -21,6 +21,10 @@ impl PointLight {
 }
 
 impl light::Light for PointLight {
+    fn num_samples(&self) -> u32 {
+        return 1;
+    }
+
     fn sample_li(
         &self,
         _sampler: &mut dyn sampler::Sampler,

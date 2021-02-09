@@ -34,10 +34,10 @@ fn ray_trace(
         }
 
         // add color from lights around the world
+        let mut direct_light_lo = vec3::Vec3::from(0.0);
         for light in world.lights() {
-            let n_samples = 16;
             let mut light_lo = vec3::Vec3::from(0.0);
-            for _ in 0..n_samples {
+            for _ in 0..light.num_samples() {
                 let mut wi = vec3::Vec3::from(0.0);
                 let li = light.sample_li(sampler, world, &surface_point_above, &normal, &mut wi);
                 if !vec3::Vec3::equal_epsilon(&li, &vec3::Vec3::from(0.0), math::EPSILON_F32_6) {
@@ -45,10 +45,13 @@ fn ray_trace(
                     light_lo += bxdf * li * f32::abs(vec3::Vec3::dot(&normal, &wi));
                 }
             }
-            light_lo /= n_samples as f32;
-            lo += light_lo;
+            light_lo /= light.num_samples() as f32;
+            direct_light_lo += light_lo;
         }
 
+        direct_light_lo /= world.lights().len() as f32;
+
+        lo += direct_light_lo;
         return Some(lo);
     }
 

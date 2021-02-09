@@ -8,15 +8,20 @@ use crate::scene::world;
 pub struct AreaLight {
     color: vec3::Vec3,
     shape: Box<dyn shape::Shape>,
+    n_samples: u32
 }
 
 impl AreaLight {
-    pub fn new(color: vec3::Vec3, shape: Box<dyn shape::Shape>) -> AreaLight {
-        return AreaLight { color, shape };
+    pub fn new(color: vec3::Vec3, shape: Box<dyn shape::Shape>, n_samples: u32) -> AreaLight {
+        return AreaLight { color, shape, n_samples };
     }
 }
 
 impl light::Light for AreaLight {
+    fn num_samples(&self) -> u32 {
+        return self.n_samples;
+    }
+
     fn sample_li(
         &self,
         sampler: &mut dyn sampler::Sampler,

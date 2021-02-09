@@ -31,6 +31,7 @@ fn main() {
     let area_light = Box::new(light::area_light::AreaLight::new(
         vec3::Vec3::from(1.0),
         sphere_light_shape,
+        32
     ));
 
     let plane = rc::Rc::new(shape::rectangle::Rectangle::new(
