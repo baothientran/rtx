@@ -1,7 +1,7 @@
+use crate::core::vec2;
 use crate::core::vec3;
 use crate::scene::light;
 use crate::scene::ray;
-use crate::scene::sampler;
 use crate::scene::shape;
 use crate::scene::world;
 
@@ -24,16 +24,15 @@ impl light::Light for AreaLight {
 
     fn sample_li(
         &self,
-        sampler: &mut dyn sampler::Sampler,
+        sample: &vec2::Vec2,
         world: &world::World,
         surface_point: &vec3::Vec3,
         surface_normal: &vec3::Vec3,
         wi: &mut vec3::Vec3,
     ) -> vec3::Vec3 {
-        let uniform_sample = sampler.get_2d();
         let mut sample_surface = vec3::Vec3::from(0.0);
         let pdf = self.shape.pdf(
-            &uniform_sample,
+            sample,
             &surface_point,
             &surface_normal,
             &mut sample_surface,

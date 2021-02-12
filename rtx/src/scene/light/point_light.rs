@@ -1,7 +1,7 @@
+use crate::core::vec2;
 use crate::core::vec3;
 use crate::scene::light;
 use crate::scene::ray;
-use crate::scene::sampler;
 use crate::scene::world;
 
 pub struct PointLight {
@@ -27,7 +27,7 @@ impl light::Light for PointLight {
 
     fn sample_li(
         &self,
-        _sampler: &mut dyn sampler::Sampler,
+        _sample: &vec2::Vec2,
         world: &world::World,
         surface_point: &vec3::Vec3,
         _surface_normal: &vec3::Vec3,
