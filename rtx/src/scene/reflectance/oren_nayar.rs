@@ -55,7 +55,11 @@ impl reflectance::Reflectance for OrenNayar {
             * (self.a + self.b * f32::max(0.0, cos_phi_diff) * sin_alpha * tan_beta);
     }
 
-    fn sample_bxdf(&self, _shading_wo: &vec3::Vec3, _shading_wi: &mut vec3::Vec3) -> vec3::Vec3 {
+    fn sample_bxdf(
+        &self,
+        _shading_wo: &vec3::Vec3,
+        _shading_wi: &mut Option<vec3::Vec3>,
+    ) -> Option<vec3::Vec3> {
         todo!();
     }
 }

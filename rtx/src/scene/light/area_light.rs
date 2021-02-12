@@ -32,15 +32,15 @@ impl light::Light for AreaLight {
         world: &world::World,
         surface_point: &vec3::Vec3,
         surface_normal: &vec3::Vec3,
-        wi: &mut vec3::Vec3,
-    ) -> vec3::Vec3 {
+        wi: &mut Option<vec3::Vec3>,
+    ) -> Option<vec3::Vec3> {
         let mut sample_surface = None;
         let pdf = self
             .shape
             .pdf(sample, &surface_point, &surface_normal, &mut sample_surface);
-        
-        if pdf == None {
-            return vec3::Vec3::from(0.0);
+
+        if pdf.is_none() {
+            return None;
         }
 
         let direction = sample_surface.unwrap() - surface_point;
@@ -48,10 +48,10 @@ impl light::Light for AreaLight {
         let ray = ray::Ray::new(*surface_point, normalize_direction);
         let max_distance = direction.length();
         if world.is_intersect(&ray, max_distance) {
-            return vec3::Vec3::from(0.0);
+            return None;
         }
 
-        *wi = normalize_direction;
-        return self.color / pdf.unwrap();
+        *wi = Some(normalize_direction);
+        return Some(self.color / pdf.unwrap());
     }
 }

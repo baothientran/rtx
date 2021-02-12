@@ -25,7 +25,11 @@ pub trait Reflectance {
 
     fn bxdf(&self, shading_wo: &vec3::Vec3, shading_wi: &vec3::Vec3) -> vec3::Vec3;
 
-    fn sample_bxdf(&self, shading_wo: &vec3::Vec3, shading_wi: &mut vec3::Vec3) -> vec3::Vec3;
+    fn sample_bxdf(
+        &self,
+        shading_wo: &vec3::Vec3,
+        shading_wi: &mut Option<vec3::Vec3>,
+    ) -> Option<vec3::Vec3>;
 }
 
 pub struct ReflectanceCollection {
@@ -75,9 +79,9 @@ impl ReflectanceCollection {
         normal: &vec3::Vec3,
         dpdu: &vec3::Vec3,
         wo: &vec3::Vec3,
-        wi: &mut vec3::Vec3,
+        wi: &mut Option<vec3::Vec3>,
         flags: u32,
-    ) -> vec3::Vec3 {
+    ) -> Option<vec3::Vec3> {
         let mut bxdf_id = -1;
         for i in 0..self.reflectances.len() {
             if self.reflectances[i].has_types(flags) {
@@ -87,28 +91,32 @@ impl ReflectanceCollection {
         }
 
         if bxdf_id == -1 {
-            return vec3::Vec3::from(0.0);
+            return None;
         }
 
         let shading_x = vec3::Vec3::normalize(&dpdu).unwrap();
         let shading_y = vec3::Vec3::cross(&normal, &shading_x);
         let shading_wo = self.world_to_shading(&shading_x, &shading_y, normal, wo);
         if shading_wo.z == 0.0 {
-            return vec3::Vec3::from(0.0);
+            return None;
         }
 
-        let mut shading_wi = vec3::Vec3::from(0.0);
-        let mut bxdf =
-            self.reflectances[bxdf_id as usize].sample_bxdf(&shading_wo, &mut shading_wi);
+        let mut shading_wi = None;
+        let bxdf = self.reflectances[bxdf_id as usize].sample_bxdf(&shading_wo, &mut shading_wi);
+        if bxdf.is_none() {
+            return None;
+        }
 
+        let out_shading_wi = shading_wi.unwrap();
+        let mut out_bxdf = bxdf.unwrap();
         for i in 0..self.reflectances.len() {
             if (i != bxdf_id as usize) && (self.reflectances[i].has_types(flags)) {
-                bxdf += self.reflectances[i].bxdf(&shading_wo, &shading_wi);
+                out_bxdf += self.reflectances[i].bxdf(&shading_wo, &out_shading_wi);
             }
         }
 
-        *wi = self.shading_to_world(&shading_x, &shading_y, normal, &shading_wi);
-        return bxdf;
+        *wi = Some(self.shading_to_world(&shading_x, &shading_y, normal, &out_shading_wi));
+        return Some(out_bxdf);
     }
 
     fn world_to_shading(

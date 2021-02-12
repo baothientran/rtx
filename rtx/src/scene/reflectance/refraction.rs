@@ -37,7 +37,11 @@ impl reflectance::Reflectance for Refraction {
         return vec3::Vec3::from(0.0);
     }
 
-    fn sample_bxdf(&self, shading_wo: &vec3::Vec3, shading_wi: &mut vec3::Vec3) -> vec3::Vec3 {
+    fn sample_bxdf(
+        &self,
+        shading_wo: &vec3::Vec3,
+        shading_wi: &mut Option<vec3::Vec3>,
+    ) -> Option<vec3::Vec3> {
         let mut cos_normal_wo = shading_wo.z;
         let eta_i;
         let eta_t;
@@ -58,15 +62,19 @@ impl reflectance::Reflectance for Refraction {
 
         // internal reflection occurs
         if cos_normal_wi_sq < 0.0 {
-            return vec3::Vec3::from(0.0);
+            return None;
         }
 
-        *shading_wi = r * (-shading_wo) + (r * cos_normal_wo - f32::sqrt(cos_normal_wi_sq)) * n;
+        let out_shading_wi =
+            r * (-shading_wo) + (r * cos_normal_wo - f32::sqrt(cos_normal_wi_sq)) * n;
+        *shading_wi = Some(out_shading_wi);
 
         // calculate bxdf of refraction
-        let cos_normal_wi = shading_wi.z;
+        let cos_normal_wi = out_shading_wi.z;
         r *= r;
-        return r * (vec3::Vec3::from(1.0) - self.fresnel.evaluate(cos_normal_wi)) * self.kt
-            / f32::abs(cos_normal_wi);
+        return Some(
+            r * (vec3::Vec3::from(1.0) - self.fresnel.evaluate(cos_normal_wi)) * self.kt
+                / f32::abs(cos_normal_wi),
+        );
     }
 }

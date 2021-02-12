@@ -14,6 +14,6 @@ pub trait Light {
         world: &world::World,
         surface_point: &vec3::Vec3,
         surface_normal: &vec3::Vec3,
-        wi: &mut vec3::Vec3,
-    ) -> vec3::Vec3;
+        wi: &mut Option<vec3::Vec3>,
+    ) -> Option<vec3::Vec3>;
 }

@@ -85,7 +85,11 @@ impl reflectance::Reflectance for MicrofacetRefraction {
             / (f32::abs(shading_wi.z) * f32::abs(shading_wo.z) * s * s);
     }
 
-    fn sample_bxdf(&self, _shading_wo: &vec3::Vec3, _shading_wi: &mut vec3::Vec3) -> vec3::Vec3 {
+    fn sample_bxdf(
+        &self,
+        _shading_wo: &vec3::Vec3,
+        _shading_wi: &mut Option<vec3::Vec3>,
+    ) -> Option<vec3::Vec3> {
         todo!()
     }
 }

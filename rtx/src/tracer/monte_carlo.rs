@@ -21,7 +21,7 @@ fn estimate_uniform_all_lights(
     for light in world.lights().iter() {
         let mut light_lo = vec3::Vec3::from(0.0);
         for _ in 0..light.num_samples() {
-            let mut wi = vec3::Vec3::from(0.0);
+            let mut wi = None;
             let sample = sampler.get_2d();
             let li = light.sample_li(
                 &sample,
@@ -31,9 +31,11 @@ fn estimate_uniform_all_lights(
                 &mut wi,
             );
 
-            if !vec3::Vec3::equal_epsilon(&li, &vec3::Vec3::from(0.0), math::EPSILON_F32_6) {
-                let bxdf = surface_material.bxdf(&surface_normal_ref, &dpdu, &wo, &wi);
-                light_lo += bxdf * li * f32::abs(vec3::Vec3::dot(&surface_normal_ref, &wi));
+            if !li.is_none() {
+                let bxdf = surface_material.bxdf(&surface_normal_ref, &dpdu, &wo, &wi.unwrap());
+                light_lo += bxdf
+                    * li.unwrap()
+                    * f32::abs(vec3::Vec3::dot(&surface_normal_ref, &wi.unwrap()));
             }
         }
 
@@ -61,7 +63,7 @@ fn estimate_multiple_with_one_light(
 
     let light = &world.lights()[light_id];
 
-    let mut wi = vec3::Vec3::from(0.0);
+    let mut wi = None;
     let sample = sampler.get_2d();
     let li = light.sample_li(
         &sample,
@@ -71,9 +73,12 @@ fn estimate_multiple_with_one_light(
         &mut wi,
     );
 
-    if !vec3::Vec3::equal_epsilon(&li, &vec3::Vec3::from(0.0), math::EPSILON_F32_6) {
-        let bxdf = surface_material.bxdf(&surface_normal_ref, &dpdu, &wo, &wi);
-        return bxdf * li * f32::abs(vec3::Vec3::dot(&surface_normal_ref, &wi)) * (world.lights().len() as f32);
+    if !li.is_none() {
+        let bxdf = surface_material.bxdf(&surface_normal_ref, &dpdu, &wo, &wi.unwrap());
+        return bxdf
+            * li.unwrap()
+            * f32::abs(vec3::Vec3::dot(&surface_normal_ref, &wi.unwrap()))
+            * (world.lights().len() as f32);
     }
 
     return vec3::Vec3::from(0.0);

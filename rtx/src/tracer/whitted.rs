@@ -36,7 +36,7 @@ fn ray_trace(
 
         // add color from lights around the world
         for light in world.lights().iter() {
-            let mut wi = vec3::Vec3::from(0.0);
+            let mut wi = None;
             let li = light.sample_li(
                 &sampler.get_2d(),
                 world,
@@ -44,15 +44,15 @@ fn ray_trace(
                 &normal,
                 &mut wi,
             );
-            if !vec3::Vec3::equal_epsilon(&li, &vec3::Vec3::from(0.0), math::EPSILON_F32_6) {
-                let bxdf = surface_material.bxdf(&normal, &dpdu, &wo, &wi);
-                lo += bxdf * li * f32::abs(vec3::Vec3::dot(&normal, &wi));
+            if !li.is_none() {
+                let bxdf = surface_material.bxdf(&normal, &dpdu, &wo, &wi.unwrap());
+                lo += bxdf * li.unwrap() * f32::abs(vec3::Vec3::dot(&normal, &wi.unwrap()));
             }
         }
 
         // add reflection or refraction
         if depth <= max_depth {
-            let mut wi = vec3::Vec3::from(0.0);
+            let mut wi = None;
             let bxdf = surface_material.sample_bxdf(
                 &normal,
                 &dpdu,
@@ -60,14 +60,14 @@ fn ray_trace(
                 &mut wi,
                 reflectance::ReflectanceType::Reflection as u32,
             );
-            if !vec3::Vec3::equal_epsilon(&bxdf, &vec3::Vec3::from(0.0), math::EPSILON_F32_6) {
-                let ray = ray::Ray::new(surface_point_above, wi);
+            if !bxdf.is_none() {
+                let ray = ray::Ray::new(surface_point_above, wi.unwrap());
                 if let Some(li) = ray_trace(&ray, world, sampler, depth + 1, max_depth) {
-                    lo += bxdf * li * f32::abs(vec3::Vec3::dot(&normal, &wi));
+                    lo += bxdf.unwrap() * li * f32::abs(vec3::Vec3::dot(&normal, &wi.unwrap()));
                 }
             }
 
-            let mut wi = vec3::Vec3::from(0.0);
+            let mut wi = None;
             let bxdf = surface_material.sample_bxdf(
                 &normal,
                 &dpdu,
@@ -75,10 +75,10 @@ fn ray_trace(
                 &mut wi,
                 reflectance::ReflectanceType::Refraction as u32,
             );
-            if !vec3::Vec3::equal_epsilon(&bxdf, &vec3::Vec3::from(0.0), math::EPSILON_F32_6) {
-                let ray = ray::Ray::new(surface_point_below, wi);
+            if !bxdf.is_none() {
+                let ray = ray::Ray::new(surface_point_below, wi.unwrap());
                 if let Some(li) = ray_trace(&ray, world, sampler, depth + 1, max_depth) {
-                    lo += bxdf * li * f32::abs(vec3::Vec3::dot(&normal, &wi));
+                    lo += bxdf.unwrap() * li * f32::abs(vec3::Vec3::dot(&normal, &wi.unwrap()));
                 }
             }
         }
