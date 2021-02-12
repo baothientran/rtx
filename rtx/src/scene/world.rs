@@ -4,7 +4,6 @@ use crate::scene::ray;
 use crate::scene::renderable;
 use crate::scene::shape;
 use std::rc;
-use std::slice;
 
 pub struct World {
     renderables: Vec<renderable::Renderable>,
@@ -32,8 +31,8 @@ impl World {
         self.lights.push(light);
     }
 
-    pub fn lights(&self) -> slice::Iter<'_, std::boxed::Box<dyn light::Light>> {
-        return self.lights.iter();
+    pub fn lights(&self) -> &Vec<Box<(dyn light::Light + 'static)>> {
+        return &self.lights;
     }
 
     pub fn is_intersect(&self, ray: &ray::Ray, max_distance: f32) -> bool {

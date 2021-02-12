@@ -35,9 +35,15 @@ fn ray_trace(
         }
 
         // add color from lights around the world
-        for light in world.lights() {
+        for light in world.lights().iter() {
             let mut wi = vec3::Vec3::from(0.0);
-            let li = light.sample_li(&sampler.get_2d(), world, &surface_point_above, &normal, &mut wi);
+            let li = light.sample_li(
+                &sampler.get_2d(),
+                world,
+                &surface_point_above,
+                &normal,
+                &mut wi,
+            );
             if !vec3::Vec3::equal_epsilon(&li, &vec3::Vec3::from(0.0), math::EPSILON_F32_6) {
                 let bxdf = surface_material.bxdf(&normal, &dpdu, &wo, &wi);
                 lo += bxdf * li * f32::abs(vec3::Vec3::dot(&normal, &wi));

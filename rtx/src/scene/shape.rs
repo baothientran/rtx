@@ -79,6 +79,6 @@ pub trait Shape {
         sample: &vec2::Vec2,
         surface_point_ref: &vec3::Vec3,
         surface_normal_ref: &vec3::Vec3,
-        surface_point: &mut vec3::Vec3,
-    ) -> f32;
+        surface_point: &mut Option<vec3::Vec3>,
+    ) -> Option<f32>;
 }

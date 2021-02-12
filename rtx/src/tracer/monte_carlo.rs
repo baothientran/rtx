@@ -2,9 +2,82 @@ use crate::core::image;
 use crate::core::math;
 use crate::core::vec3;
 use crate::scene::camera;
+use crate::scene::material;
 use crate::scene::ray;
 use crate::scene::sampler;
 use crate::scene::world;
+
+fn estimate_uniform_all_lights(
+    surface_material: &dyn material::Material,
+    surface_point_ref: &vec3::Vec3,
+    surface_normal_ref: &vec3::Vec3,
+    dpdu: &vec3::Vec3,
+    wo: &vec3::Vec3,
+    world: &world::World,
+    sampler: &mut dyn sampler::Sampler,
+) -> vec3::Vec3 {
+    let mut lo = vec3::Vec3::from(0.0);
+
+    for light in world.lights().iter() {
+        let mut light_lo = vec3::Vec3::from(0.0);
+        for _ in 0..light.num_samples() {
+            let mut wi = vec3::Vec3::from(0.0);
+            let sample = sampler.get_2d();
+            let li = light.sample_li(
+                &sample,
+                world,
+                surface_point_ref,
+                surface_normal_ref,
+                &mut wi,
+            );
+
+            if !vec3::Vec3::equal_epsilon(&li, &vec3::Vec3::from(0.0), math::EPSILON_F32_6) {
+                let bxdf = surface_material.bxdf(&surface_normal_ref, &dpdu, &wo, &wi);
+                light_lo += bxdf * li * f32::abs(vec3::Vec3::dot(&surface_normal_ref, &wi));
+            }
+        }
+
+        light_lo /= light.num_samples() as f32;
+
+        lo += light_lo;
+    }
+
+    return lo;
+}
+
+fn estimate_multiple_with_one_light(
+    surface_material: &dyn material::Material,
+    surface_point_ref: &vec3::Vec3,
+    surface_normal_ref: &vec3::Vec3,
+    dpdu: &vec3::Vec3,
+    wo: &vec3::Vec3,
+    world: &world::World,
+    sampler: &mut dyn sampler::Sampler,
+) -> vec3::Vec3 {
+    let light_id = usize::min(
+        (sampler.get_1d() * world.lights().len() as f32) as usize,
+        world.lights().len() - 1,
+    );
+
+    let light = &world.lights()[light_id];
+
+    let mut wi = vec3::Vec3::from(0.0);
+    let sample = sampler.get_2d();
+    let li = light.sample_li(
+        &sample,
+        world,
+        surface_point_ref,
+        surface_normal_ref,
+        &mut wi,
+    );
+
+    if !vec3::Vec3::equal_epsilon(&li, &vec3::Vec3::from(0.0), math::EPSILON_F32_6) {
+        let bxdf = surface_material.bxdf(&surface_normal_ref, &dpdu, &wo, &wi);
+        return bxdf * li * f32::abs(vec3::Vec3::dot(&surface_normal_ref, &wi)) * (world.lights().len() as f32);
+    }
+
+    return vec3::Vec3::from(0.0);
+}
 
 fn ray_trace(
     ray: &ray::Ray,
@@ -34,25 +107,16 @@ fn ray_trace(
         }
 
         // add color from lights around the world
-        let mut direct_light_lo = vec3::Vec3::from(0.0);
-        for light in world.lights() {
-            let mut light_lo = vec3::Vec3::from(0.0);
-            for _ in 0..light.num_samples() {
-                let mut wi = vec3::Vec3::from(0.0);
-                let sample = sampler.get_2d();
-                let li = light.sample_li(&sample, world, &surface_point_above, &normal, &mut wi);
-                if !vec3::Vec3::equal_epsilon(&li, &vec3::Vec3::from(0.0), math::EPSILON_F32_6) {
-                    let bxdf = surface_material.bxdf(&normal, &dpdu, &wo, &wi);
-                    light_lo += bxdf * li * f32::abs(vec3::Vec3::dot(&normal, &wi));
-                }
-            }
-            light_lo /= light.num_samples() as f32;
-            direct_light_lo += light_lo;
-        }
+        lo += estimate_uniform_all_lights(
+            surface_material,
+            &surface_point_above,
+            &normal,
+            &dpdu,
+            &wo,
+            world,
+            sampler,
+        );
 
-        direct_light_lo /= world.lights().len() as f32;
-
-        lo += direct_light_lo;
         return Some(lo);
     }
 
