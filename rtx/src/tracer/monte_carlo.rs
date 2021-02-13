@@ -1,13 +1,42 @@
 use crate::core::image;
 use crate::core::math;
+use crate::core::vec2;
 use crate::core::vec3;
 use crate::scene::camera;
+use crate::scene::light;
 use crate::scene::material;
 use crate::scene::ray;
 use crate::scene::sampler;
 use crate::scene::world;
 
-fn estimate_uniform_all_lights(
+fn estimate_one_light(
+    light: &dyn light::Light,
+    surface_material: &dyn material::Material,
+    surface_point_ref: &vec3::Vec3,
+    surface_normal_ref: &vec3::Vec3,
+    dpdu: &vec3::Vec3,
+    wo: &vec3::Vec3,
+    world: &world::World,
+    sample: &vec2::Vec2,
+) -> vec3::Vec3 {
+    let mut wi = None;
+    let li = light.sample_li(
+        &sample,
+        world,
+        surface_point_ref,
+        surface_normal_ref,
+        &mut wi,
+    );
+
+    if !li.is_none() {
+        let bxdf = surface_material.bxdf(&surface_normal_ref, &dpdu, &wo, &wi.unwrap());
+        return bxdf * li.unwrap() * f32::abs(vec3::Vec3::dot(&surface_normal_ref, &wi.unwrap()));
+    }
+
+    return vec3::Vec3::from(0.0);
+}
+
+fn estimate_all_lights(
     surface_material: &dyn material::Material,
     surface_point_ref: &vec3::Vec3,
     surface_normal_ref: &vec3::Vec3,
@@ -21,22 +50,17 @@ fn estimate_uniform_all_lights(
     for light in world.lights().iter() {
         let mut light_lo = vec3::Vec3::from(0.0);
         for _ in 0..light.num_samples() {
-            let mut wi = None;
             let sample = sampler.get_2d();
-            let li = light.sample_li(
-                &sample,
-                world,
+            light_lo += estimate_one_light(
+                light.as_ref(),
+                surface_material,
                 surface_point_ref,
                 surface_normal_ref,
-                &mut wi,
+                dpdu,
+                wo,
+                world,
+                &sample,
             );
-
-            if !li.is_none() {
-                let bxdf = surface_material.bxdf(&surface_normal_ref, &dpdu, &wo, &wi.unwrap());
-                light_lo += bxdf
-                    * li.unwrap()
-                    * f32::abs(vec3::Vec3::dot(&surface_normal_ref, &wi.unwrap()));
-            }
         }
 
         light_lo /= light.num_samples() as f32;
@@ -47,7 +71,7 @@ fn estimate_uniform_all_lights(
     return lo;
 }
 
-fn estimate_multiple_with_one_light(
+fn estimate_all_lights_with_uniform_contributions(
     surface_material: &dyn material::Material,
     surface_point_ref: &vec3::Vec3,
     surface_normal_ref: &vec3::Vec3,
@@ -61,27 +85,21 @@ fn estimate_multiple_with_one_light(
         world.lights().len() - 1,
     );
 
-    let light = &world.lights()[light_id];
-
-    let mut wi = None;
     let sample = sampler.get_2d();
-    let li = light.sample_li(
-        &sample,
-        world,
-        surface_point_ref,
-        surface_normal_ref,
-        &mut wi,
-    );
+    let light = &world.lights()[light_id];
+    let light_lo = estimate_one_light(light.as_ref(), surface_material, surface_point_ref, surface_normal_ref, dpdu, wo, world, &sample);
+    return light_lo * (world.lights().len() as f32); 
+}
 
-    if !li.is_none() {
-        let bxdf = surface_material.bxdf(&surface_normal_ref, &dpdu, &wo, &wi.unwrap());
-        return bxdf
-            * li.unwrap()
-            * f32::abs(vec3::Vec3::dot(&surface_normal_ref, &wi.unwrap()))
-            * (world.lights().len() as f32);
-    }
-
-    return vec3::Vec3::from(0.0);
+fn estimate_all_lights_with_linear_contributions(
+    surface_material: &dyn material::Material,
+    surface_point_ref: &vec3::Vec3,
+    surface_normal_ref: &vec3::Vec3,
+    dpdu: &vec3::Vec3,
+    wo: &vec3::Vec3,
+    world: &world::World,
+    sampler: &mut dyn sampler::Sampler,
+) {
 }
 
 fn ray_trace(
@@ -112,7 +130,7 @@ fn ray_trace(
         }
 
         // add color from lights around the world
-        lo += estimate_uniform_all_lights(
+        lo += estimate_all_lights(
             surface_material,
             &surface_point_above,
             &normal,
