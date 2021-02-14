@@ -9,7 +9,7 @@ use crate::scene::ray;
 use crate::scene::material;
 use std::rc;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Debug)]
 pub struct IntersectableShapeSurface<'a> {
     ray_time: f32,
     position: vec3::Vec3,
@@ -77,7 +77,7 @@ pub trait IntersectableShape {
     fn intersect_ray(&self, ray: &ray::Ray) -> Option<IntersectableShapeSurface>;
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Debug)]
 pub struct SampleShapeSurface {
     pub pdf: f32,
     pub surface_point: vec3::Vec3,
