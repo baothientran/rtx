@@ -1,4 +1,4 @@
-use shape::ShapeSurface;
+use shape::IntersectableShapeSurface;
 
 use crate::scene::material;
 use crate::scene::ray;
@@ -6,13 +6,13 @@ use crate::scene::shape;
 use std::rc;
 
 pub struct RenderableSurface<'a> {
-    shape_surface: shape::ShapeSurface<'a>,
+    shape_surface: shape::IntersectableShapeSurface<'a>,
     material: &'a dyn material::Material,
 }
 
 impl<'a> RenderableSurface<'a> {
     pub fn new(
-        shape_surface: shape::ShapeSurface<'a>,
+        shape_surface: shape::IntersectableShapeSurface<'a>,
         material: &'a dyn material::Material,
     ) -> RenderableSurface<'a> {
         return RenderableSurface {
@@ -21,7 +21,7 @@ impl<'a> RenderableSurface<'a> {
         };
     }
 
-    pub fn shape_surface(&self) -> &ShapeSurface {
+    pub fn shape_surface(&self) -> &IntersectableShapeSurface {
         return &self.shape_surface;
     }
 
@@ -31,13 +31,13 @@ impl<'a> RenderableSurface<'a> {
 }
 
 pub struct Renderable {
-    shape: rc::Rc<dyn shape::Shape>,
+    shape: rc::Rc<dyn shape::IntersectableShape>,
     material: rc::Rc<dyn material::Material>,
 }
 
 impl Renderable {
     pub fn new(
-        shape: rc::Rc<dyn shape::Shape>,
+        shape: rc::Rc<dyn shape::IntersectableShape>,
         material: rc::Rc<dyn material::Material>,
     ) -> Renderable {
         return Renderable { shape, material };

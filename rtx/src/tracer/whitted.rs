@@ -36,12 +36,8 @@ fn ray_trace(
 
         // add color from lights around the world
         for light in world.lights().iter() {
-            let maybe_radiance = light.sample_li(
-                &sampler.get_2d(),
-                world,
-                &surface_point_above,
-                &normal,
-            );
+            let maybe_radiance =
+                light.sample_li(&sampler.get_2d(), world, &surface_point_above, &normal);
             if !maybe_radiance.is_none() {
                 let radiance = maybe_radiance.unwrap();
                 let bxdf = surface_material.bxdf(&normal, &dpdu, &wo, &radiance.wi);

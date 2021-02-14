@@ -7,15 +7,12 @@ use crate::scene::world;
 
 pub struct SampleLightRadiance {
     pub wi: vec3::Vec3,
-    pub li: vec3::Vec3
+    pub li: vec3::Vec3,
 }
 
 impl SampleLightRadiance {
     pub fn new(wi: vec3::Vec3, li: vec3::Vec3) -> SampleLightRadiance {
-        return SampleLightRadiance {
-            wi,
-            li
-        };
+        return SampleLightRadiance { wi, li };
     }
 }
 

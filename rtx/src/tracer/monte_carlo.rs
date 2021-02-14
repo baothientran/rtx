@@ -19,12 +19,7 @@ fn estimate_one_light(
     world: &world::World,
     light_sample: &vec2::Vec2,
 ) -> vec3::Vec3 {
-    let maybe_radiance = light.sample_li(
-        &light_sample,
-        world,
-        surface_point,
-        surface_normal,
-    );
+    let maybe_radiance = light.sample_li(&light_sample, world, surface_point, surface_normal);
 
     if !maybe_radiance.is_none() {
         let radiance = maybe_radiance.unwrap();
@@ -115,18 +110,13 @@ fn estimate_all_lights_with_linear_contributions(
     let mut intensities = vec![0.0; num_lights];
     for i in 0..num_lights {
         let sample = &light_samples[i];
-        let maybe_radiance = lights[i].sample_li_no_shadow_check(
-            sample,
-            world,
-            surface_point,
-            surface_normal,
-        );
+        let maybe_radiance =
+            lights[i].sample_li_no_shadow_check(sample, world, surface_point, surface_normal);
 
         if !maybe_radiance.is_none() {
             let radiance = maybe_radiance.unwrap();
             let bxdf = surface_material.bxdf(&surface_normal, &dpdu, &wo, &radiance.wi);
-            let lo =
-                bxdf * radiance.li * f32::abs(vec3::Vec3::dot(&surface_normal, &radiance.wi));
+            let lo = bxdf * radiance.li * f32::abs(vec3::Vec3::dot(&surface_normal, &radiance.wi));
             let intensity = lo.x * 0.2989 + lo.y * 0.5870 + lo.z * 0.1140;
             intensities[i] = intensity;
             sum_intensities += intensity;

@@ -44,7 +44,10 @@ impl light::Light for PointLight {
         let distance_sq = vec3::Vec3::length_sq(&direction);
         let attenuation = f32::max(1.0 - distance_sq / (self.radius * self.radius), 0.0);
 
-        return Some(light::SampleLightRadiance::new(normalize_direction, attenuation * self.color));
+        return Some(light::SampleLightRadiance::new(
+            normalize_direction,
+            attenuation * self.color,
+        ));
     }
 
     fn sample_li_no_shadow_check(
@@ -59,6 +62,9 @@ impl light::Light for PointLight {
         let distance_sq = vec3::Vec3::length_sq(&direction);
         let attenuation = f32::max(1.0 - distance_sq / (self.radius * self.radius), 0.0);
 
-        return Some(light::SampleLightRadiance::new(normalize_direction, attenuation * self.color));
+        return Some(light::SampleLightRadiance::new(
+            normalize_direction,
+            attenuation * self.color,
+        ));
     }
 }

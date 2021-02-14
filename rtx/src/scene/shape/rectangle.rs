@@ -37,7 +37,7 @@ impl Rectangle {
     }
 }
 
-impl shape::Shape for Rectangle {
+impl shape::IntersectableShape for Rectangle {
     fn is_intersect(&self, ray: &ray::Ray, max_distance: f32) -> bool {
         let local_ray = ray::Ray::transform(ray, &self.world_to_object);
         let vd = vec3::Vec3::dot(&self.normal, local_ray.direction());
@@ -64,7 +64,7 @@ impl shape::Shape for Rectangle {
         return t < max_distance;
     }
 
-    fn intersect_ray(&self, ray: &ray::Ray) -> Option<shape::ShapeSurface> {
+    fn intersect_ray(&self, ray: &ray::Ray) -> Option<shape::IntersectableShapeSurface> {
         let local_ray = ray::Ray::transform(ray, &self.world_to_object);
         let vd = vec3::Vec3::dot(&self.normal, local_ray.direction());
         if math::equal_epsilon_f32(vd, 0.0, math::EPSILON_F32_6) {
@@ -92,7 +92,7 @@ impl shape::Shape for Rectangle {
         let mut local_dpdv = vec3::Vec3::from(0.0);
         vec3::Vec3::coordinate_system(&self.normal, &mut local_dpdv, &mut local_dpdu);
 
-        return Some(shape::ShapeSurface::new(
+        return Some(shape::IntersectableShapeSurface::new(
             t,
             local_position,
             self.normal,
@@ -102,14 +102,15 @@ impl shape::Shape for Rectangle {
             &self.normal_transform,
         ));
     }
+}
 
-    fn pdf(
+impl shape::SamplableShape for Rectangle {
+    fn sample_surface(
         &self,
         sample: &vec2::Vec2,
         surface_point_ref: &vec3::Vec3,
         _surface_normal_ref: &vec3::Vec3,
-        surface_point: &mut Option<vec3::Vec3>,
-    ) -> Option<f32> {
+    ) -> Option<shape::SampleShapeSurface> {
         let world_normal = (self.normal_transform * vec4::Vec4::from_vec3(&self.normal, 0.0))
             .to_vec3()
             .normalize()
@@ -127,8 +128,10 @@ impl shape::Shape for Rectangle {
             return None;
         }
 
-        *surface_point = Some(world_surface_point);
-        return Some(direction.length_sq() / (self.width * self.height * cos_theta));
+        return Some(shape::SampleShapeSurface::new(
+            direction.length_sq() / (self.width * self.height * cos_theta),
+            world_surface_point,
+        ));
     }
 }
 
@@ -136,7 +139,7 @@ impl shape::Shape for Rectangle {
 mod test {
     use super::*;
     use crate::core::vec4;
-    use crate::scene::shape::Shape;
+    use crate::scene::shape::IntersectableShape;
 
     #[test]
     fn test_intersect_ray_away() {

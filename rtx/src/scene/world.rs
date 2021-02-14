@@ -20,7 +20,7 @@ impl World {
 
     pub fn add_shape(
         &mut self,
-        shape: rc::Rc<dyn shape::Shape>,
+        shape: rc::Rc<dyn shape::IntersectableShape>,
         material: rc::Rc<dyn material::Material>,
     ) {
         self.renderables

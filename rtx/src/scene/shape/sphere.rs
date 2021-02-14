@@ -5,6 +5,7 @@ use crate::core::vec3;
 use crate::core::vec4;
 use crate::scene::ray;
 use crate::scene::shape;
+use crate::scene::shape::IntersectableShape;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Sphere {
@@ -28,7 +29,7 @@ impl Sphere {
     }
 }
 
-impl shape::Shape for Sphere {
+impl shape::IntersectableShape for Sphere {
     fn is_intersect(&self, ray: &ray::Ray, max_distance: f32) -> bool {
         let local_ray = ray::Ray::transform(ray, &self.world_to_object);
         let radius = self.radius;
@@ -58,7 +59,7 @@ impl shape::Shape for Sphere {
         return t < max_distance;
     }
 
-    fn intersect_ray(&self, ray: &ray::Ray) -> Option<shape::ShapeSurface> {
+    fn intersect_ray(&self, ray: &ray::Ray) -> Option<shape::IntersectableShapeSurface> {
         let local_ray = ray::Ray::transform(ray, &self.world_to_object);
         let radius = self.radius;
         let radius_sq = radius * radius;
@@ -105,7 +106,7 @@ impl shape::Shape for Sphere {
                 local_position.y * sin_phi,
             );
 
-        return Some(shape::ShapeSurface::new(
+        return Some(shape::IntersectableShapeSurface::new(
             t,
             local_position,
             local_normal,
@@ -115,14 +116,15 @@ impl shape::Shape for Sphere {
             &self.normal_transform,
         ));
     }
+}
 
-    fn pdf(
+impl shape::SamplableShape for Sphere {
+    fn sample_surface(
         &self,
         sample: &vec2::Vec2,
         surface_point_ref: &vec3::Vec3,
         surface_normal_ref: &vec3::Vec3,
-        surface_point: &mut Option<vec3::Vec3>,
-    ) -> Option<f32> {
+    ) -> Option<shape::SampleShapeSurface> {
         let center = (self.object_to_world * vec4::Vec4::new(0.0, 0.0, 0.0, 1.0)).to_vec3();
         let cos_alpha = 1.0 - sample.x
             + sample.x
@@ -156,8 +158,10 @@ impl shape::Shape for Sphere {
                 return None;
             }
 
-            *surface_point = Some(shape_surface.calc_world_position());
-            return Some(1.0 / (2.0 * math::PI_F32 * n));
+            return Some(shape::SampleShapeSurface::new(
+                1.0 / (2.0 * math::PI_F32 * n),
+                shape_surface.calc_world_position(),
+            ));
         }
 
         return None;
@@ -168,7 +172,7 @@ impl shape::Shape for Sphere {
 mod test {
     use super::*;
     use crate::core::math;
-    use crate::scene::shape::Shape;
+    use crate::scene::shape::IntersectableShape;
 
     #[test]
     fn test_intersect_ray_not_intersect() {

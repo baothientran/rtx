@@ -8,7 +8,7 @@ use crate::core::vec4;
 use crate::scene::ray;
 
 #[derive(Copy, Clone, Debug)]
-pub struct ShapeSurface<'a> {
+pub struct IntersectableShapeSurface<'a> {
     ray_time: f32,
     position: vec3::Vec3,
     normal: vec3::Vec3,
@@ -18,7 +18,7 @@ pub struct ShapeSurface<'a> {
     normal_transform: &'a mat4::Mat4,
 }
 
-impl<'a> ShapeSurface<'a> {
+impl<'a> IntersectableShapeSurface<'a> {
     pub fn new(
         ray_time: f32,
         position: vec3::Vec3,
@@ -27,8 +27,8 @@ impl<'a> ShapeSurface<'a> {
         dpdv: vec3::Vec3,
         object_to_world: &'a mat4::Mat4,
         normal_transform: &'a mat4::Mat4,
-    ) -> ShapeSurface<'a> {
-        return ShapeSurface {
+    ) -> IntersectableShapeSurface<'a> {
+        return IntersectableShapeSurface {
             ray_time,
             position,
             normal,
@@ -69,16 +69,29 @@ impl<'a> ShapeSurface<'a> {
     }
 }
 
-pub trait Shape {
+#[derive(Copy, Clone, Debug)]
+pub struct SampleShapeSurface {
+    pub pdf: f32,
+    pub surface_point: vec3::Vec3,
+}
+
+impl SampleShapeSurface {
+    pub fn new(pdf: f32, surface_point: vec3::Vec3) -> SampleShapeSurface {
+        return SampleShapeSurface { pdf, surface_point };
+    }
+}
+
+pub trait IntersectableShape {
     fn is_intersect(&self, ray: &ray::Ray, max_distance: f32) -> bool;
 
-    fn intersect_ray(&self, ray: &ray::Ray) -> Option<ShapeSurface>;
+    fn intersect_ray(&self, ray: &ray::Ray) -> Option<IntersectableShapeSurface>;
+}
 
-    fn pdf(
+pub trait SamplableShape {
+    fn sample_surface(
         &self,
         sample: &vec2::Vec2,
         surface_point_ref: &vec3::Vec3,
         surface_normal_ref: &vec3::Vec3,
-        surface_point: &mut Option<vec3::Vec3>,
-    ) -> Option<f32>;
+    ) -> Option<SampleShapeSurface>;
 }
