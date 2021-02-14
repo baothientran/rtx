@@ -17,11 +17,11 @@ fn estimate_one_light(
     dpdu: &vec3::Vec3,
     wo: &vec3::Vec3,
     world: &world::World,
-    sample: &vec2::Vec2,
+    light_sample: &vec2::Vec2,
 ) -> vec3::Vec3 {
     let mut wi = None;
     let li = light.sample_li(
-        &sample,
+        &light_sample,
         world,
         surface_point_ref,
         surface_normal_ref,
@@ -49,8 +49,8 @@ fn estimate_all_lights(
 
     for light in world.lights().iter() {
         let mut light_lo = vec3::Vec3::from(0.0);
-        for _ in 0..light.num_samples() {
-            let sample = sampler.get_2d();
+        let light_samples = sampler.get_2d_array(light.num_samples() as usize);
+        for i in 0..light.num_samples() {
             light_lo += estimate_one_light(
                 light.as_ref(),
                 surface_material,
@@ -59,7 +59,7 @@ fn estimate_all_lights(
                 dpdu,
                 wo,
                 world,
-                &sample,
+                &light_samples[i as usize],
             );
         }
 
@@ -87,8 +87,17 @@ fn estimate_all_lights_with_uniform_contributions(
 
     let sample = sampler.get_2d();
     let light = &world.lights()[light_id];
-    let light_lo = estimate_one_light(light.as_ref(), surface_material, surface_point_ref, surface_normal_ref, dpdu, wo, world, &sample);
-    return light_lo * (world.lights().len() as f32); 
+    let light_lo = estimate_one_light(
+        light.as_ref(),
+        surface_material,
+        surface_point_ref,
+        surface_normal_ref,
+        dpdu,
+        wo,
+        world,
+        &sample,
+    );
+    return light_lo * (world.lights().len() as f32);
 }
 
 fn estimate_all_lights_with_linear_contributions(
@@ -99,7 +108,58 @@ fn estimate_all_lights_with_linear_contributions(
     wo: &vec3::Vec3,
     world: &world::World,
     sampler: &mut dyn sampler::Sampler,
-) {
+) -> vec3::Vec3 {
+    let lights = world.lights();
+    let num_lights = lights.len();
+    let light_samples = sampler.get_2d_array(num_lights);
+    let mut sum_intensities = 0.0;
+    let mut intensities = vec![0.0; num_lights];
+    for i in 0..num_lights {
+        let sample = &light_samples[i];
+        let mut wi = None;
+        let li = lights[i].sample_li_no_shadow_check(
+            sample,
+            world,
+            surface_point_ref,
+            surface_normal_ref,
+            &mut wi,
+        );
+
+        if !li.is_none() {
+            let bxdf = surface_material.bxdf(&surface_normal_ref, &dpdu, &wo, &wi.unwrap());
+            let lo =
+                bxdf * li.unwrap() * f32::abs(vec3::Vec3::dot(&surface_normal_ref, &wi.unwrap()));
+            let intensity = lo.x * 0.2989 + lo.y * 0.5870 + lo.z * 0.1140;
+            intensities[i] = intensity;
+            sum_intensities += intensity;
+        }
+    }
+
+    let sample = sampler.get_1d();
+    let mut contribution = 0.0;
+    let mut sum_light_contribution = 0.0;
+    let mut light_index = 0;
+    for i in 0..num_lights {
+        contribution = intensities[i] / sum_intensities;
+        if sample > sum_light_contribution && sample < sum_light_contribution + contribution {
+            light_index = i;
+            break;
+        }
+
+        sum_light_contribution += contribution;
+    }
+
+    let light_sample = sampler.get_2d();
+    return estimate_one_light(
+        lights[light_index].as_ref(),
+        surface_material,
+        surface_point_ref,
+        surface_normal_ref,
+        dpdu,
+        wo,
+        world,
+        &light_sample,
+    ) / contribution;
 }
 
 fn ray_trace(
@@ -130,7 +190,7 @@ fn ray_trace(
         }
 
         // add color from lights around the world
-        lo += estimate_all_lights(
+        lo += estimate_all_lights_with_linear_contributions(
             surface_material,
             &surface_point_above,
             &normal,

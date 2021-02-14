@@ -54,4 +54,27 @@ impl light::Light for AreaLight {
         *wi = Some(normalize_direction);
         return Some(self.color / pdf.unwrap());
     }
+
+    fn sample_li_no_shadow_check(
+        &self,
+        sample: &vec2::Vec2,
+        _world: &world::World,
+        surface_point: &vec3::Vec3,
+        surface_normal: &vec3::Vec3,
+        wi: &mut Option<vec3::Vec3>,
+    ) -> Option<vec3::Vec3> {
+        let mut sample_surface = None;
+        let pdf = self
+            .shape
+            .pdf(sample, &surface_point, &surface_normal, &mut sample_surface);
+
+        if pdf.is_none() {
+            return None;
+        }
+
+        let direction = sample_surface.unwrap() - surface_point;
+        let normalize_direction = direction.normalize().unwrap();
+        *wi = Some(normalize_direction);
+        return Some(self.color / pdf.unwrap());
+    }
 }

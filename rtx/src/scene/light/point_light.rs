@@ -48,4 +48,20 @@ impl light::Light for PointLight {
         *wi = Some(normalize_direction);
         return Some(attenuation * self.color);
     }
+
+    fn sample_li_no_shadow_check(
+        &self,
+        _sample: &vec2::Vec2,
+        _world: &world::World,
+        surface_point: &vec3::Vec3,
+        _surface_normal: &vec3::Vec3,
+        wi: &mut Option<vec3::Vec3>,
+    ) -> Option<vec3::Vec3> {
+        let direction = self.position - surface_point;
+        let normalize_direction = direction.normalize().unwrap();
+        let distance_sq = vec3::Vec3::length_sq(&direction);
+        let attenuation = f32::max(1.0 - distance_sq / (self.radius * self.radius), 0.0);
+        *wi = Some(normalize_direction);
+        return Some(attenuation * self.color);
+    }
 }

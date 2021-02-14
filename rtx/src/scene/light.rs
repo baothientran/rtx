@@ -16,4 +16,13 @@ pub trait Light {
         surface_normal: &vec3::Vec3,
         wi: &mut Option<vec3::Vec3>,
     ) -> Option<vec3::Vec3>;
+
+    fn sample_li_no_shadow_check(
+        &self,
+        sample: &vec2::Vec2,
+        world: &world::World,
+        surface_point: &vec3::Vec3,
+        surface_normal: &vec3::Vec3,
+        wi: &mut Option<vec3::Vec3>,
+    ) -> Option<vec3::Vec3>;
 }

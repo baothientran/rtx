@@ -23,4 +23,22 @@ impl sampler::Sampler for RandomSampler {
     fn get_2d(&mut self) -> vec2::Vec2 {
         return vec2::Vec2::new(self.get_1d(), self.get_1d());
     }
+
+    fn get_1d_array(&mut self, n: usize) -> Vec<f32> {
+        let mut samples = Vec::with_capacity(n);
+        for _ in 0..n {
+            samples.push(self.get_1d());
+        }
+
+        return samples;
+    }
+
+    fn get_2d_array(&mut self, n: usize) -> Vec<vec2::Vec2> {
+        let mut samples = Vec::with_capacity(n);
+        for _ in 0..n {
+            samples.push(self.get_2d());
+        }
+
+        return samples;
+    }
 }
