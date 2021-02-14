@@ -1,19 +1,18 @@
 use crate::scene::light;
 use crate::scene::material;
 use crate::scene::ray;
-use crate::scene::renderable;
 use crate::scene::shape;
 use std::rc;
 
 pub struct World {
-    renderables: Vec<renderable::Renderable>,
+    renderables: Vec<shape::RenderableShape>,
     lights: Vec<Box<dyn light::Light>>,
 }
 
 impl World {
     pub fn new() -> World {
         return World {
-            renderables: Vec::<renderable::Renderable>::new(),
+            renderables: Vec::<shape::RenderableShape>::new(),
             lights: Vec::<Box<dyn light::Light>>::new(),
         };
     }
@@ -24,7 +23,7 @@ impl World {
         material: rc::Rc<dyn material::Material>,
     ) {
         self.renderables
-            .push(renderable::Renderable::new(shape, material));
+            .push(shape::RenderableShape::new(shape, material));
     }
 
     pub fn add_light(&mut self, light: Box<dyn light::Light>) {
@@ -45,8 +44,8 @@ impl World {
         return false;
     }
 
-    pub fn intersect_ray(&self, ray: &ray::Ray) -> Option<renderable::RenderableSurface> {
-        let mut intersect: Option<renderable::RenderableSurface> = None;
+    pub fn intersect_ray(&self, ray: &ray::Ray) -> Option<shape::RenderableShapeSurface> {
+        let mut intersect: Option<shape::RenderableShapeSurface> = None;
         for renderable in self.renderables.iter() {
             match intersect.as_mut() {
                 Some(curr_renderable_surface) => {
