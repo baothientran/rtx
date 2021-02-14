@@ -32,8 +32,7 @@ impl light::Light for AreaLight {
         world: &world::World,
         surface_point: &vec3::Vec3,
         surface_normal: &vec3::Vec3,
-        wi: &mut Option<vec3::Vec3>,
-    ) -> Option<vec3::Vec3> {
+    ) -> Option<light::SampleLightRadiance> {
         let mut sample_surface = None;
         let pdf = self
             .shape
@@ -51,8 +50,7 @@ impl light::Light for AreaLight {
             return None;
         }
 
-        *wi = Some(normalize_direction);
-        return Some(self.color / pdf.unwrap());
+        return Some(light::SampleLightRadiance::new(normalize_direction, self.color / pdf.unwrap()));
     }
 
     fn sample_li_no_shadow_check(
@@ -61,8 +59,7 @@ impl light::Light for AreaLight {
         _world: &world::World,
         surface_point: &vec3::Vec3,
         surface_normal: &vec3::Vec3,
-        wi: &mut Option<vec3::Vec3>,
-    ) -> Option<vec3::Vec3> {
+    ) -> Option<light::SampleLightRadiance> {
         let mut sample_surface = None;
         let pdf = self
             .shape
@@ -74,7 +71,6 @@ impl light::Light for AreaLight {
 
         let direction = sample_surface.unwrap() - surface_point;
         let normalize_direction = direction.normalize().unwrap();
-        *wi = Some(normalize_direction);
-        return Some(self.color / pdf.unwrap());
+        return Some(light::SampleLightRadiance::new(normalize_direction, self.color / pdf.unwrap()));
     }
 }

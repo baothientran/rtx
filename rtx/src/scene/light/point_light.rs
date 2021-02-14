@@ -31,8 +31,7 @@ impl light::Light for PointLight {
         world: &world::World,
         surface_point: &vec3::Vec3,
         _surface_normal: &vec3::Vec3,
-        wi: &mut Option<vec3::Vec3>,
-    ) -> Option<vec3::Vec3> {
+    ) -> Option<light::SampleLightRadiance> {
         let direction = self.position - surface_point;
         let normalize_direction = direction.normalize().unwrap();
 
@@ -45,8 +44,7 @@ impl light::Light for PointLight {
         let distance_sq = vec3::Vec3::length_sq(&direction);
         let attenuation = f32::max(1.0 - distance_sq / (self.radius * self.radius), 0.0);
 
-        *wi = Some(normalize_direction);
-        return Some(attenuation * self.color);
+        return Some(light::SampleLightRadiance::new(normalize_direction, attenuation * self.color));
     }
 
     fn sample_li_no_shadow_check(
@@ -55,13 +53,12 @@ impl light::Light for PointLight {
         _world: &world::World,
         surface_point: &vec3::Vec3,
         _surface_normal: &vec3::Vec3,
-        wi: &mut Option<vec3::Vec3>,
-    ) -> Option<vec3::Vec3> {
+    ) -> Option<light::SampleLightRadiance> {
         let direction = self.position - surface_point;
         let normalize_direction = direction.normalize().unwrap();
         let distance_sq = vec3::Vec3::length_sq(&direction);
         let attenuation = f32::max(1.0 - distance_sq / (self.radius * self.radius), 0.0);
-        *wi = Some(normalize_direction);
-        return Some(attenuation * self.color);
+
+        return Some(light::SampleLightRadiance::new(normalize_direction, attenuation * self.color));
     }
 }

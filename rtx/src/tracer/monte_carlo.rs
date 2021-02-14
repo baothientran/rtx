@@ -12,25 +12,24 @@ use crate::scene::world;
 fn estimate_one_light(
     light: &dyn light::Light,
     surface_material: &dyn material::Material,
-    surface_point_ref: &vec3::Vec3,
-    surface_normal_ref: &vec3::Vec3,
+    surface_point: &vec3::Vec3,
+    surface_normal: &vec3::Vec3,
     dpdu: &vec3::Vec3,
     wo: &vec3::Vec3,
     world: &world::World,
     light_sample: &vec2::Vec2,
 ) -> vec3::Vec3 {
-    let mut wi = None;
-    let li = light.sample_li(
+    let maybe_radiance = light.sample_li(
         &light_sample,
         world,
-        surface_point_ref,
-        surface_normal_ref,
-        &mut wi,
+        surface_point,
+        surface_normal,
     );
 
-    if !li.is_none() {
-        let bxdf = surface_material.bxdf(&surface_normal_ref, &dpdu, &wo, &wi.unwrap());
-        return bxdf * li.unwrap() * f32::abs(vec3::Vec3::dot(&surface_normal_ref, &wi.unwrap()));
+    if !maybe_radiance.is_none() {
+        let radiance = maybe_radiance.unwrap();
+        let bxdf = surface_material.bxdf(&surface_normal, &dpdu, &wo, &radiance.wi);
+        return bxdf * radiance.li * f32::abs(vec3::Vec3::dot(&surface_normal, &radiance.wi));
     }
 
     return vec3::Vec3::from(0.0);
@@ -38,8 +37,8 @@ fn estimate_one_light(
 
 fn estimate_all_lights(
     surface_material: &dyn material::Material,
-    surface_point_ref: &vec3::Vec3,
-    surface_normal_ref: &vec3::Vec3,
+    surface_point: &vec3::Vec3,
+    surface_normal: &vec3::Vec3,
     dpdu: &vec3::Vec3,
     wo: &vec3::Vec3,
     world: &world::World,
@@ -54,8 +53,8 @@ fn estimate_all_lights(
             light_lo += estimate_one_light(
                 light.as_ref(),
                 surface_material,
-                surface_point_ref,
-                surface_normal_ref,
+                surface_point,
+                surface_normal,
                 dpdu,
                 wo,
                 world,
@@ -73,8 +72,8 @@ fn estimate_all_lights(
 
 fn estimate_all_lights_with_uniform_contributions(
     surface_material: &dyn material::Material,
-    surface_point_ref: &vec3::Vec3,
-    surface_normal_ref: &vec3::Vec3,
+    surface_point: &vec3::Vec3,
+    surface_normal: &vec3::Vec3,
     dpdu: &vec3::Vec3,
     wo: &vec3::Vec3,
     world: &world::World,
@@ -90,8 +89,8 @@ fn estimate_all_lights_with_uniform_contributions(
     let light_lo = estimate_one_light(
         light.as_ref(),
         surface_material,
-        surface_point_ref,
-        surface_normal_ref,
+        surface_point,
+        surface_normal,
         dpdu,
         wo,
         world,
@@ -102,8 +101,8 @@ fn estimate_all_lights_with_uniform_contributions(
 
 fn estimate_all_lights_with_linear_contributions(
     surface_material: &dyn material::Material,
-    surface_point_ref: &vec3::Vec3,
-    surface_normal_ref: &vec3::Vec3,
+    surface_point: &vec3::Vec3,
+    surface_normal: &vec3::Vec3,
     dpdu: &vec3::Vec3,
     wo: &vec3::Vec3,
     world: &world::World,
@@ -116,19 +115,18 @@ fn estimate_all_lights_with_linear_contributions(
     let mut intensities = vec![0.0; num_lights];
     for i in 0..num_lights {
         let sample = &light_samples[i];
-        let mut wi = None;
-        let li = lights[i].sample_li_no_shadow_check(
+        let maybe_radiance = lights[i].sample_li_no_shadow_check(
             sample,
             world,
-            surface_point_ref,
-            surface_normal_ref,
-            &mut wi,
+            surface_point,
+            surface_normal,
         );
 
-        if !li.is_none() {
-            let bxdf = surface_material.bxdf(&surface_normal_ref, &dpdu, &wo, &wi.unwrap());
+        if !maybe_radiance.is_none() {
+            let radiance = maybe_radiance.unwrap();
+            let bxdf = surface_material.bxdf(&surface_normal, &dpdu, &wo, &radiance.wi);
             let lo =
-                bxdf * li.unwrap() * f32::abs(vec3::Vec3::dot(&surface_normal_ref, &wi.unwrap()));
+                bxdf * radiance.li * f32::abs(vec3::Vec3::dot(&surface_normal, &radiance.wi));
             let intensity = lo.x * 0.2989 + lo.y * 0.5870 + lo.z * 0.1140;
             intensities[i] = intensity;
             sum_intensities += intensity;
@@ -153,8 +151,8 @@ fn estimate_all_lights_with_linear_contributions(
     return estimate_one_light(
         lights[light_index].as_ref(),
         surface_material,
-        surface_point_ref,
-        surface_normal_ref,
+        surface_point,
+        surface_normal,
         dpdu,
         wo,
         world,
@@ -190,7 +188,7 @@ fn ray_trace(
         }
 
         // add color from lights around the world
-        lo += estimate_all_lights_with_linear_contributions(
+        lo += estimate_all_lights(
             surface_material,
             &surface_point_above,
             &normal,
