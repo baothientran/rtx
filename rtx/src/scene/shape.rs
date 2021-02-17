@@ -1,5 +1,6 @@
 pub mod rectangle;
 pub mod sphere;
+pub mod plane;
 
 use crate::core::mat4;
 use crate::core::vec2;

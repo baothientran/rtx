@@ -1,58 +1,42 @@
 use crate::core::mat4;
-use crate::core::math;
 use crate::core::vec2;
 use crate::core::vec3;
 use crate::core::vec4;
 use crate::scene::ray;
 use crate::scene::shape;
+use crate::scene::shape::plane;
 
 pub struct Rectangle {
-    normal: vec3::Vec3,
-    distance: f32,
+    plane: plane::Plane,
     width: f32,
     height: f32,
-    object_to_world: mat4::Mat4,
-    world_to_object: mat4::Mat4,
-    normal_transform: mat4::Mat4,
 }
 
 impl Rectangle {
     pub fn new(object_to_world: mat4::Mat4, width: f32, height: f32) -> Rectangle {
-        let world_to_object = mat4::Mat4::inverse(&object_to_world).unwrap();
-        let normal_transform =
-            mat4::Mat4::inverse(&mat4::Mat4::transpose(&object_to_world)).unwrap();
-
         let normal = vec3::Vec3::new(0.0, 0.0, 1.0);
         let distance = 0.0;
+        let plane = plane::Plane::new(object_to_world, normal, distance);
 
         return Rectangle {
-            normal,
-            distance,
+            plane,
             width,
             height,
-            object_to_world,
-            world_to_object,
-            normal_transform,
         };
     }
 }
 
 impl shape::IntersectableShape for Rectangle {
     fn is_intersect(&self, ray: &ray::Ray, max_distance: f32) -> bool {
-        let local_ray = ray::Ray::transform(ray, &self.world_to_object);
-        let vd = vec3::Vec3::dot(&self.normal, local_ray.direction());
-        if math::equal_epsilon_f32(vd, 0.0, math::EPSILON_F32_6) {
+        let maybe_intersect = self.plane.intersect_ray(ray);
+        if maybe_intersect.is_none() {
             return false;
         }
 
-        let vo = -vec3::Vec3::dot(&self.normal, local_ray.origin()) - self.distance;
-        let t = vo / vd;
-        if t <= 0.0 {
-            return false;
-        }
+        let intersect = maybe_intersect.unwrap();
 
         // calculate intersection point
-        let local_position = local_ray.calc_position(t);
+        let local_position = intersect.position;
         if local_position.x < -self.width * 0.5 || local_position.x > self.width * 0.5 {
             return false;
         }
@@ -61,24 +45,17 @@ impl shape::IntersectableShape for Rectangle {
             return false;
         }
 
-        return t < max_distance;
+        return intersect.ray_time < max_distance;
     }
 
     fn intersect_ray(&self, ray: &ray::Ray) -> Option<shape::IntersectableShapeSurface> {
-        let local_ray = ray::Ray::transform(ray, &self.world_to_object);
-        let vd = vec3::Vec3::dot(&self.normal, local_ray.direction());
-        if math::equal_epsilon_f32(vd, 0.0, math::EPSILON_F32_6) {
+        let maybe_intersect = self.plane.intersect_ray(ray);
+        if maybe_intersect.is_none() {
             return None;
         }
 
-        let vo = -vec3::Vec3::dot(&self.normal, local_ray.origin()) - self.distance;
-        let t = vo / vd;
-        if t <= 0.0 {
-            return None;
-        }
-
-        // calculate intersection point
-        let local_position = local_ray.calc_position(t);
+        let intersect = maybe_intersect.unwrap();
+        let local_position = intersect.position;
         if local_position.x < -self.width * 0.5 || local_position.x > self.width * 0.5 {
             return None;
         }
@@ -87,20 +64,7 @@ impl shape::IntersectableShape for Rectangle {
             return None;
         }
 
-        // calculate dpdu and dpdv
-        let mut local_dpdu = vec3::Vec3::from(0.0);
-        let mut local_dpdv = vec3::Vec3::from(0.0);
-        vec3::Vec3::coordinate_system(&self.normal, &mut local_dpdv, &mut local_dpdu);
-
-        return Some(shape::IntersectableShapeSurface::new(
-            t,
-            local_position,
-            self.normal,
-            local_dpdu,
-            local_dpdv,
-            &self.object_to_world,
-            &self.normal_transform,
-        ));
+        return Some(intersect);
     }
 }
 
@@ -111,15 +75,19 @@ impl shape::SamplableShape for Rectangle {
         surface_point_ref: &vec3::Vec3,
         _surface_normal_ref: &vec3::Vec3,
     ) -> Option<shape::SampleShapeSurface> {
-        let world_normal = (self.normal_transform * vec4::Vec4::from_vec3(&self.normal, 0.0))
+        let maybe_world_normal = (self.plane.normal_transform * vec4::Vec4::from_vec3(&self.plane.normal, 0.0))
             .to_vec3()
-            .normalize()
-            .unwrap();
+            .normalize();
+        if maybe_world_normal.is_none() {
+            return None;
+        }
+
+        let world_normal = maybe_world_normal.unwrap();
 
         let local_point = vec3::Vec3::new(sample.x * self.width, sample.y * self.height, 0.0)
             - vec3::Vec3::new(self.width * 0.5, self.height * 0.5, 0.0);
         let world_surface_point =
-            (self.object_to_world * vec4::Vec4::from_vec3(&local_point, 1.0)).to_vec3();
+            (self.plane.object_to_world * vec4::Vec4::from_vec3(&local_point, 1.0)).to_vec3();
         let direction = surface_point_ref - world_surface_point;
         let normalize_direction = direction.normalize().unwrap();
 
@@ -138,6 +106,7 @@ impl shape::SamplableShape for Rectangle {
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::core::math;
     use crate::core::vec4;
     use crate::scene::shape::IntersectableShape;
 
@@ -147,7 +116,7 @@ mod test {
             mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 1.0, 1.0));
         let normal = vec3::Vec3::new(0.0, 1.0, 0.0);
         let distance = 0.2;
-        let plane = Rectangle::new(
+        let rectangle = Rectangle::new(
             mat4::Mat4::new()
                 .translate(&vec3::Vec3::new(0.0, 1.0, 1.0))
                 .translate(&vec3::Vec3::new(0.0, -0.2, 0.0))
@@ -164,9 +133,9 @@ mod test {
         ray_direction = vec3::Vec3::normalize(&ray_direction).unwrap();
         let ray = ray::Ray::new(ray_origin, ray_direction);
 
-        assert!(vec3::Vec3::dot(ray.direction(), &plane.normal) > 0.0);
+        assert!(vec3::Vec3::dot(ray.direction(), &rectangle.plane.normal) > 0.0);
 
-        match plane.intersect_ray(&ray) {
+        match rectangle.intersect_ray(&ray) {
             None => {
                 assert!(false);
             }
@@ -209,7 +178,7 @@ mod test {
             mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 1.0, 1.0));
         let normal = vec3::Vec3::new(0.0, 1.0, 0.0);
         let distance = 0.2;
-        let plane = Rectangle::new(
+        let rectangle = Rectangle::new(
             mat4::Mat4::new()
                 .translate(&vec3::Vec3::new(0.0, 1.0, 1.0))
                 .translate(&vec3::Vec3::new(0.0, -0.2, 0.0))
@@ -226,9 +195,9 @@ mod test {
         ray_direction = vec3::Vec3::normalize(&ray_direction).unwrap();
         let ray = ray::Ray::new(ray_origin, ray_direction);
 
-        assert!(vec3::Vec3::dot(ray.direction(), &plane.normal) < 0.0);
+        assert!(vec3::Vec3::dot(ray.direction(), &rectangle.plane.normal) < 0.0);
 
-        match plane.intersect_ray(&ray) {
+        match rectangle.intersect_ray(&ray) {
             None => {
                 assert!(false);
             }

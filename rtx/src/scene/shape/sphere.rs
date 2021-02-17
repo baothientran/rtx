@@ -87,7 +87,12 @@ impl shape::IntersectableShape for Sphere {
 
         // calculate position and normal
         let local_position = local_ray.calc_position(t);
-        let local_normal = vec3::Vec3::normalize(&local_position).unwrap();
+        let maybe_local_normal = vec3::Vec3::normalize(&local_position);
+        if maybe_local_normal.is_none() {
+            return None;
+        }
+
+        let local_normal = maybe_local_normal.unwrap();
 
         // calculate dpdu and dpdv
         let two_pi = math::PI_F32 * 2.0;
