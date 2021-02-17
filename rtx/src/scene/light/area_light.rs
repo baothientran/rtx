@@ -12,7 +12,11 @@ pub struct AreaLight {
 }
 
 impl AreaLight {
-    pub fn new(color: vec3::Vec3, shape: Box<dyn shape::SamplableShape>, n_samples: u32) -> AreaLight {
+    pub fn new(
+        color: vec3::Vec3,
+        shape: Box<dyn shape::SamplableShape>,
+        n_samples: u32,
+    ) -> AreaLight {
         return AreaLight {
             color,
             shape,
@@ -33,9 +37,9 @@ impl light::Light for AreaLight {
         surface_point: &vec3::Vec3,
         surface_normal: &vec3::Vec3,
     ) -> Option<light::SampleLightRadiance> {
-        let maybe_sample_shape_surface = self
-            .shape
-            .sample_surface(sample, &surface_point, &surface_normal);
+        let maybe_sample_shape_surface =
+            self.shape
+                .sample_surface(sample, &surface_point, &surface_normal);
 
         if maybe_sample_shape_surface.is_none() {
             return None;
@@ -68,9 +72,9 @@ impl light::Light for AreaLight {
         surface_point: &vec3::Vec3,
         surface_normal: &vec3::Vec3,
     ) -> Option<light::SampleLightRadiance> {
-        let maybe_sample_shape_surface = self
-            .shape
-            .sample_surface(sample, &surface_point, &surface_normal);
+        let maybe_sample_shape_surface =
+            self.shape
+                .sample_surface(sample, &surface_point, &surface_normal);
 
         if maybe_sample_shape_surface.is_none() {
             return None;

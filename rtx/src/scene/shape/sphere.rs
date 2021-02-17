@@ -1,8 +1,8 @@
+use crate::core::mat4;
 use crate::core::math;
 use crate::core::vec2;
 use crate::core::vec3;
 use crate::core::vec4;
-use crate::core::mat4;
 use crate::scene::ray;
 use crate::scene::shape;
 use crate::scene::shape::IntersectableShape;
@@ -131,12 +131,15 @@ impl shape::SamplableShape for Sphere {
         surface_normal_ref: &vec3::Vec3,
     ) -> Option<shape::SampleShapeSurface> {
         let center = (self.object_to_world * vec4::Vec4::new(0.0, 0.0, 0.0, 1.0)).to_vec3();
-        let cos_alpha = 1.0 - sample.x
-            + sample.x
-                * f32::sqrt(
-                    1.0 - (self.radius * self.radius) / (surface_point_ref - center).length_sq(),
-                );
-        let sin_alpha = f32::sqrt(1.0 - cos_alpha * cos_alpha);
+        let distance_sq = (surface_point_ref - center).length_sq();
+        let radius_sq = self.radius * self.radius;
+        if distance_sq <= radius_sq {
+            return None;
+        }
+
+        let cos_alpha =
+            1.0 - sample.x + sample.x * f32::sqrt(f32::max(1.0 - radius_sq / distance_sq, 0.0));
+        let sin_alpha = f32::sqrt(f32::max(1.0 - cos_alpha * cos_alpha, 0.0));
 
         let phi = 2.0 * math::PI_F32 * sample.y;
         let cos_phi = f32::cos(phi);
@@ -154,16 +157,7 @@ impl shape::SamplableShape for Sphere {
         let direction = direction_vec4.to_vec3().normalize().unwrap();
         let ray = ray::Ray::new(*surface_point_ref, direction);
         if let Some(shape_surface) = self.intersect_ray(&ray) {
-            let distance_sq = (surface_point_ref - center).length_sq();
-            if distance_sq == 0.0 {
-                return None;
-            }
-
-            let n = 1.0
-                - f32::sqrt(
-                    1.0 - (self.radius * self.radius) / distance_sq,
-                );
-
+            let n = 1.0 - f32::sqrt(f32::max(1.0 - radius_sq / distance_sq, 0.0));
             return Some(shape::SampleShapeSurface::new(
                 1.0 / (2.0 * math::PI_F32 * n),
                 shape_surface.calc_world_position(),

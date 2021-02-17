@@ -75,9 +75,10 @@ impl shape::SamplableShape for Rectangle {
         surface_point_ref: &vec3::Vec3,
         _surface_normal_ref: &vec3::Vec3,
     ) -> Option<shape::SampleShapeSurface> {
-        let maybe_world_normal = (self.plane.normal_transform * vec4::Vec4::from_vec3(&self.plane.normal, 0.0))
-            .to_vec3()
-            .normalize();
+        let maybe_world_normal = (self.plane.normal_transform
+            * vec4::Vec4::from_vec3(&self.plane.normal, 0.0))
+        .to_vec3()
+        .normalize();
         if maybe_world_normal.is_none() {
             return None;
         }

@@ -1,13 +1,13 @@
+pub mod plane;
 pub mod rectangle;
 pub mod sphere;
-pub mod plane;
 
 use crate::core::mat4;
 use crate::core::vec2;
 use crate::core::vec3;
 use crate::core::vec4;
-use crate::scene::ray;
 use crate::scene::material;
+use crate::scene::ray;
 use std::rc;
 
 #[derive(Debug)]
@@ -143,7 +143,10 @@ impl RenderableShape {
 
     pub fn intersect_ray(&self, ray: &ray::Ray) -> Option<RenderableShapeSurface> {
         return match self.shape.intersect_ray(ray) {
-            Some(hit_record) => Some(RenderableShapeSurface::new(hit_record, self.material.as_ref())),
+            Some(hit_record) => Some(RenderableShapeSurface::new(
+                hit_record,
+                self.material.as_ref(),
+            )),
             None => None,
         };
     }
