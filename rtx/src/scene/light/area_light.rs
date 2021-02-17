@@ -43,7 +43,12 @@ impl light::Light for AreaLight {
 
         let sample_shape_surface = maybe_sample_shape_surface.unwrap();
         let direction = sample_shape_surface.surface_point - surface_point;
-        let normalize_direction = direction.normalize().unwrap();
+        let maybe_normalize_direction = direction.normalize();
+        if maybe_normalize_direction.is_none() {
+            return None;
+        }
+
+        let normalize_direction = maybe_normalize_direction.unwrap();
         let ray = ray::Ray::new(*surface_point, normalize_direction);
         let max_distance = direction.length();
         if world.is_intersect(&ray, max_distance) {

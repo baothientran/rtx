@@ -1,8 +1,8 @@
-use crate::core::mat4;
 use crate::core::math;
 use crate::core::vec2;
 use crate::core::vec3;
 use crate::core::vec4;
+use crate::core::mat4;
 use crate::scene::ray;
 use crate::scene::shape;
 use crate::scene::shape::IntersectableShape;
@@ -154,14 +154,15 @@ impl shape::SamplableShape for Sphere {
         let direction = direction_vec4.to_vec3().normalize().unwrap();
         let ray = ray::Ray::new(*surface_point_ref, direction);
         if let Some(shape_surface) = self.intersect_ray(&ray) {
-            let n = 1.0
-                - f32::sqrt(
-                    1.0 - (self.radius * self.radius) / (surface_point_ref - center).length_sq(),
-                );
-
-            if n == 0.0 {
+            let distance_sq = (surface_point_ref - center).length_sq();
+            if distance_sq == 0.0 {
                 return None;
             }
+
+            let n = 1.0
+                - f32::sqrt(
+                    1.0 - (self.radius * self.radius) / distance_sq,
+                );
 
             return Some(shape::SampleShapeSurface::new(
                 1.0 / (2.0 * math::PI_F32 * n),
