@@ -24,6 +24,10 @@ impl Rectangle {
             height,
         };
     }
+
+    pub fn completely_behind_surface_tangent_plane(&self, surface_point: &vec3::Vec3, surface_normal: &vec3::Vec3) -> bool {
+        todo!()
+    }
 }
 
 impl shape::IntersectableShape for Rectangle {
@@ -73,8 +77,12 @@ impl shape::SamplableShape for Rectangle {
         &self,
         sample: &vec2::Vec2,
         surface_point_ref: &vec3::Vec3,
-        _surface_normal_ref: &vec3::Vec3,
+        surface_normal_ref: &vec3::Vec3,
     ) -> Option<shape::SampleShapeSurface> {
+        if self.completely_behind_surface_tangent_plane(surface_point_ref, surface_normal_ref) {
+            return None;
+        }
+
         let maybe_world_normal = (self.plane.normal_transform
             * vec4::Vec4::from_vec3(&self.plane.normal, 0.0))
         .to_vec3()
@@ -84,7 +92,6 @@ impl shape::SamplableShape for Rectangle {
         }
 
         let world_normal = maybe_world_normal.unwrap();
-
         let local_point = vec3::Vec3::new(sample.x * self.width, sample.y * self.height, 0.0)
             - vec3::Vec3::new(self.width * 0.5, self.height * 0.5, 0.0);
         let world_surface_point =

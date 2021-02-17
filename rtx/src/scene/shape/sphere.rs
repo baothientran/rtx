@@ -27,6 +27,10 @@ impl Sphere {
             normal_transform,
         };
     }
+
+    pub fn behind_surface_tangent_plane(&self, surface_point: &vec3::Vec3, surface_normal: &vec3::Vec3) -> bool {
+        todo!()
+    }
 }
 
 impl shape::IntersectableShape for Sphere {
@@ -130,6 +134,10 @@ impl shape::SamplableShape for Sphere {
         surface_point_ref: &vec3::Vec3,
         surface_normal_ref: &vec3::Vec3,
     ) -> Option<shape::SampleShapeSurface> {
+        if self.behind_surface_tangent_plane(surface_point_ref, surface_normal_ref) {
+            return None;
+        }
+
         let center = (self.object_to_world * vec4::Vec4::new(0.0, 0.0, 0.0, 1.0)).to_vec3();
         let distance_sq = (surface_point_ref - center).length_sq();
         let radius_sq = self.radius * self.radius;
