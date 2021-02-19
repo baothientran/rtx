@@ -28,8 +28,19 @@ impl Sphere {
         };
     }
 
-    pub fn behind_surface_tangent_plane(&self, surface_point: &vec3::Vec3, surface_normal: &vec3::Vec3) -> bool {
-        todo!()
+    fn behind_surface_tangent_plane(
+        &self,
+        surface_point: &vec3::Vec3,
+        surface_normal: &vec3::Vec3,
+    ) -> bool {
+        let center = (self.object_to_world * vec4::Vec4::new(0.0, 0.0, 0.0, 1.0)).to_vec3();
+        if (center - surface_point).dot(surface_normal) >= 0.0 {
+            return false;
+        }
+        let radius_vec3 = (self.object_to_world * vec4::Vec4::new(self.radius, 0.0, 0.0, 1.0)).to_vec3();
+        let radius = (radius_vec3 - center).length();
+        let distance_center_plane = surface_normal.dot(&center) - surface_point.dot(&surface_normal); 
+        return f32::abs(distance_center_plane) >= radius;
     }
 }
 

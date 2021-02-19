@@ -123,6 +123,10 @@ fn estimate_all_lights_with_linear_contributions(
         }
     }
 
+    if sum_intensities == 0.0 {
+        return vec3::Vec3::from(0.0);
+    }
+
     let sample = sampler.get_1d();
     let mut contribution = 0.0;
     let mut sum_light_contribution = 0.0;
@@ -178,7 +182,7 @@ fn ray_trace(
         }
 
         // add color from lights around the world
-        lo += estimate_all_lights(
+        lo += estimate_all_lights_with_linear_contributions(
             surface_material,
             &surface_point_above,
             &normal,

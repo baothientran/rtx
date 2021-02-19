@@ -10,6 +10,10 @@ pub struct Rectangle {
     plane: plane::Plane,
     width: f32,
     height: f32,
+    world_north_west_corner: vec3::Vec3,
+    world_south_west_corner: vec3::Vec3,
+    world_north_east_corner: vec3::Vec3,
+    world_south_east_corner: vec3::Vec3,
 }
 
 impl Rectangle {
@@ -17,16 +21,38 @@ impl Rectangle {
         let normal = vec3::Vec3::new(0.0, 0.0, 1.0);
         let distance = 0.0;
         let plane = plane::Plane::new(object_to_world, normal, distance);
+        let half_width = width * 0.5;
+        let half_height = height * 0.5;
+        let world_north_west_corner =
+            (plane.object_to_world * vec4::Vec4::new(-half_width, half_height, 0.0, 1.0)).to_vec3();
+        let world_south_west_corner = (plane.object_to_world
+            * vec4::Vec4::new(-half_width, -half_height, 0.0, 1.0))
+        .to_vec3();
+        let world_north_east_corner =
+            (plane.object_to_world * vec4::Vec4::new(half_width, half_height, 0.0, 1.0)).to_vec3();
+        let world_south_east_corner =
+            (plane.object_to_world * vec4::Vec4::new(half_width, -half_height, 0.0, 1.0)).to_vec3();
 
         return Rectangle {
             plane,
             width,
             height,
+            world_north_west_corner,
+            world_south_west_corner,
+            world_north_east_corner,
+            world_south_east_corner,
         };
     }
 
-    pub fn completely_behind_surface_tangent_plane(&self, surface_point: &vec3::Vec3, surface_normal: &vec3::Vec3) -> bool {
-        todo!()
+    fn completely_behind_surface_tangent_plane(
+        &self,
+        surface_point: &vec3::Vec3,
+        surface_normal: &vec3::Vec3,
+    ) -> bool {
+        return (self.world_north_west_corner - surface_point).dot(surface_normal) < 0.0
+            && (self.world_south_west_corner - surface_point).dot(surface_normal) < 0.0
+            && (self.world_north_east_corner - surface_point).dot(surface_normal) < 0.0
+            && (self.world_south_east_corner - surface_point).dot(surface_normal) < 0.0;
     }
 }
 
