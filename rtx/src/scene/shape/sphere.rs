@@ -15,6 +15,7 @@ pub struct Sphere {
     object_to_world: mat4::Mat4,
     world_to_object: mat4::Mat4,
     normal_transform: mat4::Mat4,
+    inverse_normal_transform: mat4::Mat4,
 }
 
 impl Sphere {
@@ -22,6 +23,7 @@ impl Sphere {
         let world_to_object = mat4::Mat4::inverse(&object_to_world).unwrap();
         let normal_transform =
             mat4::Mat4::inverse(&mat4::Mat4::transpose(&object_to_world)).unwrap();
+        let inverse_normal_transform = normal_transform.inverse().unwrap();
 
         let world_center = (object_to_world * vec4::Vec4::new(0.0, 0.0, 0.0, 1.0)).to_vec3();
         let world_radius_vec3 = (object_to_world * vec4::Vec4::new(radius, 0.0, 0.0, 1.0)).to_vec3();
@@ -33,6 +35,7 @@ impl Sphere {
             object_to_world,
             world_to_object,
             normal_transform,
+            inverse_normal_transform
         };
     }
 
@@ -41,11 +44,14 @@ impl Sphere {
         surface_point: &vec3::Vec3,
         surface_normal: &vec3::Vec3,
     ) -> bool {
-        if (self.world_center - surface_point).dot(surface_normal) >= 0.0 {
+        let local_surface_point = (self.world_to_object * vec4::Vec4::from_vec3(surface_point, 1.0)).to_vec3();
+        let local_surface_normal = (self.inverse_normal_transform * vec4::Vec4::from_vec3(surface_normal, 0.0)).to_vec3().normalize().unwrap();
+        if (-local_surface_point).dot(&local_surface_normal) >= 0.0 {
             return false;
         }
-        let distance_center_plane = surface_normal.dot(&self.world_center) - surface_point.dot(&surface_normal); 
-        return f32::abs(distance_center_plane) >= self.world_radius;
+
+        let distance_center_plane = -local_surface_point.dot(&local_surface_normal); 
+        return f32::abs(distance_center_plane) >= self.radius;
     }
 }
 
