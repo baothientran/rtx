@@ -9,6 +9,8 @@ use crate::scene::shape::IntersectableShape;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Sphere {
+    world_center: vec3::Vec3,
+    world_radius: f32,
     radius: f32,
     object_to_world: mat4::Mat4,
     world_to_object: mat4::Mat4,
@@ -20,7 +22,13 @@ impl Sphere {
         let world_to_object = mat4::Mat4::inverse(&object_to_world).unwrap();
         let normal_transform =
             mat4::Mat4::inverse(&mat4::Mat4::transpose(&object_to_world)).unwrap();
+
+        let world_center = (object_to_world * vec4::Vec4::new(0.0, 0.0, 0.0, 1.0)).to_vec3();
+        let world_radius_vec3 = (object_to_world * vec4::Vec4::new(radius, 0.0, 0.0, 1.0)).to_vec3();
+        let world_radius = (world_radius_vec3 - world_center).length();
         return Sphere {
+            world_center,
+            world_radius,
             radius,
             object_to_world,
             world_to_object,
@@ -33,14 +41,11 @@ impl Sphere {
         surface_point: &vec3::Vec3,
         surface_normal: &vec3::Vec3,
     ) -> bool {
-        let center = (self.object_to_world * vec4::Vec4::new(0.0, 0.0, 0.0, 1.0)).to_vec3();
-        if (center - surface_point).dot(surface_normal) >= 0.0 {
+        if (self.world_center - surface_point).dot(surface_normal) >= 0.0 {
             return false;
         }
-        let radius_vec3 = (self.object_to_world * vec4::Vec4::new(self.radius, 0.0, 0.0, 1.0)).to_vec3();
-        let radius = (radius_vec3 - center).length();
-        let distance_center_plane = surface_normal.dot(&center) - surface_point.dot(&surface_normal); 
-        return f32::abs(distance_center_plane) >= radius;
+        let distance_center_plane = surface_normal.dot(&self.world_center) - surface_point.dot(&surface_normal); 
+        return f32::abs(distance_center_plane) >= self.world_radius;
     }
 }
 
@@ -149,8 +154,7 @@ impl shape::SamplableShape for Sphere {
             return None;
         }
 
-        let center = (self.object_to_world * vec4::Vec4::new(0.0, 0.0, 0.0, 1.0)).to_vec3();
-        let distance_sq = (surface_point_ref - center).length_sq();
+        let distance_sq = (surface_point_ref - self.world_center).length_sq();
         let radius_sq = self.radius * self.radius;
         if distance_sq <= radius_sq {
             return None;
@@ -164,7 +168,7 @@ impl shape::SamplableShape for Sphere {
         let cos_phi = f32::cos(phi);
         let sin_phi = f32::sin(phi);
 
-        let w = (center - surface_point_ref).normalize().unwrap();
+        let w = (self.world_center - surface_point_ref).normalize().unwrap();
         let v = w.cross(surface_normal_ref).normalize().unwrap();
         let u = v.cross(&w).normalize().unwrap();
         let sample_transform = mat4::Mat4::from_scalars(
