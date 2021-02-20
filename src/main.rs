@@ -38,7 +38,7 @@ fn main() {
         32,
     ));
     let sphere_area_light_top = Box::new(light::area_light::AreaLight::new(
-        vec3::Vec3::from(1.0),
+        vec3::Vec3::from(20.0),
         sphere_light_top_shape,
         32,
     ));
