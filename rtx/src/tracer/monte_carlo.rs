@@ -182,7 +182,7 @@ fn ray_trace(
         }
 
         // add color from lights around the world
-        lo += estimate_all_lights_with_linear_contributions(
+        lo += estimate_all_lights(
             surface_material,
             &surface_point_above,
             &normal,
