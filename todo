@@ -50,4 +50,4 @@
         * sphere
 
     + light transport
-        + diffuse area light
+        * diffuse area light
