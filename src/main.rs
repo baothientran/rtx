@@ -28,8 +28,8 @@ fn main() {
         mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.4, 0.2, 0.0)),
         0.2,
     ));
-    let sphere_light_top_shape = Box::new(shape::sphere::Sphere::new(
-        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 0.6, 0.0)),
+    let sphere_light_left_shape = Box::new(shape::sphere::Sphere::new(
+        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(-0.4, 0.2, 0.0)),
         0.2,
     ));
     let sphere_area_light_right = Box::new(light::area_light::AreaLight::new(
@@ -37,9 +37,9 @@ fn main() {
         sphere_light_right_shape,
         32,
     ));
-    let sphere_area_light_top = Box::new(light::area_light::AreaLight::new(
-        vec3::Vec3::from(20.0),
-        sphere_light_top_shape,
+    let sphere_area_light_left = Box::new(light::area_light::AreaLight::new(
+        vec3::Vec3::from(1.0),
+        sphere_light_left_shape,
         32,
     ));
     let rectangle_area_light = Box::new(light::area_light::AreaLight::new(
@@ -69,8 +69,8 @@ fn main() {
     world.add_shape(plane, white_matte.clone());
     world.add_shape(sphere_center, white_matte.clone());
     world.add_light(sphere_area_light_right);
-    world.add_light(sphere_area_light_top);
-    // world.add_light(rectangle_area_light);
+    world.add_light(sphere_area_light_left);
+    world.add_light(rectangle_area_light);
 
     // setup camera
     let view_location = vec3::Vec3::new(0.0, 0.4, 2.5);
