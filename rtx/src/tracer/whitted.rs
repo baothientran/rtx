@@ -51,7 +51,8 @@ fn ray_trace(
                 &normal,
                 &dpdu,
                 &wo,
-                reflectance::ReflectanceType::Reflection as u32 | reflectance::ReflectanceType::Specular as u32,
+                reflectance::ReflectanceType::Reflection as u32
+                    | reflectance::ReflectanceType::Specular as u32,
             );
             if !maybe_radiance.is_none() {
                 let radiance = maybe_radiance.unwrap();
@@ -65,7 +66,8 @@ fn ray_trace(
                 &normal,
                 &dpdu,
                 &wo,
-                reflectance::ReflectanceType::Refraction as u32 | reflectance::ReflectanceType::Specular as u32,
+                reflectance::ReflectanceType::Refraction as u32
+                    | reflectance::ReflectanceType::Specular as u32,
             );
             if !maybe_radiance.is_none() {
                 let radiance = maybe_radiance.unwrap();

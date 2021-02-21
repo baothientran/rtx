@@ -20,7 +20,7 @@ pub struct ShadingReflectanceRadiance {
 pub enum ReflectanceType {
     Diffuse = 1 << 0,
     Microfacet = 1 << 1,
-    Specular = 1 << 2, 
+    Specular = 1 << 2,
     Reflection = 1 << 3,
     Refraction = 1 << 4,
 }
@@ -112,8 +112,7 @@ impl ReflectanceCollection {
             return None;
         }
 
-        let maybe_radiance =
-            self.reflectances[bxdf_id as usize].sample_bxdf(&shading_wo);
+        let maybe_radiance = self.reflectances[bxdf_id as usize].sample_bxdf(&shading_wo);
         if maybe_radiance.is_none() {
             return None;
         }
@@ -134,10 +133,7 @@ impl ReflectanceCollection {
             }
         }
 
-        return Some(ReflectanceRadiance{
-            wi,
-            bxdf
-        });
+        return Some(ReflectanceRadiance { wi, bxdf });
     }
 
     fn world_to_shading(

@@ -24,8 +24,8 @@ impl Refraction {
 impl reflectance::Reflectance for Refraction {
     fn has_types(&self, flags: u32) -> bool {
         return reflectance::ReflectanceType::contain(
-            reflectance::ReflectanceType::Specular as u32 |
-            reflectance::ReflectanceType::Refraction as u32,
+            reflectance::ReflectanceType::Specular as u32
+                | reflectance::ReflectanceType::Refraction as u32,
             flags,
         );
     }

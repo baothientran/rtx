@@ -1,10 +1,10 @@
+pub mod cone;
+pub mod cylinder;
+pub mod disk;
 pub mod plane;
 pub mod rectangle;
 pub mod sphere;
-pub mod disk;
-pub mod cylinder;
 pub mod triangle;
-pub mod cone;
 
 use crate::core::mat4;
 use crate::core::vec2;
