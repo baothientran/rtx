@@ -44,9 +44,8 @@ impl material::Material for Glass {
         normal: &vec3::Vec3,
         dpdu: &vec3::Vec3,
         wo: &vec3::Vec3,
-        wi: &mut Option<vec3::Vec3>,
         flags: u32,
-    ) -> Option<vec3::Vec3> {
-        return self.reflectances.sample_bxdf(normal, dpdu, wo, wi, flags);
+    ) -> Option<reflectance::ReflectanceRadiance> {
+        return self.reflectances.sample_bxdf(normal, dpdu, wo, flags);
     }
 }

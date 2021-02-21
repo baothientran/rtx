@@ -47,33 +47,31 @@ fn ray_trace(
 
         // add reflection or refraction
         if depth <= max_depth {
-            let mut wi = None;
-            let bxdf = surface_material.sample_bxdf(
+            let maybe_radiance = surface_material.sample_bxdf(
                 &normal,
                 &dpdu,
                 &wo,
-                &mut wi,
-                reflectance::ReflectanceType::Reflection as u32,
+                reflectance::ReflectanceType::Reflection as u32 | reflectance::ReflectanceType::Specular as u32,
             );
-            if !bxdf.is_none() {
-                let ray = ray::Ray::new(surface_point_above, wi.unwrap());
+            if !maybe_radiance.is_none() {
+                let radiance = maybe_radiance.unwrap();
+                let ray = ray::Ray::new(surface_point_above, radiance.wi);
                 if let Some(li) = ray_trace(&ray, world, sampler, depth + 1, max_depth) {
-                    lo += bxdf.unwrap() * li * f32::abs(vec3::Vec3::dot(&normal, &wi.unwrap()));
+                    lo += radiance.bxdf * li * f32::abs(vec3::Vec3::dot(&normal, &radiance.wi));
                 }
             }
 
-            let mut wi = None;
-            let bxdf = surface_material.sample_bxdf(
+            let maybe_radiance = surface_material.sample_bxdf(
                 &normal,
                 &dpdu,
                 &wo,
-                &mut wi,
-                reflectance::ReflectanceType::Refraction as u32,
+                reflectance::ReflectanceType::Refraction as u32 | reflectance::ReflectanceType::Specular as u32,
             );
-            if !bxdf.is_none() {
-                let ray = ray::Ray::new(surface_point_below, wi.unwrap());
+            if !maybe_radiance.is_none() {
+                let radiance = maybe_radiance.unwrap();
+                let ray = ray::Ray::new(surface_point_below, radiance.wi);
                 if let Some(li) = ray_trace(&ray, world, sampler, depth + 1, max_depth) {
-                    lo += bxdf.unwrap() * li * f32::abs(vec3::Vec3::dot(&normal, &wi.unwrap()));
+                    lo += radiance.bxdf * li * f32::abs(vec3::Vec3::dot(&normal, &radiance.wi));
                 }
             }
         }

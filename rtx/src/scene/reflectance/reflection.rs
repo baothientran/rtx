@@ -17,6 +17,7 @@ impl Reflection {
 impl reflectance::Reflectance for Reflection {
     fn has_types(&self, flags: u32) -> bool {
         return reflectance::ReflectanceType::contain(
+            reflectance::ReflectanceType::Specular as u32 |
             reflectance::ReflectanceType::Reflection as u32,
             flags,
         );
@@ -29,11 +30,12 @@ impl reflectance::Reflectance for Reflection {
     fn sample_bxdf(
         &self,
         shading_wo: &vec3::Vec3,
-        shading_wi: &mut Option<vec3::Vec3>,
-    ) -> Option<vec3::Vec3> {
-        let out_shading_wi = vec3::Vec3::new(-shading_wo.x, -shading_wo.y, shading_wo.z);
-        *shading_wi = Some(out_shading_wi); // reflect against z-axis
-        let cos_theta_wi = out_shading_wi.z;
-        return Some(self.fresnel.evaluate(cos_theta_wi) * self.kr / f32::abs(cos_theta_wi));
+    ) -> Option<reflectance::ShadingReflectanceRadiance> {
+        let shading_wi = vec3::Vec3::new(-shading_wo.x, -shading_wo.y, shading_wo.z);
+        let cos_theta_wi = shading_wi.z;
+        return Some(reflectance::ShadingReflectanceRadiance {
+            shading_wi,
+            bxdf: self.fresnel.evaluate(cos_theta_wi) * self.kr / f32::abs(cos_theta_wi),
+        });
     }
 }

@@ -93,7 +93,7 @@ fn main() {
     let mut sampler = random_sampler::RandomSampler::new();
 
     // render objects
-    tracer::monte_carlo::render(&camera, &world, &mut sampler, 10, &mut img);
+    tracer::whitted::render(&camera, &world, &mut sampler, 10, &mut img);
 
     // export to file
     ppm::write_to_file("test.ppm", &img).unwrap();

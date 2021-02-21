@@ -24,6 +24,7 @@ impl Refraction {
 impl reflectance::Reflectance for Refraction {
     fn has_types(&self, flags: u32) -> bool {
         return reflectance::ReflectanceType::contain(
+            reflectance::ReflectanceType::Specular as u32 |
             reflectance::ReflectanceType::Refraction as u32,
             flags,
         );
@@ -40,8 +41,7 @@ impl reflectance::Reflectance for Refraction {
     fn sample_bxdf(
         &self,
         shading_wo: &vec3::Vec3,
-        shading_wi: &mut Option<vec3::Vec3>,
-    ) -> Option<vec3::Vec3> {
+    ) -> Option<reflectance::ShadingReflectanceRadiance> {
         let mut cos_normal_wo = shading_wo.z;
         let eta_i;
         let eta_t;
@@ -65,16 +65,15 @@ impl reflectance::Reflectance for Refraction {
             return None;
         }
 
-        let out_shading_wi =
-            r * (-shading_wo) + (r * cos_normal_wo - f32::sqrt(cos_normal_wi_sq)) * n;
-        *shading_wi = Some(out_shading_wi);
+        let shading_wi = r * (-shading_wo) + (r * cos_normal_wo - f32::sqrt(cos_normal_wi_sq)) * n;
 
         // calculate bxdf of refraction
-        let cos_normal_wi = out_shading_wi.z;
+        let cos_normal_wi = shading_wi.z;
         r *= r;
-        return Some(
-            r * (vec3::Vec3::from(1.0) - self.fresnel.evaluate(cos_normal_wi)) * self.kt
+        return Some(reflectance::ShadingReflectanceRadiance {
+            shading_wi,
+            bxdf: r * (vec3::Vec3::from(1.0) - self.fresnel.evaluate(cos_normal_wi)) * self.kt
                 / f32::abs(cos_normal_wi),
-        );
+        });
     }
 }

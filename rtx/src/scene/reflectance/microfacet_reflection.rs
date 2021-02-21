@@ -57,8 +57,7 @@ impl reflectance::Reflectance for MicrofacetReflection {
     fn sample_bxdf(
         &self,
         _shading_wo: &vec3::Vec3,
-        _shading_wi: &mut Option<vec3::Vec3>,
-    ) -> Option<vec3::Vec3> {
+    ) -> Option<reflectance::ShadingReflectanceRadiance> {
         todo!();
     }
 }
