@@ -2,6 +2,7 @@ pub mod glass;
 pub mod matte;
 
 use crate::core::vec3;
+use crate::scene::reflectance;
 
 pub trait Material {
     fn bxdf(
@@ -17,7 +18,6 @@ pub trait Material {
         normal: &vec3::Vec3,
         dpdu: &vec3::Vec3,
         wo: &vec3::Vec3,
-        wi: &mut vec3::Vec3,
         flags: u32,
-    ) -> vec3::Vec3;
+    ) -> Option<reflectance::ReflectanceRadiance>;
 }

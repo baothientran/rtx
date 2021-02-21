@@ -15,7 +15,8 @@ impl Lambertian {
 impl reflectance::Reflectance for Lambertian {
     fn has_types(&self, flags: u32) -> bool {
         return reflectance::ReflectanceType::contain(
-            reflectance::ReflectanceType::Lambertian as u32,
+            reflectance::ReflectanceType::Diffuse as u32
+                | reflectance::ReflectanceType::Reflection as u32,
             flags,
         );
     }
@@ -24,7 +25,7 @@ impl reflectance::Reflectance for Lambertian {
         return self.kd / math::PI_F32;
     }
 
-    fn sample_bxdf(&self, _wo: &vec3::Vec3, _wi: &mut vec3::Vec3) -> vec3::Vec3 {
+    fn sample_bxdf(&self, _wo: &vec3::Vec3) -> Option<reflectance::ShadingReflectanceRadiance> {
         todo!();
     }
 }

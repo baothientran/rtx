@@ -1,39 +1,37 @@
 use crate::scene::light;
 use crate::scene::material;
 use crate::scene::ray;
-use crate::scene::renderable;
 use crate::scene::shape;
 use std::rc;
-use std::slice;
 
 pub struct World {
-    renderables: Vec<renderable::Renderable>,
+    renderables: Vec<shape::RenderableShape>,
     lights: Vec<Box<dyn light::Light>>,
 }
 
 impl World {
     pub fn new() -> World {
         return World {
-            renderables: Vec::<renderable::Renderable>::new(),
+            renderables: Vec::<shape::RenderableShape>::new(),
             lights: Vec::<Box<dyn light::Light>>::new(),
         };
     }
 
     pub fn add_shape(
         &mut self,
-        shape: rc::Rc<dyn shape::Shape>,
+        shape: rc::Rc<dyn shape::IntersectableShape>,
         material: rc::Rc<dyn material::Material>,
     ) {
         self.renderables
-            .push(renderable::Renderable::new(shape, material));
+            .push(shape::RenderableShape::new(shape, material));
     }
 
     pub fn add_light(&mut self, light: Box<dyn light::Light>) {
         self.lights.push(light);
     }
 
-    pub fn lights(&self) -> slice::Iter<'_, std::boxed::Box<dyn light::Light>> {
-        return self.lights.iter();
+    pub fn lights(&self) -> &Vec<Box<(dyn light::Light + 'static)>> {
+        return &self.lights;
     }
 
     pub fn is_intersect(&self, ray: &ray::Ray, max_distance: f32) -> bool {
@@ -46,8 +44,8 @@ impl World {
         return false;
     }
 
-    pub fn intersect_ray(&self, ray: &ray::Ray) -> Option<renderable::RenderableSurface> {
-        let mut intersect: Option<renderable::RenderableSurface> = None;
+    pub fn intersect_ray(&self, ray: &ray::Ray) -> Option<shape::RenderableShapeSurface> {
+        let mut intersect: Option<shape::RenderableShapeSurface> = None;
         for renderable in self.renderables.iter() {
             match intersect.as_mut() {
                 Some(curr_renderable_surface) => {

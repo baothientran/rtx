@@ -4,11 +4,13 @@ use crate::core::vec3;
 use crate::scene::camera;
 use crate::scene::ray;
 use crate::scene::reflectance;
+use crate::scene::sampler;
 use crate::scene::world;
 
 fn ray_trace(
     ray: &ray::Ray,
     world: &world::World,
+    sampler: &mut dyn sampler::Sampler,
     depth: u32,
     max_depth: u32,
 ) -> Option<vec3::Vec3> {
@@ -33,44 +35,43 @@ fn ray_trace(
         }
 
         // add color from lights around the world
-        for light in world.lights() {
-            if light.is_visible(&surface_point_above, world) {
-                let mut wi = vec3::Vec3::from(0.0);
-                let li = light.li(&surface_point_above, &mut wi);
-                let bxdf = surface_material.bxdf(&normal, &dpdu, &wo, &wi);
-                lo += bxdf * li * f32::abs(vec3::Vec3::dot(&normal, &wi));
+        for light in world.lights().iter() {
+            let maybe_radiance =
+                light.sample_li(&sampler.get_2d(), world, &surface_point_above, &normal);
+            if !maybe_radiance.is_none() {
+                let radiance = maybe_radiance.unwrap();
+                let bxdf = surface_material.bxdf(&normal, &dpdu, &wo, &radiance.wi);
+                lo += bxdf * radiance.li * f32::abs(vec3::Vec3::dot(&normal, &radiance.wi));
             }
         }
 
         // add reflection or refraction
         if depth <= max_depth {
-            let mut wi = vec3::Vec3::from(0.0);
-            let bxdf = surface_material.sample_bxdf(
+            let maybe_radiance = surface_material.sample_bxdf(
                 &normal,
                 &dpdu,
                 &wo,
-                &mut wi,
-                reflectance::ReflectanceType::Reflection as u32,
+                reflectance::ReflectanceType::Reflection as u32 | reflectance::ReflectanceType::Specular as u32,
             );
-            if !vec3::Vec3::equal_epsilon(&bxdf, &vec3::Vec3::from(0.0), math::EPSILON_F32_6) {
-                let ray = ray::Ray::new(surface_point_above, wi);
-                if let Some(li) = ray_trace(&ray, world, depth + 1, max_depth) {
-                    lo += bxdf * li * f32::abs(vec3::Vec3::dot(&normal, &wi));
+            if !maybe_radiance.is_none() {
+                let radiance = maybe_radiance.unwrap();
+                let ray = ray::Ray::new(surface_point_above, radiance.wi);
+                if let Some(li) = ray_trace(&ray, world, sampler, depth + 1, max_depth) {
+                    lo += radiance.bxdf * li * f32::abs(vec3::Vec3::dot(&normal, &radiance.wi));
                 }
             }
 
-            let mut wi = vec3::Vec3::from(0.0);
-            let bxdf = surface_material.sample_bxdf(
+            let maybe_radiance = surface_material.sample_bxdf(
                 &normal,
                 &dpdu,
                 &wo,
-                &mut wi,
-                reflectance::ReflectanceType::Refraction as u32,
+                reflectance::ReflectanceType::Refraction as u32 | reflectance::ReflectanceType::Specular as u32,
             );
-            if !vec3::Vec3::equal_epsilon(&bxdf, &vec3::Vec3::from(0.0), math::EPSILON_F32_6) {
-                let ray = ray::Ray::new(surface_point_below, wi);
-                if let Some(li) = ray_trace(&ray, world, depth + 1, max_depth) {
-                    lo += bxdf * li * f32::abs(vec3::Vec3::dot(&normal, &wi));
+            if !maybe_radiance.is_none() {
+                let radiance = maybe_radiance.unwrap();
+                let ray = ray::Ray::new(surface_point_below, radiance.wi);
+                if let Some(li) = ray_trace(&ray, world, sampler, depth + 1, max_depth) {
+                    lo += radiance.bxdf * li * f32::abs(vec3::Vec3::dot(&normal, &radiance.wi));
                 }
             }
         }
@@ -84,6 +85,7 @@ fn ray_trace(
 pub fn render(
     camera: &impl camera::Camera,
     world: &world::World,
+    sampler: &mut dyn sampler::Sampler,
     max_depth: u32,
     image: &mut image::Image,
 ) {
@@ -93,7 +95,7 @@ pub fn render(
     for y in 0..image_height {
         for x in 0..image_width {
             let ray = camera.create_ray(x as f32, y as f32);
-            if let Some(color) = ray_trace(&ray, world, 0, max_depth) {
+            if let Some(color) = ray_trace(&ray, world, sampler, 0, max_depth) {
                 image[y][x] = color;
             }
         }

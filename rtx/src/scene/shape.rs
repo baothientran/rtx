@@ -1,13 +1,21 @@
 pub mod plane;
+pub mod rectangle;
 pub mod sphere;
+pub mod disk;
+pub mod cylinder;
+pub mod triangle;
+pub mod cone;
 
 use crate::core::mat4;
+use crate::core::vec2;
 use crate::core::vec3;
 use crate::core::vec4;
+use crate::scene::material;
 use crate::scene::ray;
+use std::rc;
 
-#[derive(Copy, Clone, Debug)]
-pub struct ShapeSurface<'a> {
+#[derive(Debug)]
+pub struct IntersectableShapeSurface<'a> {
     ray_time: f32,
     position: vec3::Vec3,
     normal: vec3::Vec3,
@@ -17,7 +25,7 @@ pub struct ShapeSurface<'a> {
     normal_transform: &'a mat4::Mat4,
 }
 
-impl<'a> ShapeSurface<'a> {
+impl<'a> IntersectableShapeSurface<'a> {
     pub fn new(
         ray_time: f32,
         position: vec3::Vec3,
@@ -26,8 +34,8 @@ impl<'a> ShapeSurface<'a> {
         dpdv: vec3::Vec3,
         object_to_world: &'a mat4::Mat4,
         normal_transform: &'a mat4::Mat4,
-    ) -> ShapeSurface<'a> {
-        return ShapeSurface {
+    ) -> IntersectableShapeSurface<'a> {
+        return IntersectableShapeSurface {
             ray_time,
             position,
             normal,
@@ -68,8 +76,82 @@ impl<'a> ShapeSurface<'a> {
     }
 }
 
-pub trait Shape {
+pub trait IntersectableShape {
     fn is_intersect(&self, ray: &ray::Ray, max_distance: f32) -> bool;
 
-    fn intersect_ray(&self, ray: &ray::Ray) -> Option<ShapeSurface>;
+    fn intersect_ray(&self, ray: &ray::Ray) -> Option<IntersectableShapeSurface>;
+}
+
+#[derive(Debug)]
+pub struct SampleShapeSurface {
+    pub pdf: f32,
+    pub surface_point: vec3::Vec3,
+}
+
+impl SampleShapeSurface {
+    pub fn new(pdf: f32, surface_point: vec3::Vec3) -> SampleShapeSurface {
+        return SampleShapeSurface { pdf, surface_point };
+    }
+}
+
+pub trait SamplableShape {
+    fn sample_surface(
+        &self,
+        sample: &vec2::Vec2,
+        surface_point_ref: &vec3::Vec3,
+        surface_normal_ref: &vec3::Vec3,
+    ) -> Option<SampleShapeSurface>;
+}
+
+pub struct RenderableShapeSurface<'a> {
+    shape_surface: IntersectableShapeSurface<'a>,
+    material: &'a dyn material::Material,
+}
+
+impl<'a> RenderableShapeSurface<'a> {
+    pub fn new(
+        shape_surface: IntersectableShapeSurface<'a>,
+        material: &'a dyn material::Material,
+    ) -> RenderableShapeSurface<'a> {
+        return RenderableShapeSurface {
+            shape_surface,
+            material,
+        };
+    }
+
+    pub fn shape_surface(&self) -> &IntersectableShapeSurface {
+        return &self.shape_surface;
+    }
+
+    pub fn material(&self) -> &dyn material::Material {
+        return self.material;
+    }
+}
+
+pub struct RenderableShape {
+    shape: rc::Rc<dyn IntersectableShape>,
+    material: rc::Rc<dyn material::Material>,
+}
+
+impl RenderableShape {
+    pub fn new(
+        shape: rc::Rc<dyn IntersectableShape>,
+        material: rc::Rc<dyn material::Material>,
+    ) -> RenderableShape {
+        return RenderableShape { shape, material };
+    }
+
+    pub fn is_intersect(&self, ray: &ray::Ray, max_distance: f32) -> bool {
+        return self.shape.is_intersect(ray, max_distance);
+    }
+
+    pub fn intersect_ray(&self, ray: &ray::Ray) -> Option<RenderableShapeSurface> {
+        return match self.shape.intersect_ray(ray) {
+            Some(hit_record) => Some(RenderableShapeSurface::new(
+                hit_record,
+                self.material.as_ref(),
+            )),
+            None => None,
+        };
+    }
 }

@@ -1,15 +1,21 @@
 use crate::core::mat4;
 use crate::core::math;
+use crate::core::vec2;
 use crate::core::vec3;
+use crate::core::vec4;
 use crate::scene::ray;
 use crate::scene::shape;
+use crate::scene::shape::IntersectableShape;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Sphere {
+    world_center: vec3::Vec3,
+    world_radius: f32,
     radius: f32,
     object_to_world: mat4::Mat4,
     world_to_object: mat4::Mat4,
     normal_transform: mat4::Mat4,
+    inverse_normal_transform: mat4::Mat4,
 }
 
 impl Sphere {
@@ -17,16 +23,45 @@ impl Sphere {
         let world_to_object = mat4::Mat4::inverse(&object_to_world).unwrap();
         let normal_transform =
             mat4::Mat4::inverse(&mat4::Mat4::transpose(&object_to_world)).unwrap();
+        let inverse_normal_transform = normal_transform.inverse().unwrap();
+
+        let world_center = (object_to_world * vec4::Vec4::new(0.0, 0.0, 0.0, 1.0)).to_vec3();
+        let world_radius_vec3 =
+            (object_to_world * vec4::Vec4::new(radius, 0.0, 0.0, 1.0)).to_vec3();
+        let world_radius = (world_radius_vec3 - world_center).length();
         return Sphere {
+            world_center,
+            world_radius,
             radius,
             object_to_world,
             world_to_object,
             normal_transform,
+            inverse_normal_transform,
         };
+    }
+
+    fn behind_surface_tangent_plane(
+        &self,
+        surface_point: &vec3::Vec3,
+        surface_normal: &vec3::Vec3,
+    ) -> bool {
+        let local_surface_point =
+            (self.world_to_object * vec4::Vec4::from_vec3(surface_point, 1.0)).to_vec3();
+        let local_surface_normal = (self.inverse_normal_transform
+            * vec4::Vec4::from_vec3(surface_normal, 0.0))
+        .to_vec3()
+        .normalize()
+        .unwrap();
+        if (-local_surface_point).dot(&local_surface_normal) >= 0.0 {
+            return false;
+        }
+
+        let distance_center_plane = -local_surface_point.dot(&local_surface_normal);
+        return f32::abs(distance_center_plane) >= self.radius;
     }
 }
 
-impl shape::Shape for Sphere {
+impl shape::IntersectableShape for Sphere {
     fn is_intersect(&self, ray: &ray::Ray, max_distance: f32) -> bool {
         let local_ray = ray::Ray::transform(ray, &self.world_to_object);
         let radius = self.radius;
@@ -56,7 +91,7 @@ impl shape::Shape for Sphere {
         return t < max_distance;
     }
 
-    fn intersect_ray(&self, ray: &ray::Ray) -> Option<shape::ShapeSurface> {
+    fn intersect_ray(&self, ray: &ray::Ray) -> Option<shape::IntersectableShapeSurface> {
         let local_ray = ray::Ray::transform(ray, &self.world_to_object);
         let radius = self.radius;
         let radius_sq = radius * radius;
@@ -84,7 +119,12 @@ impl shape::Shape for Sphere {
 
         // calculate position and normal
         let local_position = local_ray.calc_position(t);
-        let local_normal = vec3::Vec3::normalize(&local_position).unwrap();
+        let maybe_local_normal = vec3::Vec3::normalize(&local_position);
+        if maybe_local_normal.is_none() {
+            return None;
+        }
+
+        let local_normal = maybe_local_normal.unwrap();
 
         // calculate dpdu and dpdv
         let two_pi = math::PI_F32 * 2.0;
@@ -103,7 +143,7 @@ impl shape::Shape for Sphere {
                 local_position.y * sin_phi,
             );
 
-        return Some(shape::ShapeSurface::new(
+        return Some(shape::IntersectableShapeSurface::new(
             t,
             local_position,
             local_normal,
@@ -115,11 +155,59 @@ impl shape::Shape for Sphere {
     }
 }
 
+impl shape::SamplableShape for Sphere {
+    fn sample_surface(
+        &self,
+        sample: &vec2::Vec2,
+        surface_point_ref: &vec3::Vec3,
+        surface_normal_ref: &vec3::Vec3,
+    ) -> Option<shape::SampleShapeSurface> {
+        if self.behind_surface_tangent_plane(surface_point_ref, surface_normal_ref) {
+            return None;
+        }
+
+        let distance_sq = (surface_point_ref - self.world_center).length_sq();
+        let radius_sq = self.radius * self.radius;
+        if distance_sq <= radius_sq {
+            return None;
+        }
+
+        let cos_alpha =
+            1.0 - sample.x + sample.x * f32::sqrt(f32::max(1.0 - radius_sq / distance_sq, 0.0));
+        let sin_alpha = f32::sqrt(f32::max(1.0 - cos_alpha * cos_alpha, 0.0));
+
+        let phi = 2.0 * math::PI_F32 * sample.y;
+        let cos_phi = f32::cos(phi);
+        let sin_phi = f32::sin(phi);
+
+        let w = (self.world_center - surface_point_ref).normalize().unwrap();
+        let v = w.cross(surface_normal_ref).normalize().unwrap();
+        let u = v.cross(&w).normalize().unwrap();
+        let sample_transform = mat4::Mat4::from_scalars(
+            u.x, u.y, u.z, 0.0, v.x, v.y, v.z, 0.0, w.x, w.y, w.z, 0.0, 0.0, 0.0, 0.0, 1.0,
+        );
+        let direction_vec4 = sample_transform
+            * vec4::Vec4::new(cos_phi * sin_alpha, sin_phi * sin_alpha, cos_alpha, 0.0);
+
+        let direction = direction_vec4.to_vec3().normalize().unwrap();
+        let ray = ray::Ray::new(*surface_point_ref, direction);
+        if let Some(shape_surface) = self.intersect_ray(&ray) {
+            let n = 1.0 - f32::sqrt(f32::max(1.0 - radius_sq / distance_sq, 0.0));
+            return Some(shape::SampleShapeSurface::new(
+                1.0 / (2.0 * math::PI_F32 * n),
+                shape_surface.calc_world_position(),
+            ));
+        }
+
+        return None;
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
     use crate::core::math;
-    use crate::scene::shape::Shape;
+    use crate::scene::shape::IntersectableShape;
 
     #[test]
     fn test_intersect_ray_not_intersect() {

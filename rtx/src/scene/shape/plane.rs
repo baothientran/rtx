@@ -5,11 +5,11 @@ use crate::scene::ray;
 use crate::scene::shape;
 
 pub struct Plane {
-    normal: vec3::Vec3,
-    distance: f32,
-    object_to_world: mat4::Mat4,
-    world_to_object: mat4::Mat4,
-    normal_transform: mat4::Mat4,
+    pub normal: vec3::Vec3,
+    pub distance: f32,
+    pub object_to_world: mat4::Mat4,
+    pub world_to_object: mat4::Mat4,
+    pub normal_transform: mat4::Mat4,
 }
 
 impl Plane {
@@ -17,8 +17,9 @@ impl Plane {
         let world_to_object = mat4::Mat4::inverse(&object_to_world).unwrap();
         let normal_transform =
             mat4::Mat4::inverse(&mat4::Mat4::transpose(&object_to_world)).unwrap();
+
         return Plane {
-            normal: vec3::Vec3::normalize(&normal).unwrap(),
+            normal,
             distance,
             object_to_world,
             world_to_object,
@@ -27,7 +28,7 @@ impl Plane {
     }
 }
 
-impl shape::Shape for Plane {
+impl shape::IntersectableShape for Plane {
     fn is_intersect(&self, ray: &ray::Ray, max_distance: f32) -> bool {
         let local_ray = ray::Ray::transform(ray, &self.world_to_object);
         let vd = vec3::Vec3::dot(&self.normal, local_ray.direction());
@@ -40,7 +41,7 @@ impl shape::Shape for Plane {
         return t > 0.0 && t < max_distance;
     }
 
-    fn intersect_ray(&self, ray: &ray::Ray) -> Option<shape::ShapeSurface> {
+    fn intersect_ray(&self, ray: &ray::Ray) -> Option<shape::IntersectableShapeSurface> {
         let local_ray = ray::Ray::transform(ray, &self.world_to_object);
         let vd = vec3::Vec3::dot(&self.normal, local_ray.direction());
         if math::equal_epsilon_f32(vd, 0.0, math::EPSILON_F32_6) {
@@ -61,7 +62,7 @@ impl shape::Shape for Plane {
         let mut local_dpdv = vec3::Vec3::from(0.0);
         vec3::Vec3::coordinate_system(&self.normal, &mut local_dpdv, &mut local_dpdu);
 
-        return Some(shape::ShapeSurface::new(
+        return Some(shape::IntersectableShapeSurface::new(
             t,
             local_position,
             self.normal,
@@ -70,141 +71,5 @@ impl shape::Shape for Plane {
             &self.object_to_world,
             &self.normal_transform,
         ));
-    }
-}
-
-#[cfg(test)]
-mod test {
-    use super::*;
-    use crate::core::vec4;
-    use crate::scene::shape::Shape;
-
-    #[test]
-    fn test_intersect_ray_away() {
-        let object_to_world =
-            mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 1.0, 1.0));
-        let normal = vec3::Vec3::new(0.0, 1.0, 0.0);
-        let distance = 0.2;
-        let plane = Plane::new(object_to_world, normal, distance);
-
-        let ray_origin = vec3::Vec3::new(0.0, -4.0, 1.0);
-        let mut ray_direction = vec3::Vec3::new(0.0, 1.0, 1.0);
-        ray_direction = vec3::Vec3::normalize(&ray_direction).unwrap();
-        let ray = ray::Ray::new(ray_origin, ray_direction);
-
-        assert!(vec3::Vec3::dot(ray.direction(), &plane.normal) > 0.0);
-
-        match plane.intersect_ray(&ray) {
-            None => {
-                assert!(false);
-            }
-            Some(shape_surface) => {
-                let transform_plane = mat4::Mat4::inverse(&mat4::Mat4::transpose(&object_to_world))
-                    .unwrap()
-                    * vec4::Vec4::from_vec3(&normal, distance);
-                let plane_func = vec3::Vec3::dot(
-                    &shape_surface.calc_world_position(),
-                    &shape_surface.calc_world_normal(),
-                ) + transform_plane.w;
-                assert!(math::equal_epsilon_f32(
-                    plane_func,
-                    0.0,
-                    math::EPSILON_F32_5
-                ));
-
-                assert!(math::equal_epsilon_f32(
-                    shape_surface.calc_world_normal().x,
-                    transform_plane.x,
-                    math::EPSILON_F32_5
-                ));
-                assert!(math::equal_epsilon_f32(
-                    shape_surface.calc_world_normal().y,
-                    transform_plane.y,
-                    math::EPSILON_F32_5
-                ));
-                assert!(math::equal_epsilon_f32(
-                    shape_surface.calc_world_normal().z,
-                    transform_plane.z,
-                    math::EPSILON_F32_5
-                ));
-            }
-        }
-    }
-
-    #[test]
-    fn test_intersect_ray_toward() {
-        let object_to_world =
-            mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 1.0, 1.0));
-        let normal = vec3::Vec3::new(0.0, 1.0, 0.0);
-        let distance = 0.2;
-        let plane = Plane::new(object_to_world, normal, distance);
-
-        let ray_origin = vec3::Vec3::new(1.0, 1.0, 1.0);
-        let mut ray_direction = vec3::Vec3::from(0.0) - ray_origin;
-        ray_direction = vec3::Vec3::normalize(&ray_direction).unwrap();
-        let ray = ray::Ray::new(ray_origin, ray_direction);
-
-        assert!(vec3::Vec3::dot(ray.direction(), &plane.normal) < 0.0);
-
-        match plane.intersect_ray(&ray) {
-            None => {
-                assert!(false);
-            }
-            Some(shape_surface) => {
-                let transform_plane = mat4::Mat4::inverse(&mat4::Mat4::transpose(&object_to_world))
-                    .unwrap()
-                    * vec4::Vec4::from_vec3(&normal, distance);
-                let plane_func = vec3::Vec3::dot(
-                    &shape_surface.calc_world_position(),
-                    &shape_surface.calc_world_normal(),
-                ) + transform_plane.w;
-                assert!(math::equal_epsilon_f32(
-                    plane_func,
-                    0.0,
-                    math::EPSILON_F32_5
-                ));
-
-                assert!(math::equal_epsilon_f32(
-                    shape_surface.calc_world_normal().x,
-                    transform_plane.x,
-                    math::EPSILON_F32_5
-                ));
-                assert!(math::equal_epsilon_f32(
-                    shape_surface.calc_world_normal().y,
-                    transform_plane.y,
-                    math::EPSILON_F32_5
-                ));
-                assert!(math::equal_epsilon_f32(
-                    shape_surface.calc_world_normal().z,
-                    transform_plane.z,
-                    math::EPSILON_F32_5
-                ));
-            }
-        }
-    }
-
-    #[test]
-    fn test_intersect_ray_parallel() {
-        let plane = Plane::new(mat4::Mat4::new(), vec3::Vec3::new(0.0, 1.0, 0.0), 0.2);
-
-        let ray_origin = vec3::Vec3::new(0.0, 0.2, 1.0);
-        let ray_direction = vec3::Vec3::new(0.0, 0.0, -1.0);
-        let ray = ray::Ray::new(ray_origin, ray_direction);
-
-        let intersect = plane.intersect_ray(&ray);
-        assert!(intersect.is_none());
-    }
-
-    #[test]
-    fn test_intersect_ray_no_intersect() {
-        let plane = Plane::new(mat4::Mat4::new(), vec3::Vec3::new(0.0, 1.0, 0.0), 0.2);
-
-        let ray_origin = vec3::Vec3::new(0.0, 0.6, 1.0);
-        let mut ray_direction = vec3::Vec3::new(0.0, 1.0, 1.0);
-        ray_direction = vec3::Vec3::normalize(&ray_direction).unwrap();
-        let ray = ray::Ray::new(ray_origin, ray_direction);
-
-        let intersect = plane.intersect_ray(&ray);
-        assert!(intersect.is_none());
     }
 }
