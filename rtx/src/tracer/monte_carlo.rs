@@ -119,7 +119,7 @@ fn estimate_all_lights_with_linear_contributions(
     let mut intensities = vec![0.0; num_lights];
     for i in 0..num_lights {
         let sample = &light_samples[i];
-        let li = estimate_one_light(
+        let lo = estimate_one_light(
             lights[i].as_ref(),
             surface_material,
             surface_point,
@@ -130,7 +130,7 @@ fn estimate_all_lights_with_linear_contributions(
             sample,
             false,
         );
-        let intensity = li.x * 0.2989 + li.y * 0.5870 + li.z * 0.1140;
+        let intensity = lo.x * 0.2989 + lo.y * 0.5870 + lo.z * 0.1140;
         intensities[i] = intensity;
         sum_intensities += intensity;
     }
