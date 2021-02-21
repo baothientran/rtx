@@ -106,22 +106,30 @@ impl ReflectanceCollection {
             return None;
         }
 
-        let mut shading_wi = None;
-        let bxdf = self.reflectances[bxdf_id as usize].sample_bxdf(&shading_wo, &mut shading_wi);
-        if bxdf.is_none() {
+        let mut maybe_shading_wi = None;
+        let maybe_bxdf =
+            self.reflectances[bxdf_id as usize].sample_bxdf(&shading_wo, &mut maybe_shading_wi);
+        if maybe_bxdf.is_none() {
             return None;
         }
 
-        let out_shading_wi = shading_wi.unwrap();
-        let mut out_bxdf = bxdf.unwrap();
+        let shading_wi = maybe_shading_wi.unwrap();
+        let world_wi = self.shading_to_world(&shading_x, &shading_y, normal, &shading_wi);
+        let reflect = wo.dot(normal) * world_wi.dot(normal) > 0.0;
+        let mut bxdf = maybe_bxdf.unwrap();
         for i in 0..self.reflectances.len() {
-            if (i != bxdf_id as usize) && (self.reflectances[i].has_types(flags)) {
-                out_bxdf += self.reflectances[i].bxdf(&shading_wo, &out_shading_wi);
+            let reflectance = self.reflectances[i].as_ref();
+            if (i != bxdf_id as usize) && (reflectance.has_types(flags)) {
+                if (reflect && reflectance.has_types(ReflectanceType::Reflection as u32))
+                    || (!reflect && reflectance.has_types(ReflectanceType::Refraction as u32))
+                {
+                    bxdf += reflectance.bxdf(&shading_wo, &shading_wi);
+                }
             }
         }
 
-        *wi = Some(self.shading_to_world(&shading_x, &shading_y, normal, &out_shading_wi));
-        return Some(out_bxdf);
+        *wi = Some(world_wi);
+        return Some(bxdf);
     }
 
     fn world_to_shading(
