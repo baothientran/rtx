@@ -18,8 +18,15 @@ fn estimate_one_light(
     wo: &vec3::Vec3,
     world: &world::World,
     light_sample: &vec2::Vec2,
+    shadow_check: bool,
 ) -> vec3::Vec3 {
-    let maybe_radiance = light.sample_li(&light_sample, world, surface_point, surface_normal);
+    let maybe_radiance;
+    if shadow_check {
+        maybe_radiance = light.sample_li(&light_sample, world, surface_point, surface_normal);
+    } else {
+        maybe_radiance =
+            light.sample_li_no_shadow_check(&light_sample, world, surface_point, surface_normal);
+    }
 
     if !maybe_radiance.is_none() {
         let radiance = maybe_radiance.unwrap();
@@ -54,6 +61,7 @@ fn estimate_all_lights(
                 wo,
                 world,
                 &light_samples[i as usize],
+                true,
             );
         }
 
@@ -90,6 +98,7 @@ fn estimate_all_lights_with_uniform_contributions(
         wo,
         world,
         &sample,
+        true,
     );
     return light_lo * (world.lights().len() as f32);
 }
@@ -108,13 +117,20 @@ fn estimate_all_lights_with_linear_contributions(
     let light_samples = sampler.get_2d_array(num_lights);
     let mut sum_intensities = 0.0;
     let mut intensities = vec![0.0; num_lights];
-    let mut lo = vec![vec3::Vec3::from(0.0); num_lights];
     for i in 0..num_lights {
         let sample = &light_samples[i];
-        lo[i] = estimate_one_light(
+        let li = estimate_one_light(
             lights[i].as_ref(),
-            surface_material, surface_point, surface_normal, dpdu, wo, world, sample);
-        let intensity = lo[i].x * 0.2989 + lo[i].y * 0.5870 + lo[i].z * 0.1140;
+            surface_material,
+            surface_point,
+            surface_normal,
+            dpdu,
+            wo,
+            world,
+            sample,
+            false,
+        );
+        let intensity = li.x * 0.2989 + li.y * 0.5870 + li.z * 0.1140;
         intensities[i] = intensity;
         sum_intensities += intensity;
     }
@@ -137,7 +153,18 @@ fn estimate_all_lights_with_linear_contributions(
         sum_light_contribution += contribution;
     }
 
-    return lo[light_index] / contribution;
+    let light_sample = sampler.get_2d();
+    return estimate_one_light(
+        lights[light_index].as_ref(),
+        surface_material,
+        surface_point,
+        surface_normal,
+        dpdu,
+        wo,
+        world,
+        &light_sample,
+        true,
+    ) / contribution;
 }
 
 fn ray_trace(

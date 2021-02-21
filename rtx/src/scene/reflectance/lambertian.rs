@@ -15,7 +15,8 @@ impl Lambertian {
 impl reflectance::Reflectance for Lambertian {
     fn has_types(&self, flags: u32) -> bool {
         return reflectance::ReflectanceType::contain(
-            reflectance::ReflectanceType::Lambertian as u32,
+            reflectance::ReflectanceType::Diffuse as u32
+                | reflectance::ReflectanceType::Reflection as u32,
             flags,
         );
     }

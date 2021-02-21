@@ -8,10 +8,10 @@ pub mod refraction;
 use crate::core::vec3;
 
 pub enum ReflectanceType {
-    Lambertian = 1 << 0,
-    Reflection = 1 << 1,
-    Refraction = 1 << 2,
-    Microfacet = 1 << 3,
+    Diffuse = 1 << 0,
+    Microfacet = 1 << 1,
+    Reflection = 1 << 2,
+    Refraction = 1 << 3,
 }
 
 impl ReflectanceType {
@@ -65,10 +65,15 @@ impl ReflectanceCollection {
             return vec3::Vec3::from(0.0);
         }
 
+        let reflect = wo.dot(normal) * wi.dot(normal) > 0.0;
         let shading_wi = self.world_to_shading(&shading_x, &shading_y, normal, wi);
         let mut total_bxdf = vec3::Vec3::from(0.0);
         for reflectance in self.reflectances.iter() {
-            total_bxdf += reflectance.bxdf(&shading_wo, &shading_wi);
+            if (reflect && reflectance.has_types(ReflectanceType::Reflection as u32))
+                || (!reflect && reflectance.has_types(ReflectanceType::Refraction as u32))
+            {
+                total_bxdf += reflectance.bxdf(&shading_wo, &shading_wi);
+            }
         }
 
         return total_bxdf;

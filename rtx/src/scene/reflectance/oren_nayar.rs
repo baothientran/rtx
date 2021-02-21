@@ -20,7 +20,8 @@ impl OrenNayar {
 impl reflectance::Reflectance for OrenNayar {
     fn has_types(&self, flags: u32) -> bool {
         return reflectance::ReflectanceType::contain(
-            reflectance::ReflectanceType::Microfacet as u32,
+            reflectance::ReflectanceType::Microfacet as u32
+                | reflectance::ReflectanceType::Reflection as u32,
             flags,
         );
     }
