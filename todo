@@ -13,9 +13,6 @@
 
     + meshes: 
         * triangle mesh 
-        * cone
-        * ellipsoid
-        * cube
 
     + spatial structures:
         * bvh 
@@ -26,12 +23,13 @@
         * obj parser 
         * custom scene description file 
 
-    + rendering methods:
-        * path tracing
-
 - on going:
-    + monte-carlo integration
-    + light transport
+    + meshes
+        + add support for disk shape and disk pdf
+        + add support for cylinder shape and cylinder pdf
+        + add support for triangle shape and triangle pdf
+        + add support for cone shape and cone pdf
+
     + material:
         * lambertian (sample_bxdf)
         * microfacet: oren nayar (sample_bxdf)
@@ -46,10 +44,10 @@
         * refraction
         * gamma correction
 
-    + tests:
-        * sphere
-        * ray
-        * camera
-
     + meshes:
         * plane
+        * rectangle
+        * sphere
+
+    + light transport
+        + diffuse area light
