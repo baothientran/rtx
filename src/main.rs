@@ -25,11 +25,11 @@ fn main() {
         0.4,
     ));
     let sphere_light_right_shape = Box::new(shape::sphere::Sphere::new(
-        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.4, 0.2, 0.0)),
+        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.4, 0.3, 0.0)),
         0.2,
     ));
     let sphere_light_left_shape = Box::new(shape::sphere::Sphere::new(
-        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(-0.4, 0.2, 0.0)),
+        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(-0.4, 0.3, 0.0)),
         0.2,
     ));
     let sphere_area_light_right = Box::new(light::area_light::AreaLight::new(
@@ -60,20 +60,29 @@ fn main() {
         3.0,
     ));
     let sphere_center = rc::Rc::new(shape::sphere::Sphere::new(
-        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 0.2, 0.0)),
+        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 0.3, 0.0)),
         0.2,
+    ));
+    let disk = rc::Rc::new(shape::disk::Disk::new(
+        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 0.1, 0.0)).rotate(
+            math::degree_to_radian(-90.0),
+            &vec3::Vec3::new(1.0, 0.0, 0.0).normalize().unwrap(),
+        ),
+        0.2,
+        0.4,
     ));
     let white_matte = rc::Rc::new(matte::Matte::new(vec3::Vec3::from(0.5), 0.0));
 
     let mut world = world::World::new();
     world.add_shape(plane, white_matte.clone());
     world.add_shape(sphere_center, white_matte.clone());
+    world.add_shape(disk, white_matte.clone());
     world.add_light(sphere_area_light_right);
     world.add_light(sphere_area_light_left);
     world.add_light(rectangle_area_light);
 
     // setup camera
-    let view_location = vec3::Vec3::new(0.0, 0.4, 2.5);
+    let view_location = vec3::Vec3::new(0.0, 1.0, 2.5);
     let mut view_out = vec3::Vec3::from(0.0) - view_location;
     view_out = vec3::Vec3::normalize(&view_out).unwrap();
     let view_up = vec3::Vec3::new(0.0, 1.0, 0.0);
