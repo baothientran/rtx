@@ -14,6 +14,14 @@ fn main() {
     let mut img = image::Image::new(1000, 500);
 
     // setup lights
+    let disk_light_shape = Box::new(shape::disk::Disk::new(
+        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 0.6, 0.0)).rotate(
+            math::degree_to_radian(90.0),
+            &vec3::Vec3::new(1.0, 0.0, 0.0).normalize().unwrap(),
+        ),
+        0.0,
+        0.2,
+    ));
     let rectangle_light_shape = Box::new(shape::rectangle::Rectangle::new(
         mat4::Mat4::new()
             .translate(&vec3::Vec3::new(0.0, 0.8, 0.5))
@@ -45,6 +53,11 @@ fn main() {
     let rectangle_area_light = Box::new(light::area_light::AreaLight::new(
         vec3::Vec3::from(1.0),
         rectangle_light_shape,
+        32,
+    ));
+    let disk_area_light = Box::new(light::area_light::AreaLight::new(
+        vec3::Vec3::from(1.0),
+        disk_light_shape,
         32,
     ));
 
@@ -80,9 +93,10 @@ fn main() {
     world.add_light(sphere_area_light_right);
     world.add_light(sphere_area_light_left);
     world.add_light(rectangle_area_light);
+    world.add_light(disk_area_light);
 
     // setup camera
-    let view_location = vec3::Vec3::new(0.0, 1.0, 2.5);
+    let view_location = vec3::Vec3::new(0.0, 1.5, 2.5);
     let mut view_out = vec3::Vec3::from(0.0) - view_location;
     view_out = vec3::Vec3::normalize(&view_out).unwrap();
     let view_up = vec3::Vec3::new(0.0, 1.0, 0.0);
