@@ -153,7 +153,7 @@ fn estimate_all_lights_with_linear_contributions(
         sum_light_contribution += contribution;
     }
 
-    let light_sample = sampler.get_2d();
+    let light_sample = light_samples[light_index];
     return estimate_one_light(
         lights[light_index].as_ref(),
         surface_material,
@@ -195,7 +195,7 @@ fn ray_trace(
         }
 
         // add color from lights around the world
-        lo += estimate_all_lights(
+        lo += estimate_all_lights_with_linear_contributions(
             surface_material,
             &surface_point_above,
             &normal,
