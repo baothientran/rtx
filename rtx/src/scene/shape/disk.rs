@@ -105,6 +105,10 @@ impl shape::SamplableShape for Disk {
         _surface_normal_ref: &vec3::Vec3,
     ) -> Option<shape::SampleShapeSurface> {
         let r = self.outer_radius * f32::sqrt(sample.x);
+        if r < self.inner_radius {
+            return None;
+        }
+
         let theta = 2.0 * math::PI_F32 * sample.y;
         let world_surface_point = (self.object_to_world
             * vec4::Vec4::new(r * f32::cos(theta), r * f32::sin(theta), 0.0, 1.0))
