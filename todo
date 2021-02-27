@@ -25,7 +25,6 @@
 
 - on going:
     + meshes
-        * add support for disk shape and disk pdf
         * add support for cylinder shape and cylinder pdf
         * add support for triangle shape and triangle pdf
         * add support for cone shape and cone pdf
@@ -45,6 +44,7 @@
         * gamma correction
 
     + meshes:
+        * disk
         * plane
         * rectangle
         * sphere
