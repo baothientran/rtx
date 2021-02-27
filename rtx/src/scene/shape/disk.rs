@@ -28,7 +28,7 @@ impl Disk {
             object_to_world,
             world_to_object,
             normal_transform,
-            inverse_normal_transform
+            inverse_normal_transform,
         };
     }
 
@@ -112,7 +112,7 @@ impl Disk {
 }
 
 impl shape::IntersectableShape for Disk {
-    fn is_intersect(&self, ray: &crate::scene::ray::Ray, max_distance: f32) -> bool {
+    fn is_intersect(&self, ray: &ray::Ray, max_distance: f32) -> bool {
         let local_ray = ray::Ray::transform(ray, &self.world_to_object);
         if local_ray.direction().z == 0.0 {
             return false;
@@ -130,10 +130,7 @@ impl shape::IntersectableShape for Disk {
             && ray_time < max_distance;
     }
 
-    fn intersect_ray(
-        &self,
-        ray: &crate::scene::ray::Ray,
-    ) -> Option<shape::IntersectableShapeSurface> {
+    fn intersect_ray(&self, ray: &ray::Ray) -> Option<shape::IntersectableShapeSurface> {
         let local_ray = ray::Ray::transform(ray, &self.world_to_object);
         if local_ray.direction().z == 0.0 {
             return None;
