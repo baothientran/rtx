@@ -29,7 +29,7 @@ impl Disk {
         };
     }
 
-    pub fn uniform_sample_surface(&self, sample: &vec2::Vec2) -> vec3::Vec3 {
+    pub fn uniform_sample_surface(&self, sample: &vec2::Vec2) -> Option<vec3::Vec3> {
         let outer_radius_sq = self.outer_radius * self.outer_radius;
         let inner_radius_sq = self.inner_radius * self.inner_radius;
         let r = f32::sqrt(sample.x * (outer_radius_sq - inner_radius_sq) + inner_radius_sq);
@@ -38,10 +38,10 @@ impl Disk {
             * vec4::Vec4::new(r * f32::cos(theta), r * f32::sin(theta), 0.0, 1.0))
         .to_vec3();
 
-        return world_surface_point;
+        return Some(world_surface_point);
     }
 
-    pub fn concentric_sample_surface(&self, sample: &vec2::Vec2) -> vec3::Vec3 {
+    pub fn concentric_sample_surface(&self, sample: &vec2::Vec2) -> Option<vec3::Vec3> {
         let mut r;
         let theta;
         let offset = 2.0 * sample - vec2::Vec2::from(1.0);
@@ -57,11 +57,15 @@ impl Disk {
         }
 
         r *= self.outer_radius;
+        if r.abs() < self.inner_radius {
+            return None;
+        }
+
         let world_surface_point = (self.object_to_world
             * vec4::Vec4::new(r * f32::cos(theta), r * f32::sin(theta), 0.0, 1.0))
         .to_vec3();
 
-        return world_surface_point;
+        return Some(world_surface_point);
     }
 }
 
@@ -139,26 +143,29 @@ impl shape::SamplableShape for Disk {
         surface_point_ref: &vec3::Vec3,
         _surface_normal_ref: &vec3::Vec3,
     ) -> Option<shape::SampleShapeSurface> {
-        let world_surface_point = self.concentric_sample_surface(sample);
-        let maybe_world_normal = (self.normal_transform * vec4::Vec4::new(0.0, 0.0, 1.0, 0.0))
-            .to_vec3()
-            .normalize();
-        if maybe_world_normal.is_none() {
-            return None;
+        if let Some(world_surface_point) = self.uniform_sample_surface(sample) {
+            let maybe_world_normal = (self.normal_transform * vec4::Vec4::new(0.0, 0.0, 1.0, 0.0))
+                .to_vec3()
+                .normalize();
+            if maybe_world_normal.is_none() {
+                return None;
+            }
+
+            let world_normal = maybe_world_normal.unwrap();
+            let direction = surface_point_ref - world_surface_point;
+            let normalize_direction = direction.normalize().unwrap();
+            let cos_theta = f32::max(world_normal.dot(&normalize_direction), 0.0);
+            if cos_theta == 0.0 {
+                return None;
+            }
+
+            let area = math::PI_F32
+                * (self.outer_radius * self.outer_radius - self.inner_radius * self.inner_radius);
+
+            let pdf = direction.length_sq() / (area * cos_theta);
+            return Some(shape::SampleShapeSurface::new(pdf, world_surface_point));
         }
 
-        let world_normal = maybe_world_normal.unwrap();
-        let direction = surface_point_ref - world_surface_point;
-        let normalize_direction = direction.normalize().unwrap();
-        let cos_theta = f32::max(world_normal.dot(&normalize_direction), 0.0);
-        if cos_theta == 0.0 {
-            return None;
-        }
-
-        let area = math::PI_F32
-            * (self.outer_radius * self.outer_radius - self.inner_radius * self.inner_radius);
-
-        let pdf = direction.length_sq() / (area * cos_theta);
-        return Some(shape::SampleShapeSurface::new(pdf, world_surface_point));
+        return None;
     }
 }
