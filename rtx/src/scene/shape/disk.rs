@@ -42,9 +42,9 @@ impl Disk {
     }
 
     pub fn concentric_sample_surface(&self, sample: &vec2::Vec2) -> vec3::Vec3 {
-        let r;
+        let mut r;
         let theta;
-        let offset = 2.0 * self.outer_radius * sample - vec2::Vec2::from(self.outer_radius);
+        let offset = 2.0 * sample - vec2::Vec2::from(1.0);
         if offset.x == 0.0 || offset.y == 0.0 {
             r = 0.0;
             theta = 0.0;
@@ -56,6 +56,7 @@ impl Disk {
             theta = math::PI_F32 * 0.5 - math::PI_F32 * 0.25 * offset.x / offset.y;
         }
 
+        r *= self.outer_radius;
         let world_surface_point = (self.object_to_world
             * vec4::Vec4::new(r * f32::cos(theta), r * f32::sin(theta), 0.0, 1.0))
         .to_vec3();
