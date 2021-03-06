@@ -91,7 +91,7 @@ fn main() {
         ),
         0.2,
         0.0,
-        0.3
+        0.3,
     ));
     let white_matte = rc::Rc::new(matte::Matte::new(vec3::Vec3::from(0.5), 0.0));
 

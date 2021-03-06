@@ -2,6 +2,7 @@ use crate::core::mat4;
 use crate::core::math;
 use crate::core::vec2;
 use crate::core::vec3;
+use crate::core::vec4;
 use crate::scene::ray;
 use crate::scene::shape;
 use std::mem;
@@ -162,10 +163,45 @@ impl shape::IntersectableShape for Cylinder {
 impl shape::SamplableShape for Cylinder {
     fn sample_surface(
         &self,
-        _sample: &vec2::Vec2,
-        _surface_point_ref: &vec3::Vec3,
+        sample: &vec2::Vec2,
+        surface_point_ref: &vec3::Vec3,
         _surface_normal_ref: &vec3::Vec3,
     ) -> Option<shape::SampleShapeSurface> {
-        todo!()
+        let theta = 2.0 * math::PI_F32 * sample.x;
+        let z = (self.local_z_max - self.local_z_min) * sample.y + self.local_z_min;
+
+        let local_sample_point = vec3::Vec3::new(
+            self.local_radius * f32::cos(theta),
+            self.local_radius * f32::sin(theta),
+            z,
+        );
+        let local_normal = vec3::Vec3::new(local_sample_point.x, local_sample_point.y, 0.0)
+            .normalize()
+            .unwrap();
+
+        let world_surface_point =
+            (self.object_to_world * vec4::Vec4::from_vec3(&local_sample_point, 1.0)).to_vec3();
+
+        let maybe_world_normal = (self.normal_transform
+            * vec4::Vec4::from_vec3(&local_normal, 0.0))
+        .to_vec3()
+        .normalize();
+        if maybe_world_normal.is_none() {
+            return None;
+        }
+
+        let world_normal = maybe_world_normal.unwrap();
+
+        let direction = surface_point_ref - world_surface_point;
+        let normalize_direction = direction.normalize().unwrap();
+        let cos_theta = f32::max(world_normal.dot(&normalize_direction), 0.0);
+        if cos_theta == 0.0 {
+            return None;
+        }
+
+        let area = (self.local_z_max - self.local_z_min) * self.local_radius * 2.0 * math::PI_F32;
+
+        let pdf = direction.length_sq() / (area * cos_theta);
+        return Some(shape::SampleShapeSurface::new(pdf, world_surface_point));
     }
 }
