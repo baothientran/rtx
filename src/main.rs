@@ -15,11 +15,11 @@ fn main() {
 
     // setup lights
     let cylinder_light_shape = Box::new(shape::cylinder::Cylinder::new(
-        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 0.07, 0.6)).rotate(
+        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 0.15, 0.6)).rotate(
             math::degree_to_radian(90.0),
             &vec3::Vec3::new(0.0, 1.0, 0.0).normalize().unwrap(),
         ),
-        0.05,
+        0.1,
         -0.5,
         0.5,
     ));
@@ -112,12 +112,12 @@ fn main() {
     let mut world = world::World::new();
     world.add_shape(plane, white_matte.clone());
     world.add_shape(sphere_center, white_matte.clone());
-    // world.add_shape(disk, white_matte.clone());
-    // world.add_shape(cylinder, white_matte.clone());
-    // world.add_light(sphere_area_light_right);
-    // world.add_light(sphere_area_light_left);
-    // world.add_light(rectangle_area_light);
-    // world.add_light(disk_area_light);
+    world.add_shape(disk, white_matte.clone());
+    world.add_shape(cylinder, white_matte.clone());
+    world.add_light(sphere_area_light_right);
+    world.add_light(sphere_area_light_left);
+    world.add_light(rectangle_area_light);
+    world.add_light(disk_area_light);
     world.add_light(cylinder_area_light);
 
     // setup camera

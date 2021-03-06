@@ -167,9 +167,11 @@ impl shape::SamplableShape for Cylinder {
         surface_point_ref: &vec3::Vec3,
         _surface_normal_ref: &vec3::Vec3,
     ) -> Option<shape::SampleShapeSurface> {
+        let local_surface_point_ref =
+            (self.world_to_object * vec4::Vec4::from_vec3(surface_point_ref, 1.0)).to_vec3();
+
         let theta = 2.0 * math::PI_F32 * sample.x;
         let z = (self.local_z_max - self.local_z_min) * sample.y + self.local_z_min;
-
         let local_sample_point = vec3::Vec3::new(
             self.local_radius * f32::cos(theta),
             self.local_radius * f32::sin(theta),
@@ -179,28 +181,17 @@ impl shape::SamplableShape for Cylinder {
             .normalize()
             .unwrap();
 
-        let world_surface_point =
-            (self.object_to_world * vec4::Vec4::from_vec3(&local_sample_point, 1.0)).to_vec3();
-
-        let maybe_world_normal = (self.normal_transform
-            * vec4::Vec4::from_vec3(&local_normal, 0.0))
-        .to_vec3()
-        .normalize();
-        if maybe_world_normal.is_none() {
-            return None;
-        }
-
-        let world_normal = maybe_world_normal.unwrap();
-
-        let direction = surface_point_ref - world_surface_point;
+        let direction = local_surface_point_ref - local_sample_point;
         let normalize_direction = direction.normalize().unwrap();
-        let cos_theta = f32::max(world_normal.dot(&normalize_direction), 0.0);
+        let cos_theta = f32::abs(local_normal.dot(&normalize_direction));
         if cos_theta == 0.0 {
             return None;
         }
 
         let area = (self.local_z_max - self.local_z_min) * self.local_radius * 2.0 * math::PI_F32;
 
+        let world_surface_point =
+            (self.object_to_world * vec4::Vec4::from_vec3(&local_sample_point, 1.0)).to_vec3();
         let pdf = direction.length_sq() / (area * cos_theta);
         return Some(shape::SampleShapeSurface::new(pdf, world_surface_point));
     }
