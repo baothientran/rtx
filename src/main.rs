@@ -14,6 +14,15 @@ fn main() {
     let mut img = image::Image::new(1000, 500);
 
     // setup lights
+    let cylinder_light_shape = Box::new(shape::cylinder::Cylinder::new(
+        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 0.07, 0.6)).rotate(
+            math::degree_to_radian(90.0),
+            &vec3::Vec3::new(0.0, 1.0, 0.0).normalize().unwrap(),
+        ),
+        0.05,
+        -0.5,
+        0.5,
+    ));
     let disk_light_shape = Box::new(shape::disk::Disk::new(
         mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 0.8, 0.0)).rotate(
             math::degree_to_radian(90.0),
@@ -60,6 +69,11 @@ fn main() {
         disk_light_shape,
         32,
     ));
+    let cylinder_area_light = Box::new(light::area_light::AreaLight::new(
+        vec3::Vec3::from(1.0),
+        cylinder_light_shape,
+        32,
+    ));
 
     // setup shape
     let plane = rc::Rc::new(shape::rectangle::Rectangle::new(
@@ -98,12 +112,13 @@ fn main() {
     let mut world = world::World::new();
     world.add_shape(plane, white_matte.clone());
     world.add_shape(sphere_center, white_matte.clone());
-    world.add_shape(disk, white_matte.clone());
-    world.add_shape(cylinder, white_matte.clone());
-    world.add_light(sphere_area_light_right);
-    world.add_light(sphere_area_light_left);
-    world.add_light(rectangle_area_light);
-    world.add_light(disk_area_light);
+    // world.add_shape(disk, white_matte.clone());
+    // world.add_shape(cylinder, white_matte.clone());
+    // world.add_light(sphere_area_light_right);
+    // world.add_light(sphere_area_light_left);
+    // world.add_light(rectangle_area_light);
+    // world.add_light(disk_area_light);
+    world.add_light(cylinder_area_light);
 
     // setup camera
     let view_location = vec3::Vec3::new(0.0, 1.5, 2.5);
