@@ -177,10 +177,12 @@ mod test {
                 let transform_plane = mat4::Mat4::inverse(&mat4::Mat4::transpose(&object_to_world))
                     .unwrap()
                     * vec4::Vec4::from_vec3(&normal, distance);
+
+                // normal is flipped
                 let plane_func = vec3::Vec3::dot(
                     &shape_surface.calc_world_position(),
                     &shape_surface.calc_world_normal(),
-                ) + transform_plane.w;
+                ) - transform_plane.w;
                 assert!(math::equal_epsilon_f32(
                     plane_func,
                     0.0,
@@ -194,7 +196,7 @@ mod test {
                 ));
                 assert!(math::equal_epsilon_f32(
                     shape_surface.calc_world_normal().y,
-                    transform_plane.y,
+                    -transform_plane.y,
                     math::EPSILON_F32_5
                 ));
                 assert!(math::equal_epsilon_f32(

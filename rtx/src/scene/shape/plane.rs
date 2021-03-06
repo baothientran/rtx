@@ -58,14 +58,18 @@ impl shape::IntersectableShape for Plane {
         let local_position = local_ray.calc_position(t);
 
         // calculate dpdu and dpdv
+        let mut local_normal = self.normal;
+        if local_ray.direction().dot(&local_normal) > 0.0 {
+            local_normal = -local_normal;
+        }
         let mut local_dpdu = vec3::Vec3::from(0.0);
         let mut local_dpdv = vec3::Vec3::from(0.0);
-        vec3::Vec3::coordinate_system(&self.normal, &mut local_dpdv, &mut local_dpdu);
+        vec3::Vec3::coordinate_system(&local_normal, &mut local_dpdv, &mut local_dpdu);
 
         return Some(shape::IntersectableShapeSurface::new(
             t,
             local_position,
-            self.normal,
+            local_normal,
             local_dpdu,
             local_dpdv,
             &self.object_to_world,
