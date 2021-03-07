@@ -40,18 +40,20 @@ impl Sphere {
         };
     }
 
+    fn uniform_sample_local_surface(&self, sample: &vec2::Vec2) -> vec3::Vec3 {
+        let x =
+            f32::cos(2.0 * math::PI_F32 * sample.y) * 2.0 * f32::sqrt(sample.x * (1.0 - sample.x));
+        let y =
+            f32::cos(2.0 * math::PI_F32 * sample.y) * 2.0 * f32::sqrt(sample.x * (1.0 - sample.x));
+        let z = 1.0 - 2.0 * sample.x;
+        return vec3::Vec3::new(x, y, z);
+    }
+
     fn behind_surface_tangent_plane(
         &self,
-        surface_point: &vec3::Vec3,
-        surface_normal: &vec3::Vec3,
+        local_surface_point: &vec3::Vec3,
+        local_surface_normal: &vec3::Vec3,
     ) -> bool {
-        let local_surface_point =
-            (self.world_to_object * vec4::Vec4::from_vec3(surface_point, 1.0)).to_vec3();
-        let local_surface_normal = (self.inverse_normal_transform
-            * vec4::Vec4::from_vec3(surface_normal, 0.0))
-        .to_vec3()
-        .normalize()
-        .unwrap();
         if (-local_surface_point).dot(&local_surface_normal) >= 0.0 {
             return false;
         }
@@ -162,44 +164,56 @@ impl shape::SamplableShape for Sphere {
         surface_point_ref: &vec3::Vec3,
         surface_normal_ref: &vec3::Vec3,
     ) -> Option<shape::SampleShapeSurface> {
-        if self.behind_surface_tangent_plane(surface_point_ref, surface_normal_ref) {
+        let local_surface_point_ref =
+            (self.world_to_object * vec4::Vec4::from_vec3(surface_point_ref, 1.0)).to_vec3();
+        let local_surface_normal_ref = (self.inverse_normal_transform
+            * vec4::Vec4::from_vec3(surface_normal_ref, 0.0))
+        .to_vec3()
+        .normalize()
+        .unwrap();
+        if self.behind_surface_tangent_plane(&local_surface_point_ref, &local_surface_normal_ref) {
             return None;
         }
 
         let distance_sq = (surface_point_ref - self.world_center).length_sq();
         let radius_sq = self.radius * self.radius;
         if distance_sq <= radius_sq {
+            // uniform sample the sphere then
+            let local_sample_point = self.uniform_sample_local_surface(sample);
+            let world_surface_point =
+                (self.object_to_world * vec4::Vec4::from_vec3(&local_sample_point, 1.0)).to_vec3();
+            let pdf = 1.0 / (4.0 * math::PI_F32);
+            return Some(shape::SampleShapeSurface::new(pdf, world_surface_point));
+        } else {
+            let cos_alpha =
+                1.0 - sample.x + sample.x * f32::sqrt(f32::max(1.0 - radius_sq / distance_sq, 0.0));
+            let sin_alpha = f32::sqrt(f32::max(1.0 - cos_alpha * cos_alpha, 0.0));
+
+            let phi = 2.0 * math::PI_F32 * sample.y;
+            let cos_phi = f32::cos(phi);
+            let sin_phi = f32::sin(phi);
+
+            let w = (self.world_center - surface_point_ref).normalize().unwrap();
+            let v = w.cross(surface_normal_ref).normalize().unwrap();
+            let u = v.cross(&w).normalize().unwrap();
+            let sample_transform = mat4::Mat4::from_scalars(
+                u.x, u.y, u.z, 0.0, v.x, v.y, v.z, 0.0, w.x, w.y, w.z, 0.0, 0.0, 0.0, 0.0, 1.0,
+            );
+            let direction_vec4 = sample_transform
+                * vec4::Vec4::new(cos_phi * sin_alpha, sin_phi * sin_alpha, cos_alpha, 0.0);
+
+            let direction = direction_vec4.to_vec3().normalize().unwrap();
+            let ray = ray::Ray::new(*surface_point_ref, direction);
+            if let Some(shape_surface) = self.intersect_ray(&ray) {
+                let n = 1.0 - f32::sqrt(f32::max(1.0 - radius_sq / distance_sq, 0.0));
+                return Some(shape::SampleShapeSurface::new(
+                    1.0 / (2.0 * math::PI_F32 * n),
+                    shape_surface.calc_world_position(),
+                ));
+            }
+
             return None;
         }
-
-        let cos_alpha =
-            1.0 - sample.x + sample.x * f32::sqrt(f32::max(1.0 - radius_sq / distance_sq, 0.0));
-        let sin_alpha = f32::sqrt(f32::max(1.0 - cos_alpha * cos_alpha, 0.0));
-
-        let phi = 2.0 * math::PI_F32 * sample.y;
-        let cos_phi = f32::cos(phi);
-        let sin_phi = f32::sin(phi);
-
-        let w = (self.world_center - surface_point_ref).normalize().unwrap();
-        let v = w.cross(surface_normal_ref).normalize().unwrap();
-        let u = v.cross(&w).normalize().unwrap();
-        let sample_transform = mat4::Mat4::from_scalars(
-            u.x, u.y, u.z, 0.0, v.x, v.y, v.z, 0.0, w.x, w.y, w.z, 0.0, 0.0, 0.0, 0.0, 1.0,
-        );
-        let direction_vec4 = sample_transform
-            * vec4::Vec4::new(cos_phi * sin_alpha, sin_phi * sin_alpha, cos_alpha, 0.0);
-
-        let direction = direction_vec4.to_vec3().normalize().unwrap();
-        let ray = ray::Ray::new(*surface_point_ref, direction);
-        if let Some(shape_surface) = self.intersect_ray(&ray) {
-            let n = 1.0 - f32::sqrt(f32::max(1.0 - radius_sq / distance_sq, 0.0));
-            return Some(shape::SampleShapeSurface::new(
-                1.0 / (2.0 * math::PI_F32 * n),
-                shape_surface.calc_world_position(),
-            ));
-        }
-
-        return None;
     }
 }
 

@@ -1,5 +1,5 @@
-use crate::core::math;
 use crate::core::mat4;
+use crate::core::math;
 use crate::core::vec2;
 use crate::core::vec3;
 use crate::core::vec4;
@@ -162,9 +162,8 @@ impl shape::SamplableShape for Rectangle {
             return None;
         }
 
-        let world_surface_point = (self.object_to_world
-            * vec4::Vec4::from_vec3(&local_sample_point, 1.0))
-        .to_vec3();
+        let world_surface_point =
+            (self.object_to_world * vec4::Vec4::from_vec3(&local_sample_point, 1.0)).to_vec3();
         let pdf = direction.length_sq() / (self.width * self.height * cos_theta);
         return Some(shape::SampleShapeSurface::new(pdf, world_surface_point));
     }
