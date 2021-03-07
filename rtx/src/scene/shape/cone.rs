@@ -64,6 +64,11 @@ impl shape::IntersectableShape for Cone {
             return false;
         }
 
+        let local_position = local_ray.calc_position(ray_time);
+        if local_position.z < 0.0 || local_position.z > self.height {
+            return false;
+        }
+
         return ray_time < max_distance;
     }
 
@@ -75,7 +80,7 @@ impl shape::IntersectableShape for Cone {
         let height_sq = self.height * self.height;
         let radius_sq = self.radius * self.radius;
         let a = height_sq * (d.x * d.x + d.y * d.y) - radius_sq * d.z * d.z;
-        let b = height_sq * (o.x * d.x + o.y * d.y) - 2.0 * d.z * radius_sq * (o.z - self.height);
+        let b = 2.0 * height_sq * (o.x * d.x + o.y * d.y) - 2.0 * d.z * radius_sq * (o.z - self.height);
         let c = height_sq * (o.x * o.x + o.y * o.y) - radius_sq * (self.height - o.z) * (self.height - o.z);
         if a == 0.0 {
             return None;
@@ -102,10 +107,13 @@ impl shape::IntersectableShape for Cone {
         }
 
         let local_position = local_ray.calc_position(ray_time);
-        let local_normal = vec3::Vec3::new(self.height, self.radius, local_position.z);
+        if local_position.z < 0.0 || local_position.z > self.height {
+            return None;
+        }
         let v = local_position.z / self.height;
         let local_dpdu = vec3::Vec3::new(-2.0 * math::PI_F32 * local_position.y, 2.0 * math::PI_F32 * local_position.x, 0.0);
         let local_dpdv = vec3::Vec3::new(-local_position.x / (1.0 - v), -local_position.y / (1.0 - v), self.height);
+        let local_normal = local_dpdu.cross(&local_dpdv).normalize().unwrap();
 
         return Some(shape::IntersectableShapeSurface::new(
             ray_time,
