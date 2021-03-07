@@ -15,7 +15,7 @@ fn main() {
 
     // setup lights
     let cylinder_light_shape = Box::new(shape::cylinder::Cylinder::new(
-        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 0.15, 0.6)).rotate(
+        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 1.5, 0.6)).rotate(
             math::degree_to_radian(90.0),
             &vec3::Vec3::new(0.0, 1.0, 0.0).normalize().unwrap(),
         ),
@@ -42,11 +42,11 @@ fn main() {
         0.4,
     ));
     let sphere_light_right_shape = Box::new(shape::sphere::Sphere::new(
-        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.4, 0.0, 0.0)),
+        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.4, 0.3, 0.0)),
         0.2,
     ));
     let sphere_light_left_shape = Box::new(shape::sphere::Sphere::new(
-        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(-0.4, 0.0, 0.0)),
+        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(-0.4, 0.3, 0.0)),
         0.2,
     ));
     let sphere_area_light_right = Box::new(light::area_light::AreaLight::new(
@@ -107,6 +107,13 @@ fn main() {
         0.0,
         0.3,
     ));
+    let cone = rc::Rc::new(shape::cone::Cone::new(
+        mat4::Mat4::translate(&mat4::Mat4::new(), &vec3::Vec3::new(0.0, 0.1, 0.5)).rotate(
+            math::degree_to_radian(-90.0),
+            &vec3::Vec3::new(1.0, 0.0, 0.0).normalize().unwrap(),
+        ),
+        0.1, 
+        0.2));
     let white_matte = rc::Rc::new(matte::Matte::new(vec3::Vec3::from(0.5), 0.0));
 
     let mut world = world::World::new();
@@ -114,6 +121,7 @@ fn main() {
     world.add_shape(sphere_center, white_matte.clone());
     world.add_shape(disk, white_matte.clone());
     world.add_shape(cylinder, white_matte.clone());
+    world.add_shape(cone, white_matte.clone());
     world.add_light(sphere_area_light_right);
     world.add_light(sphere_area_light_left);
     world.add_light(rectangle_area_light);
