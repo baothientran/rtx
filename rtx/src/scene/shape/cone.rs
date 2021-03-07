@@ -113,7 +113,10 @@ impl shape::IntersectableShape for Cone {
         let v = local_position.z / self.height;
         let local_dpdu = vec3::Vec3::new(-2.0 * math::PI_F32 * local_position.y, 2.0 * math::PI_F32 * local_position.x, 0.0);
         let local_dpdv = vec3::Vec3::new(-local_position.x / (1.0 - v), -local_position.y / (1.0 - v), self.height);
-        let local_normal = local_dpdu.cross(&local_dpdv).normalize().unwrap();
+        let mut local_normal = local_dpdu.cross(&local_dpdv).normalize().unwrap();
+        if local_ray.direction().dot(&local_normal) > 0.0 {
+            local_normal = -local_normal;
+        }
 
         return Some(shape::IntersectableShapeSurface::new(
             ray_time,
