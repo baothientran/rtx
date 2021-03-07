@@ -5,11 +5,11 @@ use crate::scene::ray;
 use crate::scene::shape;
 
 pub struct Plane {
-    pub normal: vec3::Vec3,
-    pub distance: f32,
-    pub object_to_world: mat4::Mat4,
-    pub world_to_object: mat4::Mat4,
-    pub normal_transform: mat4::Mat4,
+    normal: vec3::Vec3,
+    distance: f32,
+    object_to_world: mat4::Mat4,
+    world_to_object: mat4::Mat4,
+    normal_transform: mat4::Mat4,
 }
 
 impl Plane {

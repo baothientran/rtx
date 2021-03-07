@@ -62,7 +62,7 @@ impl Disk {
             return None;
         }
 
-        let local_sample_point =  vec3::Vec3::new(r * f32::cos(theta), r * f32::sin(theta), 0.0);
+        let local_sample_point = vec3::Vec3::new(r * f32::cos(theta), r * f32::sin(theta), 0.0);
         return Some(local_sample_point);
     }
 
@@ -176,7 +176,10 @@ impl shape::SamplableShape for Disk {
         .to_vec3()
         .normalize()
         .unwrap();
-        if self.completely_behind_surface_tangent_plane(&local_surface_point_ref, &local_surface_normal_ref) {
+        if self.completely_behind_surface_tangent_plane(
+            &local_surface_point_ref,
+            &local_surface_normal_ref,
+        ) {
             return None;
         }
 
