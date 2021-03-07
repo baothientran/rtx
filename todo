@@ -25,9 +25,8 @@
 
 - on going:
     + meshes
-        * add support for cylinder shape and cylinder pdf
-        * add support for triangle shape and triangle pdf
         * add support for cone shape and cone pdf
+        * add support for triangle shape and triangle pdf
 
     + material:
         * lambertian (sample_bxdf)
@@ -44,6 +43,7 @@
         * gamma correction
 
     + meshes:
+        * cylinder
         * disk
         * plane
         * rectangle
