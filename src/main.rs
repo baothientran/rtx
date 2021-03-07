@@ -112,8 +112,9 @@ fn main() {
             math::degree_to_radian(-90.0),
             &vec3::Vec3::new(1.0, 0.0, 0.0).normalize().unwrap(),
         ),
-        0.1, 
-        0.2));
+        0.1,
+        0.2,
+    ));
     let white_matte = rc::Rc::new(matte::Matte::new(vec3::Vec3::from(0.5), 0.0));
 
     let mut world = world::World::new();

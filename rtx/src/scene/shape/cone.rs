@@ -1,5 +1,5 @@
-use crate::core::math;
 use crate::core::mat4;
+use crate::core::math;
 use crate::core::vec3;
 use crate::scene::ray;
 use crate::scene::shape;
@@ -10,7 +10,7 @@ pub struct Cone {
     world_to_object: mat4::Mat4,
     normal_transform: mat4::Mat4,
     radius: f32,
-    height: f32
+    height: f32,
 }
 
 impl Cone {
@@ -24,7 +24,7 @@ impl Cone {
             world_to_object,
             normal_transform,
             radius,
-            height
+            height,
         };
     }
 }
@@ -38,8 +38,10 @@ impl shape::IntersectableShape for Cone {
         let height_sq = self.height * self.height;
         let radius_sq = self.radius * self.radius;
         let a = height_sq * (d.x * d.x + d.y * d.y) - radius_sq * d.z * d.z;
-        let b = 2.0 * height_sq * (o.x * d.x + o.y * d.y) - 2.0 * d.z * radius_sq * (o.z - self.height);
-        let c = height_sq * (o.x * o.x + o.y * o.y) - radius_sq * (self.height - o.z) * (self.height - o.z);
+        let b =
+            2.0 * height_sq * (o.x * d.x + o.y * d.y) - 2.0 * d.z * radius_sq * (o.z - self.height);
+        let c = height_sq * (o.x * o.x + o.y * o.y)
+            - radius_sq * (self.height - o.z) * (self.height - o.z);
         if a == 0.0 {
             return false;
         }
@@ -80,7 +82,10 @@ impl shape::IntersectableShape for Cone {
         return ray_time < max_distance;
     }
 
-    fn intersect_ray(&self, ray: &crate::scene::ray::Ray) -> Option<shape::IntersectableShapeSurface> {
+    fn intersect_ray(
+        &self,
+        ray: &crate::scene::ray::Ray,
+    ) -> Option<shape::IntersectableShapeSurface> {
         let local_ray = ray::Ray::transform(ray, &self.world_to_object);
         let o = local_ray.origin();
         let d = local_ray.direction();
@@ -88,8 +93,10 @@ impl shape::IntersectableShape for Cone {
         let height_sq = self.height * self.height;
         let radius_sq = self.radius * self.radius;
         let a = height_sq * (d.x * d.x + d.y * d.y) - radius_sq * d.z * d.z;
-        let b = 2.0 * height_sq * (o.x * d.x + o.y * d.y) - 2.0 * d.z * radius_sq * (o.z - self.height);
-        let c = height_sq * (o.x * o.x + o.y * o.y) - radius_sq * (self.height - o.z) * (self.height - o.z);
+        let b =
+            2.0 * height_sq * (o.x * d.x + o.y * d.y) - 2.0 * d.z * radius_sq * (o.z - self.height);
+        let c = height_sq * (o.x * o.x + o.y * o.y)
+            - radius_sq * (self.height - o.z) * (self.height - o.z);
         if a == 0.0 {
             return None;
         }
@@ -128,8 +135,16 @@ impl shape::IntersectableShape for Cone {
         }
 
         let v = local_position.z / self.height;
-        let local_dpdu = vec3::Vec3::new(-2.0 * math::PI_F32 * local_position.y, 2.0 * math::PI_F32 * local_position.x, 0.0);
-        let local_dpdv = vec3::Vec3::new(-local_position.x / (1.0 - v), -local_position.y / (1.0 - v), self.height);
+        let local_dpdu = vec3::Vec3::new(
+            -2.0 * math::PI_F32 * local_position.y,
+            2.0 * math::PI_F32 * local_position.x,
+            0.0,
+        );
+        let local_dpdv = vec3::Vec3::new(
+            -local_position.x / (1.0 - v),
+            -local_position.y / (1.0 - v),
+            self.height,
+        );
         let mut local_normal = local_dpdu.cross(&local_dpdv).normalize().unwrap();
         if local_ray.direction().dot(&local_normal) > 0.0 {
             local_normal = -local_normal;
