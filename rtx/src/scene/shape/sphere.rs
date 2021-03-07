@@ -44,7 +44,7 @@ impl Sphere {
         let x =
             f32::cos(2.0 * math::PI_F32 * sample.y) * 2.0 * f32::sqrt(sample.x * (1.0 - sample.x));
         let y =
-            f32::cos(2.0 * math::PI_F32 * sample.y) * 2.0 * f32::sqrt(sample.x * (1.0 - sample.x));
+            f32::sin(2.0 * math::PI_F32 * sample.y) * 2.0 * f32::sqrt(sample.x * (1.0 - sample.x));
         let z = 1.0 - 2.0 * sample.x;
         return vec3::Vec3::new(x, y, z);
     }
