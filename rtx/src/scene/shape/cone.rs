@@ -59,14 +59,22 @@ impl shape::IntersectableShape for Cone {
             mem::swap(&mut ray_time_0, &mut ray_time_1);
         }
 
-        let ray_time = ray_time_0;
+        let mut ray_time = ray_time_0;
         if ray_time < 0.0 {
             return false;
         }
 
-        let local_position = local_ray.calc_position(ray_time);
+        let mut local_position = local_ray.calc_position(ray_time);
         if local_position.z < 0.0 || local_position.z > self.height {
-            return false;
+            ray_time = ray_time_1;
+            if ray_time < 0.0 {
+                return false;
+            }
+
+            local_position = local_ray.calc_position(ray_time);
+            if local_position.z < 0.0 || local_position.z > self.height {
+                return false;
+            }
         }
 
         return ray_time < max_distance;
@@ -101,15 +109,24 @@ impl shape::IntersectableShape for Cone {
             mem::swap(&mut ray_time_0, &mut ray_time_1);
         }
 
-        let ray_time = ray_time_0;
+        let mut ray_time = ray_time_0;
         if ray_time < 0.0 {
             return None;
         }
 
-        let local_position = local_ray.calc_position(ray_time);
+        let mut local_position = local_ray.calc_position(ray_time);
         if local_position.z < 0.0 || local_position.z > self.height {
-            return None;
+            ray_time = ray_time_1;
+            if ray_time < 0.0 {
+                return None;
+            }
+
+            local_position = local_ray.calc_position(ray_time);
+            if local_position.z < 0.0 || local_position.z > self.height {
+                return None;
+            }
         }
+
         let v = local_position.z / self.height;
         let local_dpdu = vec3::Vec3::new(-2.0 * math::PI_F32 * local_position.y, 2.0 * math::PI_F32 * local_position.x, 0.0);
         let local_dpdv = vec3::Vec3::new(-local_position.x / (1.0 - v), -local_position.y / (1.0 - v), self.height);
