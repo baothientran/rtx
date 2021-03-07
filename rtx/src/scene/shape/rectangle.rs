@@ -1,3 +1,4 @@
+use crate::core::math;
 use crate::core::mat4;
 use crate::core::vec2;
 use crate::core::vec3;
@@ -67,7 +68,7 @@ impl Rectangle {
 impl shape::IntersectableShape for Rectangle {
     fn is_intersect(&self, ray: &ray::Ray, max_distance: f32) -> bool {
         let local_ray = ray::Ray::transform(ray, &self.world_to_object);
-        if local_ray.direction().z == 0.0 {
+        if math::equal_epsilon_f32(local_ray.direction().z, 0.0, math::EPSILON_F32_6) {
             return false;
         }
 
@@ -90,7 +91,7 @@ impl shape::IntersectableShape for Rectangle {
 
     fn intersect_ray(&self, ray: &ray::Ray) -> Option<shape::IntersectableShapeSurface> {
         let local_ray = ray::Ray::transform(ray, &self.world_to_object);
-        if local_ray.direction().z == 0.0 {
+        if math::equal_epsilon_f32(local_ray.direction().z, 0.0, math::EPSILON_F32_6) {
             return None;
         }
 
