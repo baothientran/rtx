@@ -38,7 +38,7 @@ impl shape::IntersectableShape for Cone {
         let height_sq = self.height * self.height;
         let radius_sq = self.radius * self.radius;
         let a = height_sq * (d.x * d.x + d.y * d.y) - radius_sq * d.z * d.z;
-        let b = height_sq * (o.x * d.x + o.y * d.y) - 2.0 * d.z * radius_sq * (o.z - self.height);
+        let b = 2.0 * height_sq * (o.x * d.x + o.y * d.y) - 2.0 * d.z * radius_sq * (o.z - self.height);
         let c = height_sq * (o.x * o.x + o.y * o.y) - radius_sq * (self.height - o.z) * (self.height - o.z);
         if a == 0.0 {
             return false;
