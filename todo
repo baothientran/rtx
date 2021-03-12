@@ -26,7 +26,6 @@
 - on going:
     + meshes
         * add support for cone shape and cone pdf
-        * add support for triangle shape and triangle pdf
 
     + material:
         * lambertian (sample_bxdf)

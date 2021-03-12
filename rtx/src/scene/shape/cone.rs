@@ -1,6 +1,8 @@
 use crate::core::mat4;
 use crate::core::math;
+use crate::core::vec2;
 use crate::core::vec3;
+use crate::core::vec4;
 use crate::scene::ray;
 use crate::scene::shape;
 use std::mem;
@@ -165,10 +167,33 @@ impl shape::IntersectableShape for Cone {
 impl shape::SamplableShape for Cone {
     fn sample_surface(
         &self,
-        _sample: &crate::core::vec2::Vec2,
-        _surface_point_ref: &crate::core::vec3::Vec3,
-        _surface_normal_ref: &crate::core::vec3::Vec3,
+        sample: &vec2::Vec2,
+        surface_point_ref: &vec3::Vec3,
+        _surface_normal_ref: &vec3::Vec3,
     ) -> Option<shape::SampleShapeSurface> {
-        todo!()
+        let local_surface_point_ref =
+            (self.world_to_object * vec4::Vec4::from_vec3(surface_point_ref, 1.0)).to_vec3();
+
+        let z = self.height * f32::sqrt(sample.x);
+        let radius = (self.radius / self.height) * z;
+        let theta = 2.0 * math::PI_F32 * sample.y;
+
+        let local_sample_point = vec3::Vec3::new(radius * f32::cos(theta), radius * f32::sin(theta), z);
+        let local_normal = vec3::Vec3::new(0.0, 0.0, 1.0);
+        let direction = local_surface_point_ref - local_sample_point;
+        let normalize_direction = direction.normalize().unwrap();
+        let cos_theta = f32::max(local_normal.dot(&normalize_direction), 0.0);
+        if cos_theta == 0.0 {
+            return None;
+        }
+        
+        let area = math::PI_F32
+            * self.radius
+            * (self.radius + f32::sqrt(self.height * self.height + self.radius * self.radius));
+
+        let world_surface_point =
+            (self.object_to_world * vec4::Vec4::from_vec3(&local_sample_point, 1.0)).to_vec3();
+        let pdf = direction.length_sq() / (area * cos_theta);
+        return Some(shape::SampleShapeSurface::new(pdf, world_surface_point));
     }
 }
