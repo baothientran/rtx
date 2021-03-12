@@ -4,7 +4,6 @@ pub mod disk;
 pub mod plane;
 pub mod rectangle;
 pub mod sphere;
-pub mod triangle;
 
 use crate::core::mat4;
 use crate::core::vec2;
