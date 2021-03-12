@@ -147,7 +147,7 @@ impl shape::IntersectableShape for Cone {
             -local_position.y / (1.0 - v),
             self.height,
         );
-        let mut local_normal = local_dpdu.cross(&local_dpdv).normalize().unwrap();
+        let mut local_normal = local_dpdu.cross(&local_dpdv).normalize().unwrap_or(vec3::Vec3::new(0.0, 0.0, 1.0));
         if local_ray.direction().dot(&local_normal) > 0.0 {
             local_normal = -local_normal;
         }
@@ -174,19 +174,33 @@ impl shape::SamplableShape for Cone {
         let local_surface_point_ref =
             (self.world_to_object * vec4::Vec4::from_vec3(surface_point_ref, 1.0)).to_vec3();
 
-        let z = self.height * f32::sqrt(sample.x);
+        let z = self.height * (-f32::sqrt(sample.x));
         let radius = (self.radius / self.height) * z;
         let theta = 2.0 * math::PI_F32 * sample.y;
 
-        let local_sample_point = vec3::Vec3::new(radius * f32::cos(theta), radius * f32::sin(theta), z);
-        let local_normal = vec3::Vec3::new(0.0, 0.0, 1.0);
+        let local_sample_point =
+            vec3::Vec3::new(radius * f32::cos(theta), radius * f32::sin(theta), z + self.height);
+
+        // calculate local normal
+        let v = local_sample_point.z / self.height;
+        let local_dpdu = vec3::Vec3::new(
+            -2.0 * math::PI_F32 * local_sample_point.y,
+            2.0 * math::PI_F32 * local_sample_point.x,
+            0.0,
+        );
+        let local_dpdv = vec3::Vec3::new(
+            -local_sample_point.x / (1.0 - v),
+            -local_sample_point.y / (1.0 - v),
+            self.height,
+        );
+        let local_normal = local_dpdu.cross(&local_dpdv).normalize().unwrap();
         let direction = local_surface_point_ref - local_sample_point;
         let normalize_direction = direction.normalize().unwrap();
-        let cos_theta = f32::max(local_normal.dot(&normalize_direction), 0.0);
+        let cos_theta = f32::abs(local_normal.dot(&normalize_direction));
         if cos_theta == 0.0 {
             return None;
         }
-        
+
         let area = math::PI_F32
             * self.radius
             * (self.radius + f32::sqrt(self.height * self.height + self.radius * self.radius));
