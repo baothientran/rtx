@@ -9,7 +9,7 @@ use crate::scene::ray;
 use crate::scene::sampler;
 use crate::scene::world;
 
-fn estimate_one_light(
+fn estimate_one_light_direct(
     light: &dyn light::Light,
     surface_material: &dyn material::Material,
     surface_point: &vec3::Vec3,
@@ -37,7 +37,7 @@ fn estimate_one_light(
     return vec3::Vec3::from(0.0);
 }
 
-fn estimate_all_lights(
+fn estimate_all_lights_direct(
     surface_material: &dyn material::Material,
     surface_point: &vec3::Vec3,
     surface_normal: &vec3::Vec3,
@@ -52,7 +52,7 @@ fn estimate_all_lights(
         let mut light_lo = vec3::Vec3::from(0.0);
         let light_samples = sampler.get_2d_array(light.num_samples() as usize);
         for i in 0..light.num_samples() {
-            light_lo += estimate_one_light(
+            light_lo += estimate_one_light_direct(
                 light.as_ref(),
                 surface_material,
                 surface_point,
@@ -73,7 +73,7 @@ fn estimate_all_lights(
     return lo;
 }
 
-fn _estimate_all_lights_with_uniform_contributions(
+fn _estimate_all_lights_direct_with_uniform_contributions(
     surface_material: &dyn material::Material,
     surface_point: &vec3::Vec3,
     surface_normal: &vec3::Vec3,
@@ -89,7 +89,7 @@ fn _estimate_all_lights_with_uniform_contributions(
 
     let sample = sampler.get_2d();
     let light = &world.lights()[light_id];
-    let light_lo = estimate_one_light(
+    let light_lo = estimate_one_light_direct(
         light.as_ref(),
         surface_material,
         surface_point,
@@ -103,7 +103,7 @@ fn _estimate_all_lights_with_uniform_contributions(
     return light_lo * (world.lights().len() as f32);
 }
 
-fn _estimate_all_lights_with_linear_contributions(
+fn _estimate_all_lights_direct_with_linear_contributions(
     surface_material: &dyn material::Material,
     surface_point: &vec3::Vec3,
     surface_normal: &vec3::Vec3,
@@ -119,7 +119,7 @@ fn _estimate_all_lights_with_linear_contributions(
     let mut intensities = vec![0.0; num_lights];
     for i in 0..num_lights {
         let sample = &light_samples[i];
-        let lo = estimate_one_light(
+        let lo = estimate_one_light_direct(
             lights[i].as_ref(),
             surface_material,
             surface_point,
@@ -154,7 +154,7 @@ fn _estimate_all_lights_with_linear_contributions(
     }
 
     let light_sample = light_samples[light_index];
-    return estimate_one_light(
+    return estimate_one_light_direct(
         lights[light_index].as_ref(),
         surface_material,
         surface_point,
@@ -195,7 +195,7 @@ fn ray_trace(
         }
 
         // add color from lights around the world
-        lo += estimate_all_lights(
+        lo += estimate_all_lights_direct(
             surface_material,
             &surface_point_above,
             &normal,
