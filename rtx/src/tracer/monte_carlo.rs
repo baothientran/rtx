@@ -73,7 +73,7 @@ fn estimate_all_lights(
     return lo;
 }
 
-fn estimate_all_lights_with_uniform_contributions(
+fn _estimate_all_lights_with_uniform_contributions(
     surface_material: &dyn material::Material,
     surface_point: &vec3::Vec3,
     surface_normal: &vec3::Vec3,
@@ -103,7 +103,7 @@ fn estimate_all_lights_with_uniform_contributions(
     return light_lo * (world.lights().len() as f32);
 }
 
-fn estimate_all_lights_with_linear_contributions(
+fn _estimate_all_lights_with_linear_contributions(
     surface_material: &dyn material::Material,
     surface_point: &vec3::Vec3,
     surface_normal: &vec3::Vec3,
