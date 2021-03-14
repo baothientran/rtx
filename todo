@@ -24,9 +24,6 @@
         * custom scene description file 
 
 - on going:
-    + meshes
-        * add support for cone shape and cone pdf
-
     + material:
         * lambertian (sample_bxdf)
         * microfacet: oren nayar (sample_bxdf)
@@ -42,6 +39,7 @@
         * gamma correction
 
     + meshes:
+        * cone
         * cylinder
         * disk
         * plane
