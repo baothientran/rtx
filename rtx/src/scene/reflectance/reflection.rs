@@ -36,6 +36,7 @@ impl reflectance::Reflectance for Reflection {
         return Some(reflectance::ShadingReflectanceRadiance {
             shading_wi,
             bxdf: self.fresnel.evaluate(cos_theta_wi) * self.kr / f32::abs(cos_theta_wi),
+            pdf: 1.0,
         });
     }
 }

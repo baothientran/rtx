@@ -32,7 +32,7 @@ impl Disk {
         };
     }
 
-    pub fn uniform_sample_local_surface(&self, sample: &vec2::Vec2) -> vec3::Vec3 {
+    fn uniform_sample_local_surface(&self, sample: &vec2::Vec2) -> vec3::Vec3 {
         let outer_radius_sq = self.outer_radius * self.outer_radius;
         let inner_radius_sq = self.inner_radius * self.inner_radius;
         let r = f32::sqrt(sample.x * (outer_radius_sq - inner_radius_sq) + inner_radius_sq);
@@ -40,30 +40,6 @@ impl Disk {
         let local_sample_point = vec3::Vec3::new(r * f32::cos(theta), r * f32::sin(theta), 0.0);
 
         return local_sample_point;
-    }
-
-    pub fn concentric_sample_local_surface(&self, sample: &vec2::Vec2) -> Option<vec3::Vec3> {
-        let mut r;
-        let theta;
-        let offset = 2.0 * sample - vec2::Vec2::from(1.0);
-        if offset.x == 0.0 || offset.y == 0.0 {
-            r = 0.0;
-            theta = 0.0;
-        } else if offset.x * offset.x > offset.y * offset.y {
-            r = offset.x;
-            theta = math::PI_F32 * 0.25 * offset.y / offset.x;
-        } else {
-            r = offset.y;
-            theta = math::PI_F32 * 0.5 - math::PI_F32 * 0.25 * offset.x / offset.y;
-        }
-
-        r *= self.outer_radius;
-        if r.abs() < self.inner_radius {
-            return None;
-        }
-
-        let local_sample_point = vec3::Vec3::new(r * f32::cos(theta), r * f32::sin(theta), 0.0);
-        return Some(local_sample_point);
     }
 
     fn completely_behind_surface_tangent_plane(

@@ -147,7 +147,10 @@ impl shape::IntersectableShape for Cone {
             -local_position.y / (1.0 - v),
             self.height,
         );
-        let mut local_normal = local_dpdu.cross(&local_dpdv).normalize().unwrap_or(vec3::Vec3::new(0.0, 0.0, 1.0));
+        let mut local_normal = local_dpdu
+            .cross(&local_dpdv)
+            .normalize()
+            .unwrap_or(vec3::Vec3::new(0.0, 0.0, 1.0));
         if local_ray.direction().dot(&local_normal) > 0.0 {
             local_normal = -local_normal;
         }
@@ -178,8 +181,11 @@ impl shape::SamplableShape for Cone {
         let radius = (self.radius / self.height) * z;
         let theta = 2.0 * math::PI_F32 * sample.y;
 
-        let local_sample_point =
-            vec3::Vec3::new(radius * f32::cos(theta), radius * f32::sin(theta), z + self.height);
+        let local_sample_point = vec3::Vec3::new(
+            radius * f32::cos(theta),
+            radius * f32::sin(theta),
+            z + self.height,
+        );
 
         // calculate local normal
         let v = local_sample_point.z / self.height;

@@ -55,11 +55,4 @@ impl reflectance::Reflectance for OrenNayar {
         return self.kd / math::PI_F32
             * (self.a + self.b * f32::max(0.0, cos_phi_diff) * sin_alpha * tan_beta);
     }
-
-    fn sample_bxdf(
-        &self,
-        _shading_wo: &vec3::Vec3,
-    ) -> Option<reflectance::ShadingReflectanceRadiance> {
-        todo!();
-    }
 }

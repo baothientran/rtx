@@ -24,8 +24,4 @@ impl reflectance::Reflectance for Lambertian {
     fn bxdf(&self, _wo: &vec3::Vec3, _wi: &vec3::Vec3) -> vec3::Vec3 {
         return self.kd / math::PI_F32;
     }
-
-    fn sample_bxdf(&self, _wo: &vec3::Vec3) -> Option<reflectance::ShadingReflectanceRadiance> {
-        todo!();
-    }
 }

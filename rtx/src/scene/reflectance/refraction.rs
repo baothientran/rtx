@@ -74,6 +74,7 @@ impl reflectance::Reflectance for Refraction {
             shading_wi,
             bxdf: r * (vec3::Vec3::from(1.0) - self.fresnel.evaluate(cos_normal_wi)) * self.kt
                 / f32::abs(cos_normal_wi),
+            pdf: 1.0,
         });
     }
 }

@@ -5,6 +5,7 @@ pub mod oren_nayar;
 pub mod reflection;
 pub mod refraction;
 
+use crate::core::math;
 use crate::core::vec3;
 
 pub struct ReflectanceRadiance {
@@ -15,6 +16,7 @@ pub struct ReflectanceRadiance {
 pub struct ShadingReflectanceRadiance {
     pub shading_wi: vec3::Vec3,
     pub bxdf: vec3::Vec3,
+    pub pdf: f32,
 }
 
 pub enum ReflectanceType {
@@ -36,7 +38,25 @@ pub trait Reflectance {
 
     fn bxdf(&self, shading_wo: &vec3::Vec3, shading_wi: &vec3::Vec3) -> vec3::Vec3;
 
-    fn sample_bxdf(&self, shading_wo: &vec3::Vec3) -> Option<ShadingReflectanceRadiance>;
+    fn sample_bxdf(&self, shading_wo: &vec3::Vec3) -> Option<ShadingReflectanceRadiance> {
+        let theta = 0.0;
+        let phi = 0.0;
+
+        let shading_wi = vec3::Vec3::new(
+            f32::sin(theta) * f32::cos(phi),
+            f32::sin(theta) * f32::sin(phi),
+            f32::cos(theta),
+        )
+        .normalize()
+        .unwrap();
+        let bxdf = self.bxdf(shading_wo, &shading_wi);
+        let pdf = (f32::cos(theta) * f32::sin(theta)) / math::PI_F32;
+        return Some(ShadingReflectanceRadiance {
+            shading_wi,
+            bxdf,
+            pdf,
+        });
+    }
 }
 
 pub struct ReflectanceCollection {
