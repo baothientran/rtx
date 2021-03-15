@@ -40,7 +40,7 @@ pub trait Reflectance {
     fn bxdf(&self, shading_wo: &vec3::Vec3, shading_wi: &vec3::Vec3) -> vec3::Vec3;
 
     fn sample_bxdf(&self, sample: &vec2::Vec2, shading_wo: &vec3::Vec3) -> Option<ShadingReflectanceRadiance> {
-        assert!(self.has_types(ReflectanceType::Reflection as u32));
+        debug_assert!(self.has_types(ReflectanceType::Reflection as u32));
         let sample_position = sampling::sample_cosine_weighted_unit_hemisphere(sample);
         let mut shading_wi = sample_position.normalize().unwrap();
         let need_sign_flip_for_reflect = shading_wo.z * shading_wi.z < 0.0; 

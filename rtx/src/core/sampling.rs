@@ -69,6 +69,6 @@ pub fn sample_cosine_weighted_unit_hemisphere(sample: &vec2::Vec2) -> vec3::Vec3
 }
 
 pub fn pdf_cosine_weighted_unit_hemisphere(cos_theta: f32) -> f32 {
-    assert!(cos_theta > 0.0);
+    debug_assert!(cos_theta > 0.0);
     return cos_theta / math::PI_F32;
 }
