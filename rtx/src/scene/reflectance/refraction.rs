@@ -1,3 +1,4 @@
+use crate::core::vec2;
 use crate::core::vec3;
 use crate::scene::fresnel::dielectrics;
 use crate::scene::fresnel::Fresnel;
@@ -40,6 +41,7 @@ impl reflectance::Reflectance for Refraction {
 
     fn sample_bxdf(
         &self,
+        _sample: &vec2::Vec2,
         shading_wo: &vec3::Vec3,
     ) -> Option<reflectance::ShadingReflectanceRadiance> {
         let mut cos_normal_wo = shading_wo.z;

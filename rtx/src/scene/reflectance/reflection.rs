@@ -1,3 +1,4 @@
+use crate::core::vec2;
 use crate::core::vec3;
 use crate::scene::fresnel;
 use crate::scene::reflectance;
@@ -29,6 +30,7 @@ impl reflectance::Reflectance for Reflection {
 
     fn sample_bxdf(
         &self,
+        _sample: &vec2::Vec2,
         shading_wo: &vec3::Vec3,
     ) -> Option<reflectance::ShadingReflectanceRadiance> {
         let shading_wi = vec3::Vec3::new(-shading_wo.x, -shading_wo.y, shading_wo.z);

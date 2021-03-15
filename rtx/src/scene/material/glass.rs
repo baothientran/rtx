@@ -1,4 +1,5 @@
 use crate::core::math;
+use crate::core::vec2;
 use crate::core::vec3;
 use crate::scene::fresnel::dielectrics;
 use crate::scene::material;
@@ -41,11 +42,12 @@ impl material::Material for Glass {
 
     fn sample_bxdf(
         &self,
+        sample: &vec2::Vec2,
         normal: &vec3::Vec3,
         dpdu: &vec3::Vec3,
         wo: &vec3::Vec3,
         flags: u32,
     ) -> Option<reflectance::ReflectanceRadiance> {
-        return self.reflectances.sample_bxdf(normal, dpdu, wo, flags);
+        return self.reflectances.sample_bxdf(sample, normal, dpdu, wo, flags);
     }
 }

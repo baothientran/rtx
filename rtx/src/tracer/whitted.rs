@@ -48,6 +48,7 @@ fn ray_trace(
         // add reflection or refraction
         if depth <= max_depth {
             let maybe_radiance = surface_material.sample_bxdf(
+                &sampler.get_2d(),
                 &normal,
                 &dpdu,
                 &wo,
@@ -63,6 +64,7 @@ fn ray_trace(
             }
 
             let maybe_radiance = surface_material.sample_bxdf(
+                &sampler.get_2d(),
                 &normal,
                 &dpdu,
                 &wo,

@@ -1,6 +1,7 @@
 pub mod glass;
 pub mod matte;
 
+use crate::core::vec2;
 use crate::core::vec3;
 use crate::scene::reflectance;
 
@@ -15,6 +16,7 @@ pub trait Material {
 
     fn sample_bxdf(
         &self,
+        sample: &vec2::Vec2,
         normal: &vec3::Vec3,
         dpdu: &vec3::Vec3,
         wo: &vec3::Vec3,

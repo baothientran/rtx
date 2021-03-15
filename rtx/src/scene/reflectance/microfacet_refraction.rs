@@ -1,3 +1,4 @@
+use crate::core::vec2;
 use crate::core::vec3;
 use crate::scene::fresnel;
 use crate::scene::microfacet_distribution;
@@ -87,6 +88,7 @@ impl reflectance::Reflectance for MicrofacetRefraction {
 
     fn sample_bxdf(
         &self,
+        _sample: &vec2::Vec2,
         _shading_wo: &vec3::Vec3,
     ) -> Option<reflectance::ShadingReflectanceRadiance> {
         todo!()

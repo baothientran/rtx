@@ -5,7 +5,8 @@ pub mod oren_nayar;
 pub mod reflection;
 pub mod refraction;
 
-use crate::core::math;
+use crate::core::vec2;
+use crate::core::sampling;
 use crate::core::vec3;
 
 pub struct ReflectanceRadiance {
@@ -38,19 +39,17 @@ pub trait Reflectance {
 
     fn bxdf(&self, shading_wo: &vec3::Vec3, shading_wi: &vec3::Vec3) -> vec3::Vec3;
 
-    fn sample_bxdf(&self, shading_wo: &vec3::Vec3) -> Option<ShadingReflectanceRadiance> {
-        let theta = 0.0;
-        let phi = 0.0;
+    fn sample_bxdf(&self, sample: &vec2::Vec2, shading_wo: &vec3::Vec3) -> Option<ShadingReflectanceRadiance> {
+        let spherical_sample = sampling::sample_cosine_weighted_unit_hemisphere(sample);
+        let mut shading_wi = spherical_sample.position.normalize().unwrap();
+        let need_sign_flip_for_reflect = shading_wo.z * shading_wi.z < 0.0 && self.has_types(ReflectanceType::Reflection as u32); 
+        let need_sign_flip_for_refraction = shading_wo.z * shading_wi.z > 0.0 && self.has_types(ReflectanceType::Refraction as u32); 
+        if need_sign_flip_for_reflect || need_sign_flip_for_refraction  {
+            shading_wi = -shading_wi;
+        }
 
-        let shading_wi = vec3::Vec3::new(
-            f32::sin(theta) * f32::cos(phi),
-            f32::sin(theta) * f32::sin(phi),
-            f32::cos(theta),
-        )
-        .normalize()
-        .unwrap();
         let bxdf = self.bxdf(shading_wo, &shading_wi);
-        let pdf = (f32::cos(theta) * f32::sin(theta)) / math::PI_F32;
+        let pdf = spherical_sample.pdf;
         return Some(ShadingReflectanceRadiance {
             shading_wi,
             bxdf,
@@ -108,6 +107,7 @@ impl ReflectanceCollection {
 
     pub fn sample_bxdf(
         &self,
+        sample: &vec2::Vec2,
         normal: &vec3::Vec3,
         dpdu: &vec3::Vec3,
         wo: &vec3::Vec3,
@@ -132,7 +132,7 @@ impl ReflectanceCollection {
             return None;
         }
 
-        let maybe_radiance = self.reflectances[bxdf_id as usize].sample_bxdf(&shading_wo);
+        let maybe_radiance = self.reflectances[bxdf_id as usize].sample_bxdf(sample, &shading_wo);
         if maybe_radiance.is_none() {
             return None;
         }
