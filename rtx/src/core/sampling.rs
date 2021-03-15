@@ -2,34 +2,14 @@ use crate::core::math;
 use crate::core::vec2;
 use crate::core::vec3;
 
-pub struct SphericalSample {
-    pub theta: f32,
-    pub phi: f32,
-    pub position: vec3::Vec3,
-    pub pdf: f32,
-}
-
-pub struct DiskSample {
-    pub radius: f32,
-    pub theta: f32,
-    pub position: vec3::Vec3,
-    pub pdf: f32,
-}
-
-pub fn sample_uniform_unit_disk(sample: &vec2::Vec2) -> DiskSample {
+pub fn sample_uniform_unit_disk(sample: &vec2::Vec2) -> vec3::Vec3 {
     let radius = f32::sqrt(sample.x);
     let theta = 2.0 * math::PI_F32 * sample.y;
     let position = vec3::Vec3::new(radius * f32::cos(theta), radius * f32::sin(theta), 0.0);
-    let pdf = 1.0 / math::PI_F32;
-    return DiskSample {
-        radius,
-        theta,
-        position,
-        pdf,
-    };
+    return position;
 }
 
-pub fn sample_concentric_unit_disk(sample: &vec2::Vec2) -> DiskSample {
+pub fn sample_concentric_unit_disk(sample: &vec2::Vec2) -> vec3::Vec3 {
     let radius;
     let theta;
     let offset = 2.0 * sample - vec2::Vec2::from(1.0);
@@ -45,63 +25,50 @@ pub fn sample_concentric_unit_disk(sample: &vec2::Vec2) -> DiskSample {
     }
 
     let position = vec3::Vec3::new(radius * f32::cos(theta), radius * f32::sin(theta), 0.0);
-    let pdf = 1.0 / math::PI_F32;
-    return DiskSample {
-        radius,
-        theta,
-        position,
-        pdf,
-    };
+    return position;
 }
 
-pub fn sample_uniform_unit_sphere(sample: &vec2::Vec2) -> SphericalSample {
-    let theta = f32::acos(sample.x);
-    let phi = 2.0 * math::PI_F32 * sample.y;
+pub fn pdf_uniform_unit_disk() -> f32 {
+    return 1.0 / math::PI_F32;
+}
+
+pub fn sample_uniform_unit_sphere(sample: &vec2::Vec2) -> vec3::Vec3 {
     let position = vec3::Vec3::new(
         f32::cos(2.0 * math::PI_F32 * sample.y) * 2.0 * f32::sqrt(sample.x * (1.0 - sample.x)),
         f32::sin(2.0 * math::PI_F32 * sample.y) * 2.0 * f32::sqrt(sample.x * (1.0 - sample.x)),
         1.0 - 2.0 * sample.x,
     );
-    let pdf = 1.0 / (4.0 * math::PI_F32);
-    return SphericalSample {
-        theta,
-        phi,
-        position,
-        pdf,
-    };
+    return position;
 }
 
-pub fn sample_uniform_unit_hemisphere(sample: &vec2::Vec2) -> SphericalSample {
-    let theta = f32::acos(sample.x);
-    let phi = 2.0 * math::PI_F32 * sample.y;
+pub fn pdf_uniform_unit_sphere() -> f32 {
+    return 1.0 / (4.0 * math::PI_F32);
+}
+
+pub fn sample_uniform_unit_hemisphere(sample: &vec2::Vec2) -> vec3::Vec3 {
     let position = vec3::Vec3::new(
         f32::cos(2.0 * math::PI_F32 * sample.y) * f32::sqrt(1.0 - sample.x * sample.x),
         f32::sin(2.0 * math::PI_F32 * sample.y) * f32::sqrt(1.0 - sample.x * sample.x),
         sample.x,
     );
-    let pdf = 1.0 / (2.0 * math::PI_F32);
-    return SphericalSample {
-        theta,
-        phi,
-        position,
-        pdf,
-    };
+    return position;
 }
 
-pub fn sample_cosine_weighted_unit_hemisphere(sample: &vec2::Vec2) -> SphericalSample {
+pub fn pdf_uniform_unit_hemisphere() -> f32 {
+    return 1.0 / (2.0 * math::PI_F32);
+}
+
+pub fn sample_cosine_weighted_unit_hemisphere(sample: &vec2::Vec2) -> vec3::Vec3 {
     let disk_sample = sample_concentric_unit_disk(sample);
-    let x_sq = disk_sample.position.x * disk_sample.position.x;
-    let y_sq = disk_sample.position.y * disk_sample.position.y;
+    let x_sq = disk_sample.x * disk_sample.x;
+    let y_sq = disk_sample.y * disk_sample.y;
     let z = f32::sqrt(1.0 - x_sq - y_sq);
 
-    let theta = f32::asin(disk_sample.radius);
-    let phi = disk_sample.theta;
-    let position = vec3::Vec3::new(disk_sample.position.x, disk_sample.position.y, z);
-    let pdf = f32::sqrt(1.0 - disk_sample.radius * disk_sample.radius) / math::PI_F32;
-    return SphericalSample {
-        theta,
-        phi,
-        position,
-        pdf,
-    };
+    let position = vec3::Vec3::new(disk_sample.x, disk_sample.y, z);
+    return position;
+}
+
+pub fn pdf_cosine_weighted_unit_hemisphere(cos_theta: f32) -> f32 {
+    assert!(cos_theta > 0.0);
+    return cos_theta / math::PI_F32;
 }

@@ -40,21 +40,26 @@ pub trait Reflectance {
     fn bxdf(&self, shading_wo: &vec3::Vec3, shading_wi: &vec3::Vec3) -> vec3::Vec3;
 
     fn sample_bxdf(&self, sample: &vec2::Vec2, shading_wo: &vec3::Vec3) -> Option<ShadingReflectanceRadiance> {
-        let spherical_sample = sampling::sample_cosine_weighted_unit_hemisphere(sample);
-        let mut shading_wi = spherical_sample.position.normalize().unwrap();
-        let need_sign_flip_for_reflect = shading_wo.z * shading_wi.z < 0.0 && self.has_types(ReflectanceType::Reflection as u32); 
-        let need_sign_flip_for_refraction = shading_wo.z * shading_wi.z > 0.0 && self.has_types(ReflectanceType::Refraction as u32); 
-        if need_sign_flip_for_reflect || need_sign_flip_for_refraction  {
+        assert!(self.has_types(ReflectanceType::Reflection as u32));
+        let sample_position = sampling::sample_cosine_weighted_unit_hemisphere(sample);
+        let mut shading_wi = sample_position.normalize().unwrap();
+        let need_sign_flip_for_reflect = shading_wo.z * shading_wi.z < 0.0; 
+        if need_sign_flip_for_reflect {
             shading_wi = -shading_wi;
         }
 
         let bxdf = self.bxdf(shading_wo, &shading_wi);
-        let pdf = spherical_sample.pdf;
+        let pdf = sampling::pdf_cosine_weighted_unit_hemisphere(shading_wi.z.abs());
         return Some(ShadingReflectanceRadiance {
             shading_wi,
             bxdf,
             pdf,
         });
+    }
+
+    fn pdf(&self, shading_wi: &vec3::Vec3) -> f32 {
+        assert!(self.has_types(ReflectanceType::Reflection as u32));
+        return sampling::pdf_cosine_weighted_unit_hemisphere(shading_wi.z.abs());
     }
 }
 
