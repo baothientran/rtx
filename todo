@@ -25,15 +25,15 @@
 
 - on going:
     + material:
-        * lambertian (sample_bxdf)
         * microfacet: oren nayar (sample_bxdf)
         * microfacet: reflection and refraction (sample_bxdf) 
+        * multiple importance sampling
 
 - done:
     + material:
-        * microfacet: oren nayar (bxdf only)
         * microfacet: reflection and refraction (bxdf only) 
-        * lambertian (bxdf only)
+        * microfacet: oren nayar 
+        * lambertian 
         * reflection
         * refraction
         * gamma correction

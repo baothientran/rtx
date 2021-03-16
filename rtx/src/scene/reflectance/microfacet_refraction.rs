@@ -93,4 +93,8 @@ impl reflectance::Reflectance for MicrofacetRefraction {
     ) -> Option<reflectance::ShadingReflectanceRadiance> {
         todo!()
     }
+
+    fn pdf(&self, _shading_wi: &vec3::Vec3) -> f32 {
+        todo!()
+    }
 }
