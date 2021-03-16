@@ -12,6 +12,7 @@ use crate::core::vec3;
 pub struct ReflectanceRadiance {
     pub wi: vec3::Vec3,
     pub bxdf: vec3::Vec3,
+    pub pdf: f32,
 }
 
 pub struct ShadingReflectanceRadiance {
@@ -118,17 +119,34 @@ impl ReflectanceCollection {
         wo: &vec3::Vec3,
         flags: u32,
     ) -> Option<ReflectanceRadiance> {
-        let mut bxdf_id = -1;
+        let mut matched_bxdf_count = 0;
         for i in 0..self.reflectances.len() {
             if self.reflectances[i].has_types(flags) {
-                bxdf_id = i as i32;
-                break;
+                matched_bxdf_count += 1;
             }
         }
 
-        if bxdf_id == -1 {
+        if matched_bxdf_count == 0 {
             return None;
         }
+
+        // pick a random bxdf to sample
+        let random_bxdf_id = i32::max((sample.x * (matched_bxdf_count as f32)) as i32, matched_bxdf_count - 1);
+        let mut current_matched_bxdf = -1;
+        let mut bxdf_id = 0;
+        for i in 0..self.reflectances.len() {
+            if self.reflectances[i].has_types(flags) {
+                current_matched_bxdf += 1;
+                if random_bxdf_id == current_matched_bxdf {
+                    bxdf_id = i;
+                    break;
+                }
+            }
+        }
+
+        // create new random to sample the picked bxdf
+        let prob = 1.0 / (matched_bxdf_count as f32);
+        let new_sample = vec2::Vec2::new((sample.x - (random_bxdf_id as f32 * prob)) / prob , sample.y);
 
         let shading_x = vec3::Vec3::normalize(&dpdu).unwrap();
         let shading_y = vec3::Vec3::cross(&normal, &shading_x);
@@ -137,7 +155,7 @@ impl ReflectanceCollection {
             return None;
         }
 
-        let maybe_radiance = self.reflectances[bxdf_id as usize].sample_bxdf(sample, &shading_wo);
+        let maybe_radiance = self.reflectances[bxdf_id].sample_bxdf(&new_sample, &shading_wo);
         if maybe_radiance.is_none() {
             return None;
         }
@@ -145,20 +163,25 @@ impl ReflectanceCollection {
         let radiance = maybe_radiance.unwrap();
         let shading_wi = radiance.shading_wi;
         let mut bxdf = radiance.bxdf;
+        let mut pdf = radiance.pdf;
         let wi = self.shading_to_world(&shading_x, &shading_y, normal, &shading_wi);
         let reflect = wo.dot(normal) * wi.dot(normal) > 0.0;
         for i in 0..self.reflectances.len() {
             let reflectance = self.reflectances[i].as_ref();
-            if (i != bxdf_id as usize) && (reflectance.has_types(flags)) {
+            if (i != bxdf_id) && (reflectance.has_types(flags)) {
                 if (reflect && reflectance.has_types(ReflectanceType::Reflection as u32))
                     || (!reflect && reflectance.has_types(ReflectanceType::Refraction as u32))
                 {
                     bxdf += reflectance.bxdf(&shading_wo, &shading_wi);
                 }
+
+                pdf += reflectance.pdf(&shading_wi);
             }
         }
 
-        return Some(ReflectanceRadiance { wi, bxdf });
+        pdf /= matched_bxdf_count as f32;
+
+        return Some(ReflectanceRadiance { wi, bxdf, pdf });
     }
 
     fn world_to_shading(
